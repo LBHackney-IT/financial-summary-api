@@ -4,7 +4,7 @@ services:
   base-api:
     image: base-api
     build:
-      context: BaseApi/
+      context: FinancialSummaryApi/
       dockerfile: ./Dockerfile
     ports:
       - 3000:3000
@@ -29,7 +29,7 @@ services:
     image: base-api-test
     build:
       context: .
-      dockerfile: BaseApi.Tests/Dockerfile
+      dockerfile: FinancialSummaryApi.Tests/Dockerfile
     environment:
       - DB_HOST=test-database
       - DB_PORT=5432
