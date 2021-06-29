@@ -10,7 +10,8 @@ namespace FinancialSummaryApi.V1.Infrastructure
         public static void ConfigureDynamoDB(this IServiceCollection services)
         {
             bool localMode = false;
-            _ = bool.TryParse(Environment.GetEnvironmentVariable("DynamoDb_LocalMode"), out localMode);
+            _ = bool.TryParse(Environment.GetEnvironmentVariable("Dynamo" +
+                "Db_LocalMode"), out localMode);
 
             if (localMode)
             {

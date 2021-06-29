@@ -113,9 +113,9 @@ namespace FinancialSummaryApi
 
             ConfigureLogging(services, Configuration);
 
-            ConfigureDbContext(services);
+            //ConfigureDbContext(services);
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            // services.ConfigureDynamoDB();
+            services.ConfigureDynamoDB();
 
             RegisterGateways(services);
             RegisterUseCases(services);
@@ -125,7 +125,7 @@ namespace FinancialSummaryApi
         {
             var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
 
-            services.AddDbContext<DatabaseContext>(
+            services.AddDbContext<FinanceSummaryContext>(
                 opt => opt.UseNpgsql(connectionString).AddXRayInterceptor(true));
         }
 
@@ -151,7 +151,7 @@ namespace FinancialSummaryApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<IExampleGateway, ExampleGateway>();
+            services.AddScoped<IFinanceSummaryGateway, DynamoDbGateway>();
 
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
             //services.AddScoped<IExampleGateway, DynamoDbGateway>();
@@ -159,8 +159,10 @@ namespace FinancialSummaryApi
 
         private static void RegisterUseCases(IServiceCollection services)
         {
-            services.AddScoped<IGetAllUseCase, GetAllUseCase>();
-            services.AddScoped<IGetByIdUseCase, GetByIdUseCase>();
+            services.AddScoped<IGetAllAssetSummariesUseCase, GetAllAssetSummariesUseCase>();
+            services.AddScoped<IGetAssetSummaryByIdUseCase, GetAssetSummaryByIdUseCase>();
+            services.AddScoped<IAddAssetSummaryUseCase, AddAssetSummaryUseCase>();
+            services.AddScoped<IUpdateAssetSummaryUseCase, UpdateAssetSummaryUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

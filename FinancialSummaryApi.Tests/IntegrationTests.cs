@@ -10,7 +10,7 @@ namespace FinancialSummaryApi.Tests
     public class IntegrationTests<TStartup> where TStartup : class
     {
         protected HttpClient Client { get; private set; }
-        protected DatabaseContext DatabaseContext { get; private set; }
+        protected FinanceSummaryContext DatabaseContext { get; private set; }
 
         private MockWebApplicationFactory<TStartup> _factory;
         private NpgsqlConnection _connection;
@@ -36,7 +36,7 @@ namespace FinancialSummaryApi.Tests
         {
             _factory = new MockWebApplicationFactory<TStartup>(_connection);
             Client = _factory.CreateClient();
-            DatabaseContext = new DatabaseContext(_builder.Options);
+            DatabaseContext = new FinanceSummaryContext(_builder.Options);
             DatabaseContext.Database.EnsureCreated();
             _transaction = DatabaseContext.Database.BeginTransaction();
         }

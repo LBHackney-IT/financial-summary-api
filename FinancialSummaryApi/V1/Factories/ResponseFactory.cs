@@ -7,14 +7,46 @@ namespace FinancialSummaryApi.V1.Factories
 {
     public static class ResponseFactory
     {
-        //TODO: Map the fields in the domain object(s) to fields in the response object(s).
-        // More information on this can be found here https://github.com/LBHackney-IT/lbh-base-api/wiki/Factory-object-mappings
-        public static ResponseObject ToResponse(this Entity domain)
+        public static RentGroupSummaryResponse ToResponse(this RentGroupSummary domain)
         {
-            return new ResponseObject();
+            return new RentGroupSummaryResponse()
+            {
+                Id = domain.Id,
+                TargetType = domain.TargetType,
+                SubmitDate = domain.SubmitDate,
+                ArrearsYTD = domain.ArrearsYTD,
+                ChargedYTD = domain.ChargedYTD,
+                PaidYTD = domain.PaidYTD,
+                TargetDescription = domain.TargetDescription,
+                TotalBalance = domain.TotalBalance,
+                TotalCharged = domain.TotalCharged,
+                TotalPaid = domain.TotalPaid,
+                RentGroupName = domain.RentGroupName
+            };
         }
 
-        public static List<ResponseObject> ToResponse(this IEnumerable<Entity> domainList)
+        public static List<RentGroupSummaryResponse> ToResponse(this IEnumerable<RentGroupSummary> domainList)
+        {
+            return domainList.Select(domain => domain.ToResponse()).ToList();
+        }
+
+        public static AssetSummaryResponse ToResponse(this AssetSummary domain)
+        {
+            return new AssetSummaryResponse()
+            {
+                Id = domain.Id,
+                TargetId = domain.TargetId,
+                TargetType = domain.TargetType,
+                SubmitDate = domain.SubmitDate,
+                TotalDwellingRent = domain.TotalDwellingRent,
+                TotalNonDwellingRent = domain.TotalNonDwellingRent,
+                TotalRentalServiceCharge = domain.TotalRentalServiceCharge,
+                TotalServiceCharges = domain.TotalServiceCharges,
+                AssetName = domain.AssetName
+            };
+        }
+
+        public static List<AssetSummaryResponse> ToResponse(this IEnumerable<AssetSummary> domainList)
         {
             return domainList.Select(domain => domain.ToResponse()).ToList();
         }

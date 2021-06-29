@@ -14,18 +14,18 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
     public class ExampleGatewayTests : DatabaseTests
     {
         private readonly Fixture _fixture = new Fixture();
-        private ExampleGateway _classUnderTest;
+        private DynamoDbGateway _classUnderTest;
 
         [SetUp]
         public void Setup()
         {
-            _classUnderTest = new ExampleGateway(DatabaseContext);
+            _classUnderTest = new DynamoDbGateway(DatabaseContext);
         }
 
         [Test]
         public void GetEntityByIdReturnsNullIfEntityDoesntExist()
         {
-            var response = _classUnderTest.GetEntityById(123);
+            var response = _classUnderTest.GetEntityByIdAsync(123);
 
             response.Should().BeNull();
         }

@@ -16,6 +16,7 @@ namespace FinancialSummaryApi.V1.Controllers
 
         public async Task InvokeAsync(HttpContext context)
         {
+            // ToDo: Do we need to throw an error here?
             if (context.Request.Headers[Constants.CorrelationId].Count == 0)
             {
                 context.Request.Headers[Constants.CorrelationId] = Guid.NewGuid().ToString();
