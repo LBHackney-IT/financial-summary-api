@@ -9,7 +9,7 @@ namespace FinancialSummaryApi.V1.Factories
     {
         public static RentGroupSummaryResponse ToResponse(this RentGroupSummary domain)
         {
-            return new RentGroupSummaryResponse()
+            return domain == null ? null : new RentGroupSummaryResponse()
             {
                 Id = domain.Id,
                 TargetType = domain.TargetType,
@@ -32,7 +32,7 @@ namespace FinancialSummaryApi.V1.Factories
 
         public static AssetSummaryResponse ToResponse(this AssetSummary domain)
         {
-            return new AssetSummaryResponse()
+            return domain == null ? null : new AssetSummaryResponse
             {
                 Id = domain.Id,
                 TargetId = domain.TargetId,
@@ -48,7 +48,7 @@ namespace FinancialSummaryApi.V1.Factories
 
         public static List<AssetSummaryResponse> ToResponse(this IEnumerable<AssetSummary> domainList)
         {
-            return domainList.Select(domain => domain.ToResponse()).ToList();
+            return domainList?.Select(domain => domain.ToResponse())?.ToList();
         }
     }
 }

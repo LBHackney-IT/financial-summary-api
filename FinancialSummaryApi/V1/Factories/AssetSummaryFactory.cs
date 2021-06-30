@@ -9,6 +9,10 @@ namespace FinancialSummaryApi.V1.Factories
     {
         public static AssetSummary ToAssetDomain(this FinanceSummaryDbEntity databaseEntity)
         {
+            if(databaseEntity == null)
+            {
+                return null;
+            }
             if (databaseEntity.AssetSummaryData == null)
             {
                 throw new Exception("Loaded data from the database cannot be parsed as a Asset data. Id: " + databaseEntity.Id);
@@ -28,7 +32,7 @@ namespace FinancialSummaryApi.V1.Factories
 
         public static FinanceSummaryDbEntity ToDatabase(this AssetSummary entity)
         {
-            return new FinanceSummaryDbEntity
+            return entity == null ? null : new FinanceSummaryDbEntity
             {
                 Id = entity.Id,
                 TargetId = entity.TargetId,
@@ -46,23 +50,8 @@ namespace FinancialSummaryApi.V1.Factories
 
         public static AssetSummary ToDomain(this AddAssetSummaryRequest requestModel)
         {
-            return new AssetSummary
+            return requestModel == null ? null : new AssetSummary
             {
-                TargetId = requestModel.TargetId,
-                TargetType = requestModel.TargetType,
-                SubmitDate = requestModel.SubmitDate,
-                TotalDwellingRent = requestModel.TotalDwellingRent,
-                TotalNonDwellingRent = requestModel.TotalNonDwellingRent,
-                TotalRentalServiceCharge = requestModel.TotalRentalServiceCharge,
-                TotalServiceCharges = requestModel.TotalServiceCharges
-            };
-        }
-
-        public static AssetSummary ToDomain(this UpdateAssetSummaryRequest requestModel)
-        {
-            return new AssetSummary
-            {
-                Id = requestModel.Id,
                 TargetId = requestModel.TargetId,
                 TargetType = requestModel.TargetType,
                 SubmitDate = requestModel.SubmitDate,

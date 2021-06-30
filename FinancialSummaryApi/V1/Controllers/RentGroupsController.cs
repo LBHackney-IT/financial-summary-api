@@ -62,7 +62,7 @@ namespace FinancialSummaryApi.V1.Controllers
         {
             if (summaryRequest == null)
             {
-                return BadRequest(new BaseErrorResponse("AssetSummary model cannot be null"));
+                return BadRequest(new BaseErrorResponse("Rent Group Summary model cannot be null"));
             }
 
             if(!ModelState.IsValid)

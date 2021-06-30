@@ -33,7 +33,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         [Range(0, (double) decimal.MaxValue)]
         public decimal TotalBalance { get; set; }
 
-        [Required]
+        [RequiredDateTime]
         public DateTime SubmitDate { get; set; }
     }
 }

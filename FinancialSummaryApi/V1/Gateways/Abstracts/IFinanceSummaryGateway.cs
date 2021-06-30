@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace FinancialSummaryApi.V1.Gateways
+namespace FinancialSummaryApi.V1.Gateways.Abstracts
 {
     public interface IFinanceSummaryGateway
     {
@@ -15,9 +15,5 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public Task AddAsync(RentGroupSummary groupSummary);
         public Task AddAsync(AssetSummary assetSummary);
-
-        Task<string> GetAssetNameByTenureIdAsync(Guid tenureId);
-        Task<string> GetAssetNameByAssetIdAsync(Guid assetId);
-        Task<Guid> GetTenureIdByAssetIdAsync(Guid assetId);
     }
 }

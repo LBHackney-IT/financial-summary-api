@@ -22,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using FinancialSummaryApi.V1.Gateways.Abstracts;
 
 namespace FinancialSummaryApi
 {
@@ -157,6 +158,9 @@ namespace FinancialSummaryApi
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<IFinanceSummaryGateway, DynamoDbGateway>();
+            services.AddScoped<ITenureInfoDbGateway, TenureInfoDbGateway>();
+            services.AddScoped<ITenureInfoDbGateway, TenureInfoDbGateway>();
+            services.AddScoped<IAssetInfoDbGateway, AssetInfoDbGateway>();
 
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
             //services.AddScoped<IExampleGateway, DynamoDbGateway>();

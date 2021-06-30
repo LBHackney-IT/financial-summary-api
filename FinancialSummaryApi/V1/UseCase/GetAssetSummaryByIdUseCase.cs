@@ -1,6 +1,6 @@
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Factories;
-using FinancialSummaryApi.V1.Gateways;
+using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
@@ -9,20 +9,23 @@ namespace FinancialSummaryApi.V1.UseCase
 {
     public class GetAssetSummaryByIdUseCase : IGetAssetSummaryByIdUseCase
     {
-        private IFinanceSummaryGateway _gateway;
+        private readonly IFinanceSummaryGateway _financeSummaryGateway;
+        private readonly IAssetInfoDbGateway _assetInfoGateway;
 
-        public GetAssetSummaryByIdUseCase(IFinanceSummaryGateway gateway)
+        public GetAssetSummaryByIdUseCase(IFinanceSummaryGateway financeSummaryGateway,
+            IAssetInfoDbGateway assetInfoGateway)
         {
-            _gateway = gateway;
+            _financeSummaryGateway = financeSummaryGateway;
+            _assetInfoGateway = assetInfoGateway;
         }
 
         public async Task<AssetSummaryResponse> ExecuteAsync(Guid assetId)
         {
-            var assetSummary = await _gateway.GetAssetSummaryByIdAsync(assetId).ConfigureAwait(false);
+            var assetSummary = await _financeSummaryGateway.GetAssetSummaryByIdAsync(assetId).ConfigureAwait(false);
 
             if(assetSummary != null)
             {
-                var assetName = await _gateway.GetAssetNameByAssetIdAsync(assetId).ConfigureAwait(false);
+                var assetName = await _assetInfoGateway.GetAssetNameByAssetIdAsync(assetId).ConfigureAwait(false);
 
                 assetSummary.AssetName = assetName;
             }

@@ -9,6 +9,11 @@ namespace FinancialSummaryApi.V1.Factories
     {
         public static RentGroupSummary ToRentGroupDomain(this FinanceSummaryDbEntity databaseEntity)
         {
+            if(databaseEntity == null)
+            {
+                return null;
+            }
+
             if(databaseEntity.RentGroupSummaryData == null)
             {
                 // ToDo: Add error handler
@@ -32,7 +37,7 @@ namespace FinancialSummaryApi.V1.Factories
 
         public static FinanceSummaryDbEntity ToDatabase(this RentGroupSummary entity)
         {
-            return new FinanceSummaryDbEntity
+            return entity == null ? null : new FinanceSummaryDbEntity
             {
                 Id = entity.Id,
                 TargetType = entity.TargetType,
@@ -53,7 +58,7 @@ namespace FinancialSummaryApi.V1.Factories
 
         public static RentGroupSummary ToRentGroupDomain(this AddRentGroupSummaryRequest model)
         {
-            return new RentGroupSummary
+            return model == null ? null : new RentGroupSummary
             {
                 TargetType = model.TargetType,
                 SubmitDate = model.SubmitDate,

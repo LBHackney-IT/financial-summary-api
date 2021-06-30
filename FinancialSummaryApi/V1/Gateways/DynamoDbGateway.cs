@@ -2,6 +2,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
+using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,7 @@ namespace FinancialSummaryApi.V1.Gateways
             _dynamoDbContext = dynamoDbContext;
         }
 
-        public async Task AddAsync(RentGroupSummary rentGroupSummary)
-        {
-            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase()).ConfigureAwait(false);
-        }
+        #region Asset Summary
 
         public async Task AddAsync(AssetSummary assetSummary)
         {
@@ -40,17 +38,6 @@ namespace FinancialSummaryApi.V1.Gateways
             return data.Select(s => s.ToAssetDomain()).OrderByDescending(r => r.SubmitDate).ToList();
         }
 
-        public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync()
-        {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
-
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.RentGroup));
-
-            List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
-
-            return data.Select(s => s.ToRentGroupDomain()).OrderByDescending(r => r.SubmitDate).ToList();
-        }
-
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId)
         {
             List<ScanCondition> scanConditions = new List<ScanCondition>();
@@ -63,19 +50,25 @@ namespace FinancialSummaryApi.V1.Gateways
             return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault()?.ToAssetDomain();  
         }
 
-        public Task<string> GetAssetNameByTenureIdAsync(Guid tenureId)
+        #endregion
+
+        #region Rent Group Summary
+
+        public async Task AddAsync(RentGroupSummary rentGroupSummary)
         {
-            return Task.FromResult("Mock Asset Name");
+            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase()).ConfigureAwait(false);
         }
 
-        public Task<string> GetAssetNameByAssetIdAsync(Guid assetId)
+        public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync()
         {
-            return Task.FromResult("Mock Asset Name");
-        }
+            List<ScanCondition> scanConditions = new List<ScanCondition>();
 
-        public Task<Guid> GetTenureIdByAssetIdAsync(Guid assetId)
-        {
-            return Task.FromResult(assetId);
+            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.GreaterThanOrEqual, DateTime.UtcNow.AddDays(-1)));
+            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.RentGroup));
+
+            List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
+
+            return data.Select(s => s.ToRentGroupDomain()).OrderByDescending(r => r.SubmitDate).ToList();
         }
 
         public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName)
@@ -90,5 +83,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault(s => string.Equals(s.RentGroupSummaryData?.RentGroupName, rentGroupName)).ToRentGroupDomain();
         }
+
+        #endregion
     }
 }

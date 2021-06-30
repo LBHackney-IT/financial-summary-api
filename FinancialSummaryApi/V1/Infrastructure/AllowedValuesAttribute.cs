@@ -33,7 +33,7 @@ namespace FinancialSummaryApi.V1.Infrastructure
 
             if(!isValid)
             {
-                ErrorMessage = $"Provided value should be in a range: [{string.Join(", ", _allowedEnumItems)}]";
+                ErrorMessage = $"Provided value should be in a range: [{string.Join(", ", _allowedEnumItems.Select(a => $"{(int)a}({a})"))}]";
             }
 
             return isValid;
