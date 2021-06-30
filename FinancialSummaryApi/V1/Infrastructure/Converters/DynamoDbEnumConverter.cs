@@ -15,6 +15,11 @@ namespace FinancialSummaryApi.V1.Infrastructure
         {
             if (null == value) return new DynamoDBNull();
 
+            if(value is TEnum enumItem)
+            {
+                return new Primitive(enumItem.ToString());
+            }
+
             return new Primitive(Enum.GetName(typeof(TEnum), value));
         }
 

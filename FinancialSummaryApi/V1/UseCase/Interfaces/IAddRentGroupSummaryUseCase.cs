@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.UseCase.Interfaces
 {
-    public interface IUpdateAssetSummaryUseCase
+    public interface IAddRentGroupSummaryUseCase
     {
-        Task ExecuteAsync(UpdateAssetSummaryRequest assetSummary);
+        Task ExecuteAsync(AddRentGroupSummaryRequest groupSummaryRequest);
     }
 }

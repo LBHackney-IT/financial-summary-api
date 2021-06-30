@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.UseCase.Interfaces
 {
-    public interface IGetAllAssetSummariesUseCase
+    public interface IGetAllRentGroupSummariesUseCase
     {
-        Task<List<AssetSummaryResponse>> ExecuteAsync();
+        Task<List<RentGroupSummaryResponse>> ExecuteAsync();
     }
 }

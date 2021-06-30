@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FinancialSummaryApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -39,6 +40,11 @@ namespace FinancialSummaryApi.V1.Controllers
 
                 return settings;
             };
+        }
+
+        public static string GetErrorMessage(ModelStateDictionary modelState)
+        {
+            return string.Join(", ", modelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
         }
     }
 }

@@ -7,17 +7,14 @@ namespace FinancialSummaryApi.V1.Gateways
 {
     public interface IFinanceSummaryGateway
     {
-        Task<RentGroupSummary> GetRentGroupSummaryByIdAsync(Guid id);
+        Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName);
         Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync();
 
-        Task<AssetSummary> GetAssetSummaryByIdAsync(Guid id);
+        Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId);
         Task<List<AssetSummary>> GetAllAssetSummaryAsync();
 
         public Task AddAsync(RentGroupSummary groupSummary);
         public Task AddAsync(AssetSummary assetSummary);
-
-        public Task UpdateAsync(RentGroupSummary groupSummary);
-        public Task UpdateAsync(AssetSummary assetSummary);
 
         Task<string> GetAssetNameByTenureIdAsync(Guid tenureId);
         Task<string> GetAssetNameByAssetIdAsync(Guid assetId);

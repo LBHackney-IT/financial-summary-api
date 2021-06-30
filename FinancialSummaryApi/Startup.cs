@@ -119,6 +119,11 @@ namespace FinancialSummaryApi
 
             RegisterGateways(services);
             RegisterUseCases(services);
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
         }
 
         private static void ConfigureDbContext(IServiceCollection services)
@@ -162,7 +167,9 @@ namespace FinancialSummaryApi
             services.AddScoped<IGetAllAssetSummariesUseCase, GetAllAssetSummariesUseCase>();
             services.AddScoped<IGetAssetSummaryByIdUseCase, GetAssetSummaryByIdUseCase>();
             services.AddScoped<IAddAssetSummaryUseCase, AddAssetSummaryUseCase>();
-            services.AddScoped<IUpdateAssetSummaryUseCase, UpdateAssetSummaryUseCase>();
+            services.AddScoped<IAddRentGroupSummaryUseCase, AddRentGroupSummaryUseCase>();
+            services.AddScoped<IGetRentGroupSummaryByNameUseCase, GetRentGroupSummaryByNameUseCase>();
+            services.AddScoped<IGetAllRentGroupSummariesUseCase, GetAllRentGroupSummariesUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -181,7 +188,7 @@ namespace FinancialSummaryApi
 
             // TODO
             // If you DON'T use the renaming script, PLEASE replace with your own API name manually
-            app.UseXRay("base-api");
+            app.UseXRay("financial_summary_api");
 
 
             //Get All ApiVersions,

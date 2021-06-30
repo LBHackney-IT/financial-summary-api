@@ -1,3 +1,4 @@
+using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using System;
@@ -10,6 +11,7 @@ namespace FinancialSummaryApi.V1.Factories
         {
             if(databaseEntity.RentGroupSummaryData == null)
             {
+                // ToDo: Add error handler
                 throw new Exception("Loaded data from the database cannot be parsed as a RentGroup data. Id: " + databaseEntity.Id);
             }
             return new RentGroupSummary
@@ -23,7 +25,8 @@ namespace FinancialSummaryApi.V1.Factories
                 TargetDescription = databaseEntity.RentGroupSummaryData.TargetDescription,
                 TotalBalance = databaseEntity.RentGroupSummaryData.TotalBalance,
                 TotalCharged = databaseEntity.RentGroupSummaryData.TotalCharged,
-                TotalPaid = databaseEntity.RentGroupSummaryData.TotalPaid
+                TotalPaid = databaseEntity.RentGroupSummaryData.TotalPaid,
+                RentGroupName = databaseEntity.RentGroupSummaryData.RentGroupName
             };
         }
 
@@ -45,6 +48,23 @@ namespace FinancialSummaryApi.V1.Factories
                     TotalPaid = entity.TotalPaid,
                     RentGroupName = entity.RentGroupName
                 }
+            };
+        }
+
+        public static RentGroupSummary ToRentGroupDomain(this AddRentGroupSummaryRequest model)
+        {
+            return new RentGroupSummary
+            {
+                TargetType = model.TargetType,
+                SubmitDate = model.SubmitDate,
+                ArrearsYTD = model.ArrearsYTD,
+                ChargedYTD = model.ChargedYTD,
+                PaidYTD = model.PaidYTD,
+                TargetDescription = model.TargetDescription,
+                TotalBalance = model.TotalBalance,
+                TotalCharged = model.TotalCharged,
+                TotalPaid = model.TotalPaid,
+                RentGroupName = model.RentGroupName
             };
         }
     }

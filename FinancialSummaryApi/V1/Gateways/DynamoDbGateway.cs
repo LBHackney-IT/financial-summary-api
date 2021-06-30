@@ -1,8 +1,8 @@
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.DocumentModel;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,9 +19,9 @@ namespace FinancialSummaryApi.V1.Gateways
             _dynamoDbContext = dynamoDbContext;
         }
 
-        public Task AddAsync(RentGroupSummary assetSummary)
+        public async Task AddAsync(RentGroupSummary rentGroupSummary)
         {
-            throw new NotImplementedException();
+            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase()).ConfigureAwait(false);
         }
 
         public async Task AddAsync(AssetSummary assetSummary)
@@ -33,28 +33,34 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             List<ScanCondition> scanConditions = new List<ScanCondition>();
 
-            scanConditions.Add(new ScanCondition("SubmitDate", Amazon.DynamoDBv2.DocumentModel.ScanOperator.GreaterThanOrEqual, DateTime.UtcNow.Date.AddDays(-1)));
+            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block));
 
             List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
 
-            return data.Select(s => s.ToAssetDomain()).ToList();
+            return data.Select(s => s.ToAssetDomain()).OrderByDescending(r => r.SubmitDate).ToList();
         }
 
-        public Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync()
+        public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync()
         {
-            throw new NotImplementedException();
+            List<ScanCondition> scanConditions = new List<ScanCondition>();
+
+            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.RentGroup));
+
+            List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
+
+            return data.Select(s => s.ToRentGroupDomain()).OrderByDescending(r => r.SubmitDate).ToList();
         }
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId)
         {
             List<ScanCondition> scanConditions = new List<ScanCondition>();
 
-            scanConditions.Add(new ScanCondition("SubmitDate", Amazon.DynamoDBv2.DocumentModel.ScanOperator.GreaterThanOrEqual, DateTime.UtcNow.Date.AddDays(-1)));
-            scanConditions.Add(new ScanCondition("TargetId", Amazon.DynamoDBv2.DocumentModel.ScanOperator.Equal, assetId));
+            scanConditions.Add(new ScanCondition("TargetId", ScanOperator.Equal, assetId));
+            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block));
 
             List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
 
-            return data.FirstOrDefault()?.ToAssetDomain();
+            return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault()?.ToAssetDomain();  
         }
 
         public Task<string> GetAssetNameByTenureIdAsync(Guid tenureId)
@@ -72,19 +78,17 @@ namespace FinancialSummaryApi.V1.Gateways
             return Task.FromResult(assetId);
         }
 
-        public Task<RentGroupSummary> GetRentGroupSummaryByIdAsync(Guid id)
+        public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName)
         {
-            throw new NotImplementedException();
-        }
+            List<ScanCondition> scanConditions = new List<ScanCondition>();
 
-        public Task UpdateAsync(RentGroupSummary groupSummary)
-        {
-            throw new NotImplementedException();
-        }
+            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.Equal, TargetType.RentGroup));
+            // ToDo: Change way to search by rent_group_name
+            //scanConditions.Add(new ScanCondition("RentGroupSummaryData.rent_group_name", ScanOperator.Equal, rentGroupName));
 
-        public async Task UpdateAsync(AssetSummary assetSummary)
-        {
-            await _dynamoDbContext.SaveAsync<FinanceSummaryDbEntity>(assetSummary.ToDatabase()).ConfigureAwait(false);
+            List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
+
+            return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault(s => string.Equals(s.RentGroupSummaryData?.RentGroupName, rentGroupName)).ToRentGroupDomain();
         }
     }
 }

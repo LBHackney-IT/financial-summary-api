@@ -1,11 +1,10 @@
 using FinancialSummaryApi.V1.Boundary.Response;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.UseCase.Interfaces
 {
-    public interface IGetAllAssetSummariesUseCase
+    public interface IGetRentGroupSummaryByNameUseCase
     {
-        Task<List<AssetSummaryResponse>> ExecuteAsync();
+        Task<RentGroupSummaryResponse> ExecuteAsync(string rentGroupName);
     }
 }
