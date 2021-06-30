@@ -6,6 +6,6 @@ namespace FinancialSummaryApi.V1.UseCase.Interfaces
 {
     public interface IGetAssetSummaryByIdUseCase
     {
-        Task<AssetSummaryResponse> ExecuteAsync(Guid assetId);
+        Task<AssetSummaryResponse> ExecuteAsync(Guid assetId, DateTime submitDate);
     }
 }

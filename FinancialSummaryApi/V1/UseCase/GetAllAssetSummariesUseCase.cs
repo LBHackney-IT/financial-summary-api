@@ -2,6 +2,7 @@ using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -19,9 +20,14 @@ namespace FinancialSummaryApi.V1.UseCase
             _assetInfoGateway = assetInfoGateway;
         }
 
-        public async Task<List<AssetSummaryResponse>> ExecuteAsync()
+        public async Task<List<AssetSummaryResponse>> ExecuteAsync(DateTime submitDate)
         {
-            var assetSummaries = (await _financeSummaryGateway.GetAllAssetSummaryAsync().ConfigureAwait(false)).ToResponse();
+            if (submitDate == DateTime.MinValue)
+            {
+                submitDate = DateTime.UtcNow;
+            }
+
+            var assetSummaries = (await _financeSummaryGateway.GetAllAssetSummaryAsync(submitDate).ConfigureAwait(false)).ToResponse();
 
             foreach(var asset in assetSummaries)
             {

@@ -27,10 +27,11 @@ namespace FinancialSummaryApi.V1.Gateways
             await _dynamoDbContext.SaveAsync(assetSummary.ToDatabase()).ConfigureAwait(false);
         }
 
-        public async Task<List<AssetSummary>> GetAllAssetSummaryAsync()
+        public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(DateTime submitDate)
         {
             List<ScanCondition> scanConditions = new List<ScanCondition>();
 
+            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
             scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block));
 
             List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
@@ -38,10 +39,11 @@ namespace FinancialSummaryApi.V1.Gateways
             return data.Select(s => s.ToAssetDomain()).OrderByDescending(r => r.SubmitDate).ToList();
         }
 
-        public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId)
+        public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
         {
             List<ScanCondition> scanConditions = new List<ScanCondition>();
 
+            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
             scanConditions.Add(new ScanCondition("TargetId", ScanOperator.Equal, assetId));
             scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block));
 
@@ -49,6 +51,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault()?.ToAssetDomain();  
         }
+
 
         #endregion
 
@@ -59,11 +62,11 @@ namespace FinancialSummaryApi.V1.Gateways
             await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase()).ConfigureAwait(false);
         }
 
-        public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync()
+        public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
         {
             List<ScanCondition> scanConditions = new List<ScanCondition>();
 
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.GreaterThanOrEqual, DateTime.UtcNow.AddDays(-1)));
+            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
             scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.RentGroup));
 
             List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
@@ -71,10 +74,11 @@ namespace FinancialSummaryApi.V1.Gateways
             return data.Select(s => s.ToRentGroupDomain()).OrderByDescending(r => r.SubmitDate).ToList();
         }
 
-        public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName)
+        public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName, DateTime submitDate)
         {
             List<ScanCondition> scanConditions = new List<ScanCondition>();
 
+            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
             scanConditions.Add(new ScanCondition("TargetType", ScanOperator.Equal, TargetType.RentGroup));
             // ToDo: Change way to search by rent_group_name
             //scanConditions.Add(new ScanCondition("RentGroupSummaryData.rent_group_name", ScanOperator.Equal, rentGroupName));
@@ -85,5 +89,8 @@ namespace FinancialSummaryApi.V1.Gateways
         }
 
         #endregion
+
+        private static Tuple<DateTime, DateTime> GetDayRange(DateTime date)
+            => new Tuple<DateTime, DateTime> (date.Date, date.Date.AddHours(23).AddMinutes(59));
     }
 }

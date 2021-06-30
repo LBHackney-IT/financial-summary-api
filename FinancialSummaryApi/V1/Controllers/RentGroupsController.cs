@@ -3,11 +3,13 @@ using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.Controllers
 {
+    // ToDO: add summary annotations
     [ApiController]
     [Route("api/v1/rent-group-summary")]
     [Produces("application/json")]
@@ -30,9 +32,9 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(List<RentGroupSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] DateTime submitDate)
         {
-            var rentGroups = await _getAllUseCase.ExecuteAsync().ConfigureAwait(false);
+            var rentGroups = await _getAllUseCase.ExecuteAsync(submitDate).ConfigureAwait(false);
 
             return Ok(rentGroups);
         }
@@ -42,9 +44,9 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{rentGroupName}")]
-        public async Task<IActionResult> Get([FromRoute] string rentGroupName)
+        public async Task<IActionResult> Get([FromRoute] string rentGroupName, [FromQuery] DateTime submitDate)
         {
-            var rentGroup = await _getByNameUseCase.ExecuteAsync(rentGroupName).ConfigureAwait(false);
+            var rentGroup = await _getByNameUseCase.ExecuteAsync(rentGroupName, submitDate).ConfigureAwait(false);
 
             if(rentGroup == null)
             {

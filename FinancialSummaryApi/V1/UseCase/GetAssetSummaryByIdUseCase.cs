@@ -19,9 +19,13 @@ namespace FinancialSummaryApi.V1.UseCase
             _assetInfoGateway = assetInfoGateway;
         }
 
-        public async Task<AssetSummaryResponse> ExecuteAsync(Guid assetId)
+        public async Task<AssetSummaryResponse> ExecuteAsync(Guid assetId, DateTime submitDate)
         {
-            var assetSummary = await _financeSummaryGateway.GetAssetSummaryByIdAsync(assetId).ConfigureAwait(false);
+            if (submitDate == DateTime.MinValue)
+            {
+                submitDate = DateTime.UtcNow;
+            }
+            var assetSummary = await _financeSummaryGateway.GetAssetSummaryByIdAsync(assetId, submitDate).ConfigureAwait(false);
 
             if(assetSummary != null)
             {

@@ -37,9 +37,9 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] DateTime submitDate)
         {
-            var assetSummaries = await _getAllUseCase.ExecuteAsync().ConfigureAwait(false);
+            var assetSummaries = await _getAllUseCase.ExecuteAsync(submitDate).ConfigureAwait(false);
 
             return Ok(assetSummaries);
         }
@@ -55,9 +55,9 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{assetId}")]
-        public async Task<IActionResult> Get([FromRoute]Guid assetId)
+        public async Task<IActionResult> Get([FromRoute]Guid assetId, [FromQuery]DateTime submitDate)
         {
-            var assetSummary = await _getByIdUseCase.ExecuteAsync(assetId).ConfigureAwait(false);
+            var assetSummary = await _getByIdUseCase.ExecuteAsync(assetId, submitDate).ConfigureAwait(false);
 
             if (assetSummary == null)
             {
