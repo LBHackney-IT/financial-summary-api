@@ -44,13 +44,7 @@ namespace FinancialSummaryApi.V1.Gateways
                 .GetRemainingAsync()
                 .ConfigureAwait(false);
 
-            if (tenureInfo == null || !tenureInfo.Any() || tenureInfo.First().TenuredAsset == null)
-            {
-                // ToDo: how to handle this case?
-                return null;
-            }
-
-            return tenureInfo.FirstOrDefault().ToDomain();
+            return tenureInfo?.FirstOrDefault().ToDomain();
         }
     }
 }

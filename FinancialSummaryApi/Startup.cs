@@ -23,6 +23,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
+using FinancialSummaryApi.V1;
 
 namespace FinancialSummaryApi
 {
@@ -37,8 +38,7 @@ namespace FinancialSummaryApi
 
         public IConfiguration Configuration { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
-        //TODO update the below to the name of your API
-        private const string ApiName = "Your API Name";
+        private const string ApiName = "Finance Summary API";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -190,10 +190,7 @@ namespace FinancialSummaryApi
                 app.UseHsts();
             }
 
-            // TODO
-            // If you DON'T use the renaming script, PLEASE replace with your own API name manually
             app.UseXRay("financial_summary_api");
-
 
             //Get All ApiVersions,
             var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
@@ -209,6 +206,7 @@ namespace FinancialSummaryApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();
             app.UseEndpoints(endpoints =>

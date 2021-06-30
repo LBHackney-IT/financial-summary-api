@@ -27,7 +27,6 @@ namespace FinancialSummaryApi.V1.UseCase
             if(existentTenure == null)
             {
                 throw new ArgumentException("Tenure info by provided targetId cannot be found!");
-                // ToDo: Add error handling
             }
 
             domainModel.Id = Guid.NewGuid();

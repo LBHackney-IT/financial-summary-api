@@ -25,7 +25,7 @@ namespace FinancialSummaryApi.V1.Infrastructure
             var valueType = value.GetType();
             if(!valueType.IsEnum || !Enum.IsDefined(typeof(TargetType), value))
             {
-                ErrorMessage = "Provided value should be a type of TargetType enum";
+                ErrorMessage = "Provided value should be a type of TargetType enum.";
                 return false;
             }
 
@@ -33,7 +33,7 @@ namespace FinancialSummaryApi.V1.Infrastructure
 
             if(!isValid)
             {
-                ErrorMessage = $"Provided value should be in a range: [{string.Join(", ", _allowedEnumItems.Select(a => $"{(int)a}({a})"))}]";
+                ErrorMessage = $"Provided value should be in a range: [{string.Join(", ", _allowedEnumItems.Select(a => $"{(int)a}({a})"))}].";
             }
 
             return isValid;

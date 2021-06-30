@@ -9,7 +9,6 @@ namespace FinancialSummaryApi.V1.Domain
     {
         public Guid Id { get; set; }
 
-        // ToDo how to validate type to be always rent group 
         public TargetType TargetType { get; set; }
 
         public string TargetDescription { get; set; }

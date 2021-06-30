@@ -1,11 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using FinancialSummaryApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancialSummaryApi.V1.Controllers
 {
@@ -22,7 +21,9 @@ namespace FinancialSummaryApi.V1.Controllers
             HttpContext.Request.Headers.TryGetValue(Constants.CorrelationId, out correlationId);
 
             if (!correlationId.Any())
+            {
                 throw new KeyNotFoundException("Request is missing a correlationId");
+            }
 
             return correlationId.First();
         }
@@ -44,7 +45,7 @@ namespace FinancialSummaryApi.V1.Controllers
 
         public static string GetErrorMessage(ModelStateDictionary modelState)
         {
-            return string.Join(", ", modelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
+            return string.Join(" ", modelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)));
         }
     }
 }

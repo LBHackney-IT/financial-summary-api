@@ -9,12 +9,12 @@ namespace FinancialSummaryApi.V1.Infrastructure
         {
             if (!(value is DateTime))
             {
-                return new ValidationResult($"{validationContext.MemberName} is required");
+                return new ValidationResult($"{validationContext.MemberName} is required.");
             }
 
             if ((DateTime) value == DateTime.MinValue)
             {
-                return new ValidationResult($"{validationContext.MemberName} cannot be default value");
+                return new ValidationResult($"{validationContext.MemberName} cannot be default value.");
             }
 
             return ValidationResult.Success;

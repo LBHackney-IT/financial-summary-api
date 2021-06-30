@@ -16,7 +16,6 @@ namespace FinancialSummaryApi.V1.Factories
 
             if(databaseEntity.RentGroupSummaryData == null)
             {
-                // ToDo: Add error handler
                 throw new Exception("Loaded data from the database cannot be parsed as a RentGroup data. Id: " + databaseEntity.Id);
             }
             return new RentGroupSummary
