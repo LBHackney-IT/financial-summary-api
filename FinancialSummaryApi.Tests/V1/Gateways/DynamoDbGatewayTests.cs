@@ -1,12 +1,12 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
 using FinancialSummaryApi.Tests.V1.Helper;
-using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Gateways;
-using FinancialSummaryApi.V1.Infrastructure;
+using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using System;
 
 namespace FinancialSummaryApi.Tests.V1.Gateways
 {
@@ -24,13 +24,17 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         public void Setup()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
+            _dynamoDb
+                .Setup(x => x.GetAssetSummaryByIdAsync(new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"), DateTime.UtcNow.AddDays(-2)))
+                .Returns(x => null);
             _classUnderTest = new DynamoDbGateway(_dynamoDb.Object);
         }
 
         [Test]
         public void GetEntityByIdReturnsNullIfEntityDoesntExist()
         {
-            var response = _classUnderTest.GetEntityById(123);
+            // ToDO
+            var response = _classUnderTest.GetAssetSummaryByIdAsync(new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"), DateTime.UtcNow.AddDays(-2));
 
             response.Should().BeNull();
         }
@@ -38,18 +42,17 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         [Test]
         public void GetEntityByIdReturnsTheEntityIfItExists()
         {
-            var entity = _fixture.Create<Entity>();
+            var entity = _fixture.Create<FinanceSummaryDbEntity>();
             var dbEntity = DatabaseEntityHelper.CreateDatabaseEntityFrom(entity);
 
-            _dynamoDb.Setup(x => x.LoadAsync<FinanceAssetSummaryDbEntity>(entity.Id, default))
+            _dynamoDb.Setup(x => x.LoadAsync<FinanceSummaryDbEntity>(entity.Id, default))
                      .ReturnsAsync(dbEntity);
+            // ToDO
+            var response = _classUnderTest.GetAssetSummaryByIdAsync(entity.Id, DateTime.UtcNow);
 
-            var response = _classUnderTest.GetEntityById(entity.Id);
+            _dynamoDb.Verify(x => x.LoadAsync<FinanceSummaryDbEntity>(entity.Id, default), Times.Once);
 
-            _dynamoDb.Verify(x => x.LoadAsync<FinanceAssetSummaryDbEntity>(entity.Id, default), Times.Once);
-
-            entity.Id.Should().Be(response.Id);
-            entity.CreatedAt.Should().BeSameDateAs(response.CreatedAt);
+            entity.Id.Should().Be(response.Result.Id);
         }
     }
 }

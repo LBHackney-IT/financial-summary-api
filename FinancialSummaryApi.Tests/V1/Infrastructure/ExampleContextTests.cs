@@ -16,7 +16,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure
             DatabaseContext.Add(databaseEntity);
             DatabaseContext.SaveChanges();
 
-            var result = DatabaseContext.DatabaseEntities.ToList().FirstOrDefault();
+            var result = DatabaseContext.SummaryEntities.ToList().FirstOrDefault();
 
             Assert.AreEqual(result, databaseEntity);
         }
