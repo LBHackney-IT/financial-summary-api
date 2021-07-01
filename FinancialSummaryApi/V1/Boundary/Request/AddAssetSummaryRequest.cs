@@ -10,7 +10,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         [Required]
         public Guid TargetId { get; set; }
 
-        [AllowedValues(TargetType.Estate, TargetType.Block)]
+        [AllowedValues(TargetType.Estate, TargetType.Block, TargetType.Core)]
         public TargetType TargetType { get; set; }
 
         [Required]

@@ -1,5 +1,7 @@
 using FinancialSummaryApi.V1.Boundary.Response;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -11,10 +13,16 @@ namespace FinancialSummaryApi.V1
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionMiddleware> _logger;
+        private readonly IHostEnvironment _env;
 
-        public ExceptionMiddleware(RequestDelegate next)
+        public ExceptionMiddleware(RequestDelegate next,
+            ILogger<ExceptionMiddleware> logger,
+            IHostEnvironment env)
         {
             _next = next;
+            _logger = logger;
+            _env = env;
         }
 
         public async Task Invoke(HttpContext context)
@@ -25,31 +33,33 @@ namespace FinancialSummaryApi.V1
             }
             catch (ArgumentNullException ex)
             {
-                await HandleExceptionAsync(context, ex.Message, HttpStatusCode.BadRequest).ConfigureAwait(false);
+                await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest).ConfigureAwait(false);
             }
             catch (ArgumentException ex)
             {
-                await HandleExceptionAsync(context, ex.Message, HttpStatusCode.BadRequest).ConfigureAwait(false);
+                await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest).ConfigureAwait(false);
             }
             catch (KeyNotFoundException ex)
             {
-                await HandleExceptionAsync(context, ex.Message, HttpStatusCode.BadRequest).ConfigureAwait(false);
+                await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest).ConfigureAwait(false);
             }
-            #pragma warning disable CA1031 // Do not catch general exception types
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex.Message, HttpStatusCode.InternalServerError).ConfigureAwait(false);
+                await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError).ConfigureAwait(false);
             }
         }
 
-        private static async Task HandleExceptionAsync(HttpContext context, string message, HttpStatusCode code)
+        private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode code)
         {
+            _logger.LogError(ex, ex.Message);
             var response = context.Response;
-
             response.ContentType = "application/json";
             response.StatusCode = (int) code;
 
-            await response.WriteAsync(JsonConvert.SerializeObject(new BaseErrorResponse(message))).ConfigureAwait(false);
+            var details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : "Server Error";
+
+            await response.WriteAsync(JsonConvert.SerializeObject(new BaseErrorResponse((int) code, ex.Message, details)))
+                    .ConfigureAwait(false);
         }
     }
 }

@@ -31,13 +31,14 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get a list of Rent Group summary models
         /// </summary>
+        /// <param name="correlationId"></param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Rent Group summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<RentGroupSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] DateTime submitDate)
+        public async Task<IActionResult> GetAll([FromHeader(Name = "x-correlation-id")] string correlationId, [FromQuery] DateTime submitDate)
         {
             var rentGroups = await _getAllUseCase.ExecuteAsync(submitDate).ConfigureAwait(false);
 
@@ -47,6 +48,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get Rent Group summary model by provided groupName
         /// </summary>
+        /// <param name="correlationId"></param>
         /// <param name="rentGroupName">The rent group name to get the data for</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Rent Group summary models was received successfully</response>
@@ -59,13 +61,13 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{rentGroupName}")]
-        public async Task<IActionResult> Get([FromRoute] string rentGroupName, [FromQuery] DateTime submitDate)
+        public async Task<IActionResult> Get([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] string rentGroupName, [FromQuery] DateTime submitDate)
         {
             var rentGroup = await _getByNameUseCase.ExecuteAsync(rentGroupName, submitDate).ConfigureAwait(false);
 
             if(rentGroup == null)
             {
-                return NotFound(new BaseErrorResponse("Rent Group with provided name cannot be found!"));
+                return NotFound(new BaseErrorResponse(404, "Rent Group with provided name cannot be found!"));
             }
 
             return Ok(rentGroup);
@@ -74,6 +76,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Create new Rent Group summary model
         /// </summary>
+        /// <param name="correlationId"></param>
         /// <param name="summaryRequest"></param>
         /// <response code="200">Rent Group summary model was created successfully</response>
         /// <response code="400">Bad Request</response>
@@ -82,16 +85,16 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]AddRentGroupSummaryRequest summaryRequest)
+        public async Task<IActionResult> Create([FromHeader(Name = "x-correlation-id")] string correlationId, [FromBody] AddRentGroupSummaryRequest summaryRequest)
         {
             if (summaryRequest == null)
             {
-                return BadRequest(new BaseErrorResponse("Rent Group Summary model cannot be null"));
+                return BadRequest(new BaseErrorResponse(400, "Rent Group Summary model cannot be null"));
             }
 
             if(!ModelState.IsValid)
             {
-                return BadRequest(new BaseErrorResponse(GetErrorMessage(ModelState)));
+                return BadRequest(new BaseErrorResponse(400, GetErrorMessage(ModelState)));
             }
 
             await _addUseCase.ExecuteAsync(summaryRequest).ConfigureAwait(false);

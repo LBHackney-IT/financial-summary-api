@@ -32,13 +32,14 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get a list of Asset summary models
         /// </summary>
+        /// <param name="correlationId"></param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] DateTime submitDate)
+        public async Task<IActionResult> GetAll([FromHeader(Name = "x-correlation-id")] string correlationId, [FromQuery] DateTime submitDate)
         {
             var assetSummaries = await _getAllUseCase.ExecuteAsync(submitDate).ConfigureAwait(false);
 
@@ -48,6 +49,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get Asset summary model by provided assetId
         /// </summary>
+        /// <param name="correlationId"></param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <param name="assetId"></param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
@@ -60,13 +62,13 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{assetId}")]
-        public async Task<IActionResult> Get([FromRoute]Guid assetId, [FromQuery]DateTime submitDate)
+        public async Task<IActionResult> Get([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] Guid assetId, [FromQuery] DateTime submitDate)
         {
             var assetSummary = await _getByIdUseCase.ExecuteAsync(assetId, submitDate).ConfigureAwait(false);
 
             if (assetSummary == null)
             {
-                return NotFound(new BaseErrorResponse("No Asset Summary by provided assetId cannot be found!"));
+                return NotFound(new BaseErrorResponse(404, "No Asset Summary by provided assetId cannot be found!"));
             }
 
             return Ok(assetSummary);
@@ -82,16 +84,16 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] AddAssetSummaryRequest assetSummary)
+        public async Task<IActionResult> Create([FromHeader(Name = "x-correlation-id")] string correlationId, [FromBody] AddAssetSummaryRequest assetSummary)
         {
             if (assetSummary == null)
             {
-                return BadRequest(new BaseErrorResponse("AssetSummary model cannot be null"));
+                return BadRequest(new BaseErrorResponse(400, "AssetSummary model cannot be null"));
             }
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseErrorResponse(GetErrorMessage(ModelState)));
+                return BadRequest(new BaseErrorResponse(400, GetErrorMessage(ModelState)));
             }
 
             await _addUseCase.ExecuteAsync(assetSummary).ConfigureAwait(false);
