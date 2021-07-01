@@ -13,7 +13,10 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         [AllowedValues(TargetType.Estate, TargetType.Block)]
         public TargetType TargetType { get; set; }
 
-        [Range(0, (double)decimal.MaxValue)]
+        [Required]
+        public string AssetName { get; set; }
+
+        [Range(0, (double) decimal.MaxValue)]
         public decimal TotalDwellingRent { get; set; }
 
         [Range(0, (double) decimal.MaxValue)]

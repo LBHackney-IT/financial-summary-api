@@ -4,6 +4,9 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
 {
     public class AssetSummaryDbEntity
     {
+        [DynamoDBProperty(AttributeName = "asset_name")]
+        public string AssetName { get; set; }
+
         [DynamoDBProperty(AttributeName = "total_dwelling_rent")]
         public decimal TotalDwellingRent { get; set; }
 

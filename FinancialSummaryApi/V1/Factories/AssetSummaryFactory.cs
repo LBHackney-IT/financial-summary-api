@@ -22,6 +22,7 @@ namespace FinancialSummaryApi.V1.Factories
                 Id = databaseEntity.Id,
                 TargetId =  databaseEntity.TargetId,
                 TargetType = databaseEntity.TargetType,
+                AssetName = databaseEntity.AssetSummaryData.AssetName,
                 SubmitDate = databaseEntity.SubmitDate,
                 TotalDwellingRent = databaseEntity.AssetSummaryData.TotalDwellingRent,
                 TotalNonDwellingRent = databaseEntity.AssetSummaryData.TotalNonDwellingRent,
@@ -40,6 +41,7 @@ namespace FinancialSummaryApi.V1.Factories
                 SubmitDate = entity.SubmitDate,
                 AssetSummaryData = new AssetSummaryDbEntity()
                 {
+                    AssetName = entity.AssetName,
                     TotalDwellingRent = entity.TotalDwellingRent,
                     TotalNonDwellingRent = entity.TotalNonDwellingRent,
                     TotalRentalServiceCharge = entity.TotalRentalServiceCharge,
@@ -54,6 +56,7 @@ namespace FinancialSummaryApi.V1.Factories
             {
                 TargetId = requestModel.TargetId,
                 TargetType = requestModel.TargetType,
+                AssetName = requestModel.AssetName,
                 SubmitDate = requestModel.SubmitDate,
                 TotalDwellingRent = requestModel.TotalDwellingRent,
                 TotalNonDwellingRent = requestModel.TotalNonDwellingRent,

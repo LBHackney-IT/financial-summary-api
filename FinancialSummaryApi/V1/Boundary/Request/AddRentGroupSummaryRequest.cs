@@ -15,7 +15,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         [Required]
         public string RentGroupName { get; set; }
 
-        [Range(0, (double)decimal.MaxValue)]
+        [Range(0, (double) decimal.MaxValue)]
         public decimal TotalCharged { get; set; }
 
         [Range(0, (double) decimal.MaxValue)]
@@ -30,7 +30,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         [Range(0, (double) decimal.MaxValue)]
         public decimal ArrearsYTD { get; set; }
 
-        [Range(0, (double) decimal.MaxValue)]
+        [Range((double) decimal.MinValue, (double) decimal.MaxValue)]
         public decimal TotalBalance { get; set; }
 
         [RequiredDateTime]

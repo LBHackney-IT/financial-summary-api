@@ -27,12 +27,13 @@ namespace FinancialSummaryApi.V1.UseCase
             }
             var assetSummary = await _financeSummaryGateway.GetAssetSummaryByIdAsync(assetId, submitDate).ConfigureAwait(false);
 
-            if(assetSummary != null)
-            {
-                var assetName = await _assetInfoGateway.GetAssetNameByAssetIdAsync(assetId).ConfigureAwait(false);
+            // ToDO
+            //if(assetSummary != null)
+            //{
+            //    var assetName = await _assetInfoGateway.GetAssetNameByAssetIdAsync(assetId).ConfigureAwait(false);
 
-                assetSummary.AssetName = assetName;
-            }
+            //    assetSummary.AssetName = assetName;
+            //}
 
             return assetSummary?.ToResponse();
         }

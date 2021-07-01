@@ -29,11 +29,12 @@ namespace FinancialSummaryApi.V1.UseCase
 
             var assetSummaries = (await _financeSummaryGateway.GetAllAssetSummaryAsync(submitDate).ConfigureAwait(false)).ToResponse();
 
-            foreach(var asset in assetSummaries)
-            {
-                var assetInfo = await _assetInfoGateway.GetAssetInfoAsync(asset.TargetId).ConfigureAwait(false);
-                asset.AssetName = assetInfo?.AssetName;
-            }
+            // ToDO
+            //foreach(var asset in assetSummaries)
+            //{
+            //    var assetInfo = await _assetInfoGateway.GetAssetInfoAsync(asset.TargetId).ConfigureAwait(false);
+            //    asset.AssetName = assetInfo?.AssetName;
+            //}
 
             return assetSummaries;
         }
