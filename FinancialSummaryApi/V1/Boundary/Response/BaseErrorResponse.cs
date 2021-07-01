@@ -9,6 +9,12 @@ namespace FinancialSummaryApi.V1.Boundary.Response
             Message = message;
         }
 
+        /// <summary>
+        /// Error message
+        /// </summary>
+        /// <example>
+        /// Model cannot be null
+        /// </example>>
         public string Message { get; set; }
     }
 }

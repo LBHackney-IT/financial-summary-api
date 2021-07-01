@@ -5,8 +5,6 @@ namespace FinancialSummaryApi.V1.Boundary.Response
 {
     public class AssetSummaryResponse
     {
-        // ToDo: add more summary annotations
-
         /// <summary>
         /// Id of the created model
         /// </summary>
@@ -24,7 +22,7 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         public Guid TargetId { get; set; }
 
         /// <summary>
-        /// Values: [Estate, Block, RentGroup]
+        /// Values: [Estate, Block]
         /// </summary>
         /// <example>
         /// Estate
@@ -56,6 +54,9 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// </example>
         public decimal TotalRentalServiceCharge { get; set; }
 
+        /// <summary>
+        /// Date and time when summary was calculated and saved
+        /// </summary>
         /// <example>
         /// 2021-06-25T13:19:47.993Z
         /// </example>

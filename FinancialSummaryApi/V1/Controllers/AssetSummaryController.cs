@@ -32,6 +32,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get a list of Asset summary models
         /// </summary>
+        /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
@@ -47,10 +48,14 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get Asset summary model by provided assetId
         /// </summary>
+        /// <param name="submitDate">The date when the requested data was generated</param>
+        /// <param name="assetId"></param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
+        /// <response code="400">Bad Request</response>
         /// <response code="404">Asset with provided id cannot be found</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]

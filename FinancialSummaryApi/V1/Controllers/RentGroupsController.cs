@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.Controllers
 {
-    // ToDO: add summary annotations
     [ApiController]
     [Route("api/v1/rent-group-summary")]
     [Produces("application/json")]
@@ -29,6 +28,12 @@ namespace FinancialSummaryApi.V1.Controllers
             _getAllUseCase = getAllUseCase;
         }
 
+        /// <summary>
+        /// Get a list of Rent Group summary models
+        /// </summary>
+        /// <param name="submitDate">The date when the requested data was generated</param>
+        /// <response code="200">Rent Group summary models was received successfully</response>
+        /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<RentGroupSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
@@ -39,7 +44,17 @@ namespace FinancialSummaryApi.V1.Controllers
             return Ok(rentGroups);
         }
 
+        /// <summary>
+        /// Get Rent Group summary model by provided groupName
+        /// </summary>
+        /// <param name="rentGroupName">The rent group name to get the data for</param>
+        /// <param name="submitDate">The date when the requested data was generated</param>
+        /// <response code="200">Rent Group summary models was received successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Rent Group with provided name cannot be found!</response>
+        /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(RentGroupSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
@@ -56,6 +71,13 @@ namespace FinancialSummaryApi.V1.Controllers
             return Ok(rentGroup);
         }
 
+        /// <summary>
+        /// Create new Rent Group summary model
+        /// </summary>
+        /// <param name="summaryRequest"></param>
+        /// <response code="200">Rent Group summary model was created successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(RentGroupSummaryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]

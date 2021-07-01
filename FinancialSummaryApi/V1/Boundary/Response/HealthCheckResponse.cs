@@ -8,7 +8,14 @@ namespace FinancialSummaryApi.V1.Boundary
             Message = message;
         }
 
+        /// <example>
+        /// true
+        /// </example>
         public bool Success { get; }
+
+        /// <example>
+        /// Service is avaliable
+        /// </example>
         public string Message { get; }
     }
 }
