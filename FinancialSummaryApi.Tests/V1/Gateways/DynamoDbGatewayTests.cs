@@ -24,9 +24,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         public void Setup()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
-            _dynamoDb
-                .Setup(x => x.GetAssetSummaryByIdAsync(new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"), DateTime.UtcNow.AddDays(-2)))
-                .Returns(x => null);
             _classUnderTest = new DynamoDbGateway(_dynamoDb.Object);
         }
 

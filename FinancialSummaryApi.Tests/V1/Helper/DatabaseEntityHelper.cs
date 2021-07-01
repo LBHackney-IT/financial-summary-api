@@ -1,6 +1,4 @@
 using AutoFixture;
-using FinancialSummaryApi.V1.Domain;
-using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 
 namespace FinancialSummaryApi.Tests.V1.Helper
@@ -19,7 +17,11 @@ namespace FinancialSummaryApi.Tests.V1.Helper
             return new FinanceSummaryDbEntity
             {
                 Id = entity.Id,
-                // ToDO
+                TargetId = entity.TargetId,
+                TargetType = entity.TargetType,
+                SubmitDate = entity.SubmitDate,
+                AssetSummaryData = entity.AssetSummaryData,
+                RentGroupSummaryData = entity.RentGroupSummaryData
             };
         }
     }
