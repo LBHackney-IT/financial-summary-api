@@ -158,8 +158,6 @@ namespace FinancialSummaryApi
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<IFinanceSummaryGateway, DynamoDbGateway>();
-            services.AddScoped<ITenureInfoDbGateway, TenureInfoDbGateway>();
-            services.AddScoped<ITenureInfoDbGateway, TenureInfoDbGateway>();
 
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
             //services.AddScoped<IExampleGateway, DynamoDbGateway>();

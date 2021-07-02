@@ -14,7 +14,7 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         public Guid Id { get; set; }
 
         /// <summary>
-        /// Id of the appropriate tenure if TargetType = [0]Estate or [1]Block
+        /// Id of the appropriate tenure if TargetType = [0]Estate or [1]Block or [2]Core
         /// </summary>
         /// <example>
         /// ada361e1-9e93-4cbb-b534-da97a3f5f9f9
@@ -22,7 +22,7 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         public Guid TargetId { get; set; }
 
         /// <summary>
-        /// Values: [Estate, Block]
+        /// Values: [Estate, Block, Core]
         /// </summary>
         /// <example>
         /// Estate
