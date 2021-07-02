@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -17,7 +18,7 @@ using System.Threading.Tasks;
 namespace FinancialSummaryApi.Tests.V1.E2ETests
 {
     // For guidance on writing integration tests see the wiki page https://github.com/LBHackney-IT/lbh-base-api/wiki/Writing-Integration-Tests
-    public class FinanceDynamoDbTest : DynamoDbIntegrationTests<Startup>
+    public class DynamoDbAssetsIntegrationTest : DynamoDbIntegrationTests<Startup>
     {
         private readonly Fixture _fixture = new Fixture();
 
@@ -37,40 +38,12 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         /// <summary>
-        /// Method to construct a test entity that can be used in a test
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        private RentGroupSummary ConstructRentGroupSummary()
-        {
-            var entity = _fixture.Create<RentGroupSummary>();
-
-            entity.TargetType = TargetType.RentGroup;
-            entity.SubmitDate = DateTime.UtcNow;
-
-            return entity;
-        }
-
-        /// <summary>
         /// Method to add an entity instance to the database so that it can be used in a test.
         /// Also adds the corresponding action to remove the upserted data from the database when the test is done.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
         private async Task SetupTestData(AssetSummary entity)
-        {
-            await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
-
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(entity.Id).ConfigureAwait(false));
-        }
-
-        /// <summary>
-        /// Method to add an entity instance to the database so that it can be used in a test.
-        /// Also adds the corresponding action to remove the upserted data from the database when the test is done.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        private async Task SetupTestData(RentGroupSummary entity)
         {
             await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
 
@@ -92,25 +65,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntity.Should().NotBeNull();
             apiEntity.Message.Should().BeEquivalentTo("No Asset Summary by provided assetId cannot be found!");
-            apiEntity.StatusCode.Should().Be(404);
-            apiEntity.Details.Should().BeEquivalentTo(string.Empty);
-        }
-
-        [Test]
-        public async Task GetRentGroupBydIdNotFoundReturns404()
-        {
-            string rentGroupName = "SomeInvalidName";
-
-            var uri = new Uri($"api/v1/rent-group-summary/{rentGroupName}", UriKind.Relative);
-            var response = await Client.GetAsync(uri).ConfigureAwait(false);
-
-            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.Message.Should().BeEquivalentTo("Rent Group with provided name cannot be found!");
             apiEntity.StatusCode.Should().Be(404);
             apiEntity.Details.Should().BeEquivalentTo(string.Empty);
         }
@@ -217,6 +171,28 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             firstAsset.ShouldBeEqualTo(assetDomains[0]);
             secondAsset.ShouldBeEqualTo(assetDomains[1]);
+        }
+
+        [Test]
+        public async Task CreateAssetAndGetForYesterdayReturns200()
+        {
+            var asset = ConstructAssetSummary();
+            await SetupTestData(asset).ConfigureAwait(false);
+
+            var uri = new Uri($"api/v1/asset-summary?submitDate={asset.SubmitDate.AddDays(-2):yyyy-MM-dd}", UriKind.Relative);
+            using var response = await Client.GetAsync(uri).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<List<AssetSummaryResponse>>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.Count.Should().BeGreaterOrEqualTo(0);
+
+            var foundAsset = apiEntity.FirstOrDefault(a => a.TargetId == asset.TargetId);
+
+            foundAsset.Should().BeNull();
         }
 
         private async Task CreateAssetAndValidateResponse(AssetSummary assetSummary)

@@ -11,13 +11,28 @@ using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.Gateways
 {
+    public class DynamoDbContextWrapper
+    {
+        public virtual Task<List<FinanceSummaryDbEntity>> ScanAsync(IDynamoDBContext context, IEnumerable<ScanCondition> conditions, DynamoDBOperationConfig operationConfig = null)
+        {
+            return context.ScanAsync<FinanceSummaryDbEntity>(conditions, operationConfig).GetRemainingAsync();
+        }
+    }
+
     public class DynamoDbGateway : IFinanceSummaryGateway
     {
+        private readonly DynamoDbContextWrapper _wrapper;
         private readonly IDynamoDBContext _dynamoDbContext;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext,
+            DynamoDbContextWrapper wrapper)
         {
             _dynamoDbContext = dynamoDbContext;
+
+            // Hanna Holasava
+            // We need this wrapper only for unit tests purposes.
+            // If you will find other way to test this, please contact me!
+            _wrapper = wrapper;
         }
 
         #region Asset Summary
@@ -34,7 +49,7 @@ namespace FinancialSummaryApi.V1.Gateways
             scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
             scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block));
 
-            List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
+            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
 
             return data.Select(s => s.ToAssetDomain()).OrderByDescending(r => r.SubmitDate).ToList();
         }
@@ -47,11 +62,10 @@ namespace FinancialSummaryApi.V1.Gateways
             scanConditions.Add(new ScanCondition("TargetId", ScanOperator.Equal, assetId));
             scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block));
 
-            List<FinanceSummaryDbEntity> data = await _dynamoDbContext.ScanAsync<FinanceSummaryDbEntity>(scanConditions).GetRemainingAsync().ConfigureAwait(false);
+            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
 
             return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault()?.ToAssetDomain();  
         }
-
 
         #endregion
 

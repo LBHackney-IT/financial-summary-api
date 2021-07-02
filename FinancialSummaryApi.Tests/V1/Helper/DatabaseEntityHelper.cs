@@ -9,10 +9,10 @@ namespace FinancialSummaryApi.Tests.V1.Helper
         {
             var entity = new Fixture().Create<FinanceSummaryDbEntity>();
 
-            return CreateDatabaseEntityFrom(entity);
+            return CreateCopy(entity);
         }
 
-        public static FinanceSummaryDbEntity CreateDatabaseEntityFrom(FinanceSummaryDbEntity entity)
+        public static FinanceSummaryDbEntity CreateCopy(FinanceSummaryDbEntity entity)
         {
             return new FinanceSummaryDbEntity
             {
