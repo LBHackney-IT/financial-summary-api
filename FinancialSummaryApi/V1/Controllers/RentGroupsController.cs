@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.Controllers
@@ -31,7 +32,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get a list of Rent Group summary models
         /// </summary>
-        /// <param name="correlationId"></param>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Rent Group summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
@@ -48,7 +49,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get Rent Group summary model by provided groupName
         /// </summary>
-        /// <param name="correlationId"></param>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="rentGroupName">The rent group name to get the data for</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Rent Group summary models was received successfully</response>
@@ -67,7 +68,7 @@ namespace FinancialSummaryApi.V1.Controllers
 
             if(rentGroup == null)
             {
-                return NotFound(new BaseErrorResponse(404, "Rent Group with provided name cannot be found!"));
+                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Rent Group with provided name cannot be found!"));
             }
 
             return Ok(rentGroup);
@@ -76,8 +77,8 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Create new Rent Group summary model
         /// </summary>
-        /// <param name="correlationId"></param>
-        /// <param name="summaryRequest"></param>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="summaryRequest">Rent Group summary model for create</param>
         /// <response code="200">Rent Group summary model was created successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
@@ -89,17 +90,16 @@ namespace FinancialSummaryApi.V1.Controllers
         {
             if (summaryRequest == null)
             {
-                return BadRequest(new BaseErrorResponse(400, "Rent Group Summary model cannot be null"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Rent Group Summary model cannot be null"));
             }
 
             if(!ModelState.IsValid)
             {
-                return BadRequest(new BaseErrorResponse(400, GetErrorMessage(ModelState)));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
             await _addUseCase.ExecuteAsync(summaryRequest).ConfigureAwait(false);
 
-            // ToDo: join with asset table to get AssetId
             return RedirectToAction("Get", new { rentGroupName = summaryRequest.RentGroupName });
         }
     }

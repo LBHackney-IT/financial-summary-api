@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.Controllers
@@ -32,7 +33,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get a list of Asset summary models
         /// </summary>
-        /// <param name="correlationId"></param>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
@@ -49,9 +50,9 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get Asset summary model by provided assetId
         /// </summary>
-        /// <param name="correlationId"></param>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
-        /// <param name="assetId"></param>
+        /// <param name="assetId">The value by which we are looking for an asset summary</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">Asset with provided id cannot be found</response>
@@ -68,7 +69,7 @@ namespace FinancialSummaryApi.V1.Controllers
 
             if (assetSummary == null)
             {
-                return NotFound(new BaseErrorResponse(404, "No Asset Summary by provided assetId cannot be found!"));
+                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Asset Summary by provided assetId cannot be found!"));
             }
 
             return Ok(assetSummary);
@@ -77,6 +78,8 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Create new Asset summary model
         /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="assetSummary">Asset summary model for create</param>
         /// <response code="200">Created. Asset summary model was created successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
@@ -88,17 +91,16 @@ namespace FinancialSummaryApi.V1.Controllers
         {
             if (assetSummary == null)
             {
-                return BadRequest(new BaseErrorResponse(400, "AssetSummary model cannot be null"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "AssetSummary model cannot be null"));
             }
 
             if (!ModelState.IsValid)
             {
-                return BadRequest(new BaseErrorResponse(400, GetErrorMessage(ModelState)));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
             await _addUseCase.ExecuteAsync(assetSummary).ConfigureAwait(false);
 
-            // ToDo: join with asset table to get AssetId
             return RedirectToAction("Get", new { assetId = assetSummary.TargetId });
         }
     }

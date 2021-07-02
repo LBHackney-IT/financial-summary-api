@@ -8,14 +8,14 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         {
             StatusCode = statusCode;
             Message = message;
-            Details = details;
+            Details = details ?? string.Empty;
         }
 
         /// <summary>
         /// Status code
         /// </summary>
         /// <example>
-        /// 400, 404, 500
+        /// 400
         /// </example>
         public int StatusCode { get; set; }
 

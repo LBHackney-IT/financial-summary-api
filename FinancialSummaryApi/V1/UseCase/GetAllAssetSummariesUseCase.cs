@@ -11,13 +11,10 @@ namespace FinancialSummaryApi.V1.UseCase
     public class GetAllAssetSummariesUseCase : IGetAllAssetSummariesUseCase
     {
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
-        private readonly IAssetInfoDbGateway _assetInfoGateway;
 
-        public GetAllAssetSummariesUseCase(IFinanceSummaryGateway financeSummaryGateway,
-            IAssetInfoDbGateway assetInfoGateway)
+        public GetAllAssetSummariesUseCase(IFinanceSummaryGateway financeSummaryGateway)
         {
             _financeSummaryGateway = financeSummaryGateway;
-            _assetInfoGateway = assetInfoGateway;
         }
 
         public async Task<List<AssetSummaryResponse>> ExecuteAsync(DateTime submitDate)
@@ -28,13 +25,6 @@ namespace FinancialSummaryApi.V1.UseCase
             }
 
             var assetSummaries = (await _financeSummaryGateway.GetAllAssetSummaryAsync(submitDate).ConfigureAwait(false)).ToResponse();
-
-            // ToDO
-            //foreach(var asset in assetSummaries)
-            //{
-            //    var assetInfo = await _assetInfoGateway.GetAssetInfoAsync(asset.TargetId).ConfigureAwait(false);
-            //    asset.AssetName = assetInfo?.AssetName;
-            //}
 
             return assetSummaries;
         }

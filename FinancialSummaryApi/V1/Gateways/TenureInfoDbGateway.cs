@@ -23,6 +23,7 @@ namespace FinancialSummaryApi.V1.Gateways
         public Task<Guid> GetTenureIdByAssetIdAsync(Guid assetId)
         {
             return Task.FromResult(assetId);
+            // ToDO
             //AssetInfoDbEntity assetInfo = await GetAssetInfoAsync(assetId).ConfigureAwait(false);
 
             //List<ScanCondition> scanToFindTenure = new List<ScanCondition>();
