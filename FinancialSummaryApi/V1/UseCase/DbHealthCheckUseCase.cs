@@ -1,9 +1,10 @@
 using FinancialSummaryApi.V1.Boundary;
+using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.Extensions.HealthChecks;
 
 namespace FinancialSummaryApi.V1.UseCase
 {
-    public class DbHealthCheckUseCase
+    public class DbHealthCheckUseCase : IDbHealthCheckUseCase
     {
         private readonly IHealthCheckService _healthCheckService;
 
@@ -20,5 +21,4 @@ namespace FinancialSummaryApi.V1.UseCase
             return new HealthCheckResponse(success, result.Description);
         }
     }
-
 }

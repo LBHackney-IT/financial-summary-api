@@ -1,4 +1,5 @@
 using AutoFixture;
+using FinancialSummaryApi.V1.Boundary;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
@@ -7,7 +8,10 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.Tests.V1.E2ETests
@@ -25,8 +29,10 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         private AssetSummary ConstructAssetSummary()
         {
             var entity = _fixture.Create<AssetSummary>();
+
+            entity.TargetType = TargetType.Block;
             entity.SubmitDate = DateTime.UtcNow;
-            // todo
+
             return entity;
         }
 
@@ -38,8 +44,10 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         private RentGroupSummary ConstructRentGroupSummary()
         {
             var entity = _fixture.Create<RentGroupSummary>();
+
+            entity.TargetType = TargetType.RentGroup;
             entity.SubmitDate = DateTime.UtcNow;
-            // todo
+
             return entity;
         }
 
@@ -105,6 +113,148 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Message.Should().BeEquivalentTo("Rent Group with provided name cannot be found!");
             apiEntity.StatusCode.Should().Be(404);
             apiEntity.Details.Should().BeEquivalentTo(string.Empty);
+        }
+
+        [Test]
+        public async Task HealchCheckOkReturns200()
+        {
+            var uri = new Uri($"api/v1/healthcheck/ping", UriKind.Relative);
+            var response = await Client.GetAsync(uri).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<HealthCheckResponse>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.Message.Should().BeNull();
+            apiEntity.Success.Should().BeTrue();
+        }
+
+        [Test]
+        public async Task CreateAssetCreatedReturns200()
+        {
+            var assetDomain = ConstructAssetSummary();
+
+            await CreateAssetAndValidateResponse(assetDomain).ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task CreateAssetAndThenGetByTargetId()
+        {
+            var assetDomain = ConstructAssetSummary();
+
+            await CreateAssetAndValidateResponse(assetDomain).ConfigureAwait(false);
+
+            await GetAssetByTargetIdAndValidateResponse(assetDomain).ConfigureAwait(false);
+        }
+
+        [Test]
+        public async Task CreateAssetBadRequestReturns400()
+        {
+            var assetDomain = ConstructAssetSummary();
+
+            assetDomain.TargetType = TargetType.RentGroup;
+            assetDomain.TotalDwellingRent = -1;
+            assetDomain.TotalNonDwellingRent = -1;
+            assetDomain.TotalRentalServiceCharge = -1;
+            assetDomain.TotalServiceCharges = -1;
+            assetDomain.AssetName = string.Empty;
+
+            var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
+            string body = JsonConvert.SerializeObject(assetDomain);
+
+            HttpResponseMessage response;
+            using (StringContent stringContent = new StringContent(body))
+            {
+                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+            }
+
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.Details.Should().Be(string.Empty);
+
+            apiEntity.Message.Should().Contain("The AssetName field is required.");
+            apiEntity.Message.Should().Contain("TargetType should be in a range: [0(Estate), 1(Block), 2(Core)].");
+            apiEntity.Message.Should().Contain("The field TotalDwellingRent must be between 0 and 7,922816251426434E+28.");
+            apiEntity.Message.Should().Contain("The field TotalServiceCharges must be between 0 and 7,922816251426434E+28.");
+            apiEntity.Message.Should().Contain("The field TotalNonDwellingRent must be between 0 and 7,922816251426434E+28.");
+            apiEntity.Message.Should().Contain("The field TotalRentalServiceCharge must be between 0 and 7,922816251426434E+28.");
+        }
+
+        [Test]
+        public async Task CreateTwoAssetsGetAllReturns200()
+        {
+            var assetDomains = new[] { ConstructAssetSummary(), ConstructAssetSummary() };
+
+            foreach (var asset in assetDomains)
+            {
+                await CreateAssetAndValidateResponse(asset).ConfigureAwait(false);
+
+                await GetAssetByTargetIdAndValidateResponse(asset).ConfigureAwait(false);
+            }
+
+            var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
+            using var response = await Client.GetAsync(uri).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<List<AssetSummaryResponse>>(responseContent);
+
+            apiEntity.Should().NotBeNull();
+            apiEntity.Count.Should().BeGreaterOrEqualTo(2);
+
+            var firstAsset = apiEntity.Find(a => a.TargetId == assetDomains[0].TargetId);
+            var secondAsset = apiEntity.Find(a => a.TargetId == assetDomains[1].TargetId);
+
+            firstAsset.ShouldBeEqualTo(assetDomains[0]);
+            secondAsset.ShouldBeEqualTo(assetDomains[1]);
+        }
+
+        private async Task CreateAssetAndValidateResponse(AssetSummary assetSummary)
+        {
+            var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
+
+            string body = JsonConvert.SerializeObject(assetSummary);
+
+            using (StringContent stringContent = new StringContent(body))
+            {
+                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+
+                response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+                var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
+
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
+
+                apiEntity.Should().NotBeNull();
+
+                apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id));
+            }
+        }
+
+        private async Task GetAssetByTargetIdAndValidateResponse(AssetSummary assetSummary)
+        {
+            var uri = new Uri($"api/v1/asset-summary/{assetSummary.TargetId}", UriKind.Relative);
+            using var response = await Client.GetAsync(uri).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
+
+            apiEntity.ShouldBeEqualTo(assetSummary);
         }
     }
 }

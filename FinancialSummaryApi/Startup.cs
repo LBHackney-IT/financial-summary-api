@@ -114,8 +114,6 @@ namespace FinancialSummaryApi
 
             ConfigureLogging(services, Configuration);
 
-            //ConfigureDbContext(services);
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
             services.ConfigureDynamoDB();
 
             RegisterGateways(services);
@@ -160,9 +158,6 @@ namespace FinancialSummaryApi
             services.AddScoped<IFinanceSummaryGateway, DynamoDbGateway>();
             services.AddScoped<ITenureInfoDbGateway, TenureInfoDbGateway>();
             services.AddScoped<ITenureInfoDbGateway, TenureInfoDbGateway>();
-
-            //TODO: For DynamoDb, remove the line above and uncomment the line below.
-            //services.AddScoped<IExampleGateway, DynamoDbGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -173,6 +168,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IAddRentGroupSummaryUseCase, AddRentGroupSummaryUseCase>();
             services.AddScoped<IGetRentGroupSummaryByNameUseCase, GetRentGroupSummaryByNameUseCase>();
             services.AddScoped<IGetAllRentGroupSummariesUseCase, GetAllRentGroupSummariesUseCase>();
+            services.AddScoped<IDbHealthCheckUseCase, DbHealthCheckUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

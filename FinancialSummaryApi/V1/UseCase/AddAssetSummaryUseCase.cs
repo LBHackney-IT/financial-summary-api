@@ -23,11 +23,11 @@ namespace FinancialSummaryApi.V1.UseCase
         {
             var domainModel = assetSummary.ToDomain();
 
-            var existentTenure = await _tenureInfoGateway.GetTenureInfoAsync(assetSummary.TargetId).ConfigureAwait(false);
-            if(existentTenure == null)
-            {
-                throw new ArgumentException("Tenure info by provided targetId cannot be found!");
-            }
+            //var existentTenure = await _tenureInfoGateway.GetTenureInfoAsync(assetSummary.TargetId).ConfigureAwait(false);
+            //if(existentTenure == null)
+            //{
+            //    throw new ArgumentException("Tenure info by provided targetId cannot be found!");
+            //}
 
             domainModel.Id = Guid.NewGuid();
 
