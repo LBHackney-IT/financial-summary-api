@@ -1,10 +1,12 @@
 using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -51,14 +53,18 @@ namespace FinancialSummaryApi.V1
 
         private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode code)
         {
-            _logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, ex.StackTrace);
+
             var response = context.Response;
             response.ContentType = "application/json";
             response.StatusCode = (int) code;
+            var allMessageText = ex.GetFullMessage();
 
-            var details = _env.IsDevelopment() ? ex.StackTrace?.ToString() : "Server Error";
+            var details = _env.IsDevelopment() && code == HttpStatusCode.InternalServerError
+                ? ex.StackTrace?.ToString() :
+                  string.Empty;
 
-            await response.WriteAsync(JsonConvert.SerializeObject(new BaseErrorResponse((int) code, ex.Message, details)))
+            await response.WriteAsync(JsonConvert.SerializeObject(new BaseErrorResponse((int) code, allMessageText, details)))
                     .ConfigureAwait(false);
         }
     }

@@ -4,24 +4,9 @@ namespace FinancialSummaryApi.V1.Infrastructure
 {
     public static class ExceptionExtensions
     {
-        private static string GetExceptionMessages(this Exception e, string msgs = "")
+        public static string GetFullMessage(this Exception ex)
         {
-            if (e == null)
-            {
-                return string.Empty;
-            }
-
-            if (string.IsNullOrEmpty(msgs))
-            {
-                msgs = e.Message;
-            }
-
-            if (e.InnerException != null)
-            {
-                msgs += "\r\nInnerException: " + GetExceptionMessages(e.InnerException);
-            }
-
-            return msgs;
+            return ex?.Message + "; " + ex?.InnerException?.GetFullMessage();
         }
     }
 }

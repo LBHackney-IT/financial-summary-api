@@ -30,7 +30,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         [Range(0, (double) decimal.MaxValue)]
         public decimal ArrearsYTD { get; set; }
 
-        [Range((double) decimal.MinValue, (double) decimal.MaxValue)]
+        [Required]
         public decimal TotalBalance { get; set; }
 
         [RequiredDateTime]
