@@ -12,6 +12,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.Tests.V1.Controllers
@@ -47,7 +48,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Test]
         public async Task GetAllByDateAssetSummaryObjectsReturns200()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(new DateTime(2021, 7, 2)))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
                 .ReturnsAsync(
                     new List<AssetSummaryResponse>()
                     {
@@ -93,7 +94,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Test]
         public async Task GetAllByAnotherDateAssetSummaryObjectsReturns200()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(new DateTime(2021, 7, 2)))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
                 .ReturnsAsync(
                     new List<AssetSummaryResponse>()
                     {
@@ -111,7 +112,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         }
                     });
 
-            _getAllUseCase.Setup(x => x.ExecuteAsync(new DateTime(2021, 7, 1)))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<AssetSummaryResponse> { });
 
             var result = await _assetSummaryController.GetAll("", new DateTime(2021, 7, 1)).ConfigureAwait(false);
@@ -142,14 +143,15 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             }
             catch (Exception ex)
             {
+                ex.GetType().Should().Be(typeof(Exception));
                 ex.Message.Should().Be("Test exception");
             }
         }
 
         [Test]
-        public async Task GetByAssetIdAndDateWithProvidedIdAssetSummaryObjectReturns200()
+        public async Task GetByAssetIdValidIdReturns200()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"), new DateTime(2021, 7, 1)))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                .ReturnsAsync(new AssetSummaryResponse
                {
                    Id = new Guid("c5f95fc9-ade5-4b13-96bc-1adff137e246"),
@@ -206,7 +208,11 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
 
+            response.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
+
             response.Message.Should().Be("No Asset Summary by provided assetId cannot be found!");
+
+            response.Details.Should().Be("");
         }
 
         [Test]
@@ -223,6 +229,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             }
             catch (Exception ex)
             {
+                ex.GetType().Should().Be(typeof(Exception));
                 ex.Message.Should().Be("Test exception");
             }
         }
@@ -277,6 +284,10 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             response.Should().NotBeNull();
 
+            response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+
+            response.Details.Should().Be("");
+
             response.Message.Should().Be("AssetSummary model cannot be null");
         }
 
@@ -294,6 +305,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             }
             catch (Exception ex)
             {
+                ex.GetType().Should().Be(typeof(Exception));
                 ex.Message.Should().Be("Test exception");
             }
         }
