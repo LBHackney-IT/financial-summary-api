@@ -16,14 +16,15 @@ namespace FinancialSummaryApi.Tests
 
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            // TODO: Populate the list of table(s) and their key property details here, for example:
-            //new TableDef { Name = "example_table", KeyName = "id", KeyType = ScalarAttributeType.N }
+            new TableDef { Name = "finance_summary_table", KeyName = "id", KeyType = ScalarAttributeType.S }
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
         {
             if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(name)))
+            {
                 Environment.SetEnvironmentVariable(name, defaultValue);
+            }
         }
 
         [OneTimeSetUp]
@@ -51,7 +52,9 @@ namespace FinancialSummaryApi.Tests
         public void BaseTearDown()
         {
             foreach (var act in CleanupActions)
+            {
                 act();
+            }
             Client.Dispose();
         }
     }

@@ -1,9 +1,8 @@
-using System.Threading.Tasks;
 using FinancialSummaryApi.V1.Controllers;
-using FinancialSummaryApi.V1.Infrastructure;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using NUnit.Framework;
+using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.Tests.V1.Infrastructure
 {

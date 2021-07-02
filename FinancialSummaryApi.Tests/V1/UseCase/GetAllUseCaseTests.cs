@@ -1,12 +1,6 @@
-using System.Linq;
 using AutoFixture;
-using FinancialSummaryApi.V1.Boundary.Response;
-using FinancialSummaryApi.V1.Domain;
-using FinancialSummaryApi.V1.Factories;
-using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase;
-using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 
@@ -15,7 +9,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
     public class GetAllUseCaseTests
     {
         private Mock<IFinanceSummaryGateway> _mockFinanceGateway;
-        private Mock<IAssetInfoDbGateway> _mockAssetGateway;
         private GetAllAssetSummariesUseCase _classUnderTest;
         private Fixture _fixture;
 
@@ -23,9 +16,8 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         public void SetUp()
         {
             _mockFinanceGateway = new Mock<IFinanceSummaryGateway>();
-            _mockAssetGateway = new Mock<IAssetInfoDbGateway>();
 
-            _classUnderTest = new GetAllAssetSummariesUseCase(_mockFinanceGateway.Object, _mockAssetGateway.Object);
+            _classUnderTest = new GetAllAssetSummariesUseCase(_mockFinanceGateway.Object);
             _fixture = new Fixture();
         }
 
