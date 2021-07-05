@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace FinancialSummaryApi.Tests.V1.Controllers
 {
     [TestFixture]
-    public class AssetSummaryControllerTests
+    public sealed class AssetSummaryControllerTests : IDisposable
     {
         private AssetSummaryController _assetSummaryController;
         private ControllerContext _controllerContext;
@@ -310,6 +310,11 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 ex.GetType().Should().Be(typeof(Exception));
                 ex.Message.Should().Be("Test exception");
             }
+        }
+
+        public void Dispose()
+        {
+            _assetSummaryController.Dispose();
         }
     }
 }

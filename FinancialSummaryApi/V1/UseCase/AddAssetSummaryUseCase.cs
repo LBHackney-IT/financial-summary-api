@@ -18,6 +18,11 @@ namespace FinancialSummaryApi.V1.UseCase
 
         public async Task ExecuteAsync(AddAssetSummaryRequest assetSummary)
         {
+            if(assetSummary == null)
+            {
+                throw new ArgumentNullException(nameof(assetSummary));
+            }
+
             var domainModel = assetSummary.ToDomain();
 
             domainModel.Id = Guid.NewGuid();
