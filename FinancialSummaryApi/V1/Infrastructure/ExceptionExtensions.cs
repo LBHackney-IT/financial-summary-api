@@ -6,7 +6,12 @@ namespace FinancialSummaryApi.V1.Infrastructure
     {
         public static string GetFullMessage(this Exception ex)
         {
-            return ex?.Message + "; " + ex?.InnerException?.GetFullMessage();
+            if(ex == null)
+            {
+                return "Exception message is empty";
+            }
+
+            return ex.Message + "; " + ex.InnerException?.GetFullMessage();
         }
     }
 }
