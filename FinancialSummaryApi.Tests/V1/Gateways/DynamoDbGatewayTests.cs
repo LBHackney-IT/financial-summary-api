@@ -1,6 +1,5 @@
 using Amazon.DynamoDBv2.DataModel;
 using AutoFixture;
-using FinancialSummaryApi.Tests.V1.Helper;
 using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
@@ -8,7 +7,6 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.Tests.V1.Gateways
@@ -30,7 +28,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         }
 
         [Test]
-        public async Task GetEntityByIdReturnsNullIfEntityDoesntExist()
+        public async Task GetAssetSummaryByTargetIdReturnsNullIfEntityDoesntExist()
         {
             _wrapper.Setup(_ => _.ScanAsync(
                 It.IsAny<IDynamoDBContext>(),
@@ -38,15 +36,19 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 It.IsAny<DynamoDBOperationConfig>()))
                 .ReturnsAsync(new List<FinanceSummaryDbEntity>());
 
-            var response = await _gateway.GetAssetSummaryByIdAsync(new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"), DateTime.UtcNow).ConfigureAwait(false);
+            var response = await _gateway.GetAssetSummaryByIdAsync(new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"), DateTime.UtcNow)
+                .ConfigureAwait(false);
 
             response.Should().BeNull();
         }
 
         [Test]
-        public void GetEntityByIdReturnsTheEntityIfItExists()
+        public async Task GetAssetSummaryByTargetIdReturnsAssetSummaryIfItExists()
         {
+            var firstEntity = _fixture.Create<FinanceSummaryDbEntity>();
+            firstEntity.SubmitDate = new DateTime(2021, 7, 1);
             var latestEntity = _fixture.Create<FinanceSummaryDbEntity>();
+            latestEntity.SubmitDate = new DateTime(2021, 7, 2);
 
             _wrapper.Setup(_ => _.ScanAsync(
                 It.IsAny<IDynamoDBContext>(),
@@ -54,14 +56,22 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 It.IsAny<DynamoDBOperationConfig>()))
                 .ReturnsAsync(new List<FinanceSummaryDbEntity>()
                 {
-                    latestEntity,
-                    _fixture.Create<FinanceSummaryDbEntity>()
+                    firstEntity,
+                    latestEntity
                 });
 
-            var response = _gateway.GetAssetSummaryByIdAsync(latestEntity.Id, DateTime.UtcNow);
+            var assetSummaryDomain = await _gateway.GetAssetSummaryByIdAsync(latestEntity.TargetId, DateTime.UtcNow)
+                .ConfigureAwait(false);
 
-            latestEntity.Id.Should().Be(response.Result.Id);
-            // ToDo
+            latestEntity.Id.Should().Be(assetSummaryDomain.Id);
+            latestEntity.TargetId.Should().Be(assetSummaryDomain.TargetId);
+            latestEntity.TargetType.Should().Be(assetSummaryDomain.TargetType);
+            latestEntity.AssetSummaryData.AssetName.Should().Be(assetSummaryDomain.AssetName);
+            latestEntity.AssetSummaryData.TotalDwellingRent.Should().Be(assetSummaryDomain.TotalDwellingRent);
+            latestEntity.AssetSummaryData.TotalNonDwellingRent.Should().Be(assetSummaryDomain.TotalNonDwellingRent);
+            latestEntity.AssetSummaryData.TotalRentalServiceCharge.Should().Be(assetSummaryDomain.TotalRentalServiceCharge);
+            latestEntity.AssetSummaryData.TotalServiceCharges.Should().Be(assetSummaryDomain.TotalServiceCharges);
+            latestEntity.SubmitDate.Should().Be(assetSummaryDomain.SubmitDate);
         }
     }
 }

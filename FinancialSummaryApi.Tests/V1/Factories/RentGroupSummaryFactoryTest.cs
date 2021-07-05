@@ -1,22 +1,36 @@
-using AutoFixture;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
 
 namespace FinancialSummaryApi.Tests.V1.Factories
 {
     [TestFixture]
     public class RentGroupSummaryFactoryTest
     {
-        private readonly Fixture _fixture = new Fixture();
-
         [Test]
         public void CanMapADatabaseEntityToADomainObject()
         {
-            // ToDO: Use Real Value
-            var databaseEntity = _fixture.Create<FinanceSummaryDbEntity>();
+            var databaseEntity = new FinanceSummaryDbEntity
+            {
+                Id = new Guid("98eb124b-b90e-452f-8916-94cd8e40b582"),
+                TargetType = TargetType.RentGroup,
+                SubmitDate = new DateTime(2021, 7, 2),
+                RentGroupSummaryData = new RentGroupSummaryDbEntity
+                {
+                    RentGroupName = "LeaseHolders",
+                    TargetDescription = "desc",
+                    ArrearsYTD = 100,
+                    ChargedYTD = 120,
+                    PaidYTD = 150,
+                    TotalBalance = -70,
+                    TotalCharged = 170,
+                    TotalPaid = 150
+                }
+            };
+
             var entity = databaseEntity.ToRentGroupDomain();
 
             databaseEntity.Id.Should().Be(entity.Id);
@@ -35,7 +49,21 @@ namespace FinancialSummaryApi.Tests.V1.Factories
         [Test]
         public void CanMapADomainEntityToADatabaseObject()
         {
-            var entity = _fixture.Create<RentGroupSummary>();
+            var entity = new RentGroupSummary
+            {
+                Id = new Guid("d597c0fc-9e32-4f65-894c-c8922bcfed64"),
+                TargetType = TargetType.RentGroup,
+                SubmitDate = new DateTime(2021, 7, 2),
+                TargetDescription = "desc",
+                RentGroupName = "LeaseHolders",
+                ArrearsYTD = 150,
+                ChargedYTD = 120,
+                PaidYTD = 270,
+                TotalBalance = 0,
+                TotalCharged = 270,
+                TotalPaid = 270
+            };
+
             var databaseEntity = entity.ToDatabase();
 
             entity.Id.Should().Be(databaseEntity.Id);

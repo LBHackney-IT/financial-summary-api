@@ -4,11 +4,12 @@ using FluentAssertions;
 
 namespace FinancialSummaryApi.Tests.V1.E2ETests
 {
-    public static class AssertionExtensions
+    public static class AssertExtensions
     {
         public static void ShouldBeEqualTo(this AssetSummaryResponse response, AssetSummary model)
         {
             response.Should().NotBeNull();
+            model.Should().NotBeNull();
 
             response.TargetId.Should().Be(model.TargetId);
             response.TargetType.Should().Be(model.TargetType);
