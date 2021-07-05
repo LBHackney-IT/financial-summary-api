@@ -250,24 +250,25 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddRentGroupSummaryRequest>()))
                 .Returns(Task.CompletedTask);
 
-            var result = await _rentGroupsController.Create("",
-                new AddRentGroupSummaryRequest
-                {
-                    TargetType = TargetType.RentGroup,
-                    RentGroupName = "LeaseHolders",
-                    SubmitDate = new DateTime(2021, 7, 2),
-                    TargetDescription = "desc",
-                    ArrearsYTD = 100,
-                    ChargedYTD = 120,
-                    PaidYTD = 0,
-                    TotalCharged = 220,
-                    TotalPaid = 0,
-                    TotalBalance = -220
-                }).ConfigureAwait(false);
+            var request = new AddRentGroupSummaryRequest
+            {
+                TargetType = TargetType.RentGroup,
+                RentGroupName = "LeaseHolders",
+                SubmitDate = new DateTime(2021, 7, 2),
+                TargetDescription = "desc",
+                ArrearsYTD = 100,
+                ChargedYTD = 120,
+                PaidYTD = 0,
+                TotalCharged = 220,
+                TotalPaid = 0,
+                TotalBalance = -220
+            };
+
+            var result = await _rentGroupsController.Create("", request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
-            _addUseCase.Verify(x => x.ExecuteAsync(It.IsAny<AddRentGroupSummaryRequest>()), Times.Once);
+            _addUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
 
             var redirectToActionResult = result as RedirectToActionResult;
 

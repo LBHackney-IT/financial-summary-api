@@ -239,22 +239,24 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         {
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddAssetSummaryRequest>())).Returns(Task.CompletedTask);
 
-            var result = await _assetSummaryController.Create("",
-                new AddAssetSummaryRequest
-                {
-                    TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
-                    TargetType = TargetType.Estate,
-                    AssetName = "Estate 2",
-                    SubmitDate = new DateTime(2021, 7, 1),
-                    TotalDwellingRent = 87,
-                    TotalNonDwellingRent = 37,
-                    TotalRentalServiceCharge = 99,
-                    TotalServiceCharges = 109
-                }).ConfigureAwait(false);
+            var request = new AddAssetSummaryRequest
+            {
+                TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
+                TargetType = TargetType.Estate,
+                AssetName = "Estate 2",
+                SubmitDate = new DateTime(2021, 7, 1),
+                TotalDwellingRent = 87,
+                TotalNonDwellingRent = 37,
+                TotalRentalServiceCharge = 99,
+                TotalServiceCharges = 109
+            };
+
+            var result = await _assetSummaryController.Create("", request)
+                .ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
-            _addUseCase.Verify(x => x.ExecuteAsync(It.IsAny<AddAssetSummaryRequest>()), Times.Once);
+            _addUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
 
             var redirectToActionResult = result as RedirectToActionResult;
 
