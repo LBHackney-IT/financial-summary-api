@@ -1,4 +1,3 @@
-using AutoFixture;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
@@ -7,7 +6,6 @@ using FluentAssertions;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.ComponentModel;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
@@ -16,14 +14,12 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
     {
         private Mock<IFinanceSummaryGateway> _mockFinanceGateway;
         private AddAssetSummaryUseCase _useCase;
-        private Fixture _fixture;
 
         public AddAssetSummaryUseCaseTests()
         {
             _mockFinanceGateway = new Mock<IFinanceSummaryGateway>();
 
             _useCase = new AddAssetSummaryUseCase(_mockFinanceGateway.Object);
-            _fixture = new Fixture();
         }
 
         [Test]
@@ -43,7 +39,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             catch (Exception ex)
             {
                 ex.Should().NotBeNull();
-                ex.GetType().Should().Be(typeof(ArgumentNullException));
+                ex.Should().BeOfType<ArgumentNullException>();
                 ex.Message.Should().Be("Value cannot be null. (Parameter 'assetSummary')");
             }
         }
@@ -51,7 +47,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         [Test]
         public async Task Add_ValidModel_CallsGateway()
         {
-            AddAssetSummaryRequest assetModel = _fixture.Create<AddAssetSummaryRequest>();
+            AddAssetSummaryRequest assetModel = new AddAssetSummaryRequest();
 
             _mockFinanceGateway.Setup(_ => _.AddAsync(It.IsAny<AssetSummary>()))
                 .Returns(Task.CompletedTask);
@@ -60,6 +56,5 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
 
             _mockFinanceGateway.Verify(_ => _.AddAsync(It.IsAny<AssetSummary>()), Times.Once);
         }
-
     }
 }
