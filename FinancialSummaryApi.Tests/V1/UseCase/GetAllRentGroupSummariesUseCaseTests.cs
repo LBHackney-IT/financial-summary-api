@@ -18,42 +18,100 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
     {
         private Mock<IFinanceSummaryGateway> _mockFinanceGateway;
         private GetAllRentGroupSummariesUseCase _getAllRentGroupSummariesUseCase;
-        private Fixture _fixture;
 
         [SetUp]
         public void SetUp()
         {
             _mockFinanceGateway = new Mock<IFinanceSummaryGateway>();
-
             _getAllRentGroupSummariesUseCase = new GetAllRentGroupSummariesUseCase(_mockFinanceGateway.Object);
-            _fixture = new Fixture();
         }
 
         [Test]
-        public async Task GetAllAssetSummariesFromTheGatewayWithDate()
+        public async Task GetAll_WithCustomDate_ReturnsListOfRentGroupSummaries()
         {
-            var rentGroupSummaries = _fixture.CreateMany<RentGroupSummary>().ToList();
+            var rentGroupSummaries = new List<RentGroupSummary>()
+            {
+                new RentGroupSummary
+                {
+                    Id = new Guid("c4b19453-4e1c-40ba-b937-db41a46eca45"),
+                    TargetType = TargetType.RentGroup,
+                    RentGroupName = "LeaseHolders",
+                    TargetDescription = "desc",
+                    ArrearsYTD = 100,
+                    SubmitDate = new DateTime(2021, 7, 2),
+                    ChargedYTD = 102,
+                    PaidYTD = 160,
+                    TotalBalance = -42,
+                    TotalCharged = 102,
+                    TotalPaid = 160
+                },
+                new RentGroupSummary
+                {
+                    Id = new Guid("814ab48c-090e-42fc-9e17-67bf6b3eb48f"),
+                    TargetType = TargetType.RentGroup,
+                    RentGroupName = "LeaseHolders2",
+                    TargetDescription = "desc",
+                    ArrearsYTD = 100,
+                    SubmitDate = new DateTime(2021, 7, 2),
+                    ChargedYTD = 102,
+                    PaidYTD = 160,
+                    TotalBalance = -42,
+                    TotalCharged = 102,
+                    TotalPaid = 160
+                }
+            };
 
             _mockFinanceGateway.Setup(x => x.GetAllRentGroupSummaryAsync(It.IsAny<DateTime>())).ReturnsAsync(rentGroupSummaries);
 
-            var response = new List<RentGroupSummaryResponse>(rentGroupSummaries.ToResponse());
+            var expectedResult = new List<RentGroupSummaryResponse>(rentGroupSummaries.ToResponse());
 
             var result = await _getAllRentGroupSummariesUseCase.ExecuteAsync(new DateTime(2021, 7, 2)).ConfigureAwait(false);
 
-            result.Should().BeEquivalentTo(response);
+            result.Should().BeEquivalentTo(expectedResult);
         }
 
         [Test]
-        public async Task GetAllAssetSummariesFromTheGatewayWithDefaultDate()
+        public async Task GetAll_WithDefaultDate_ReturnsListOfRentGroupSummaries()
         {
-            var rentGroupSummaries = _fixture.CreateMany<RentGroupSummary>().ToList();
+            var rentGroupSummaries = new List<RentGroupSummary>()
+            {
+                new RentGroupSummary
+                {
+                    Id = new Guid("c4b19453-4e1c-40ba-b937-db41a46eca45"),
+                    TargetType = TargetType.RentGroup,
+                    RentGroupName = "LeaseHolders",
+                    TargetDescription = "desc",
+                    ArrearsYTD = 100,
+                    SubmitDate = DateTime.UtcNow.Date,
+                    ChargedYTD = 102,
+                    PaidYTD = 160,
+                    TotalBalance = -42,
+                    TotalCharged = 102,
+                    TotalPaid = 160
+                },
+                new RentGroupSummary
+                {
+                    Id = new Guid("814ab48c-090e-42fc-9e17-67bf6b3eb48f"),
+                    TargetType = TargetType.RentGroup,
+                    RentGroupName = "LeaseHolders2",
+                    TargetDescription = "desc",
+                    ArrearsYTD = 100,
+                    SubmitDate = DateTime.UtcNow.Date,
+                    ChargedYTD = 102,
+                    PaidYTD = 160,
+                    TotalBalance = -42,
+                    TotalCharged = 102,
+                    TotalPaid = 160
+                }
+            };
+
             _mockFinanceGateway.Setup(x => x.GetAllRentGroupSummaryAsync(It.IsAny<DateTime>())).ReturnsAsync(rentGroupSummaries);
 
-            var response = new List<RentGroupSummaryResponse>(rentGroupSummaries.ToResponse());
+            var exprectedResult = new List<RentGroupSummaryResponse>(rentGroupSummaries.ToResponse());
 
             var result = await _getAllRentGroupSummariesUseCase.ExecuteAsync(new DateTime()).ConfigureAwait(false);
 
-            result.Should().BeEquivalentTo(response);
+            result.Should().BeEquivalentTo(exprectedResult);
         }
     }
 }
