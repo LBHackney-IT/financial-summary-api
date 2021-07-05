@@ -15,9 +15,14 @@ namespace FinancialSummaryApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task ExecuteAsync(AddRentGroupSummaryRequest assetSummary)
+        public async Task ExecuteAsync(AddRentGroupSummaryRequest rentGroupSummary)
         {
-            var domainModel = assetSummary.ToRentGroupDomain();
+            if(rentGroupSummary == null)
+            {
+                throw new ArgumentNullException(nameof(rentGroupSummary));
+            }
+
+            var domainModel = rentGroupSummary.ToRentGroupDomain();
 
             domainModel.Id = Guid.NewGuid();
 

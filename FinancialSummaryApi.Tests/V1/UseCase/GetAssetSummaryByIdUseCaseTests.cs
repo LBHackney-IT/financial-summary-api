@@ -13,9 +13,9 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
 {
     public class GetAssetSummaryByIdUseCaseTests
     {
-        private Mock<IFinanceSummaryGateway> _mockFinanceGateway;
-        private GetAssetSummaryByIdUseCase _useCase;
-        private Fixture _fixture;
+        private readonly Mock<IFinanceSummaryGateway> _mockFinanceGateway;
+        private readonly GetAssetSummaryByIdUseCase _useCase;
+        private readonly Fixture _fixture;
 
         public GetAssetSummaryByIdUseCaseTests()
         {
