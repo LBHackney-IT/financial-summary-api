@@ -8,9 +8,9 @@ ENV DynamoDb_LocalMode='true'
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
-COPY ./FinancialSummaryApi.sln ./
-COPY ./FinancialSummaryApi/FinancialSummaryApi.csproj ./FinancialSummaryApi/
-COPY ./FinancialSummaryApi.Tests/FinancialSummaryApi.Tests.csproj ./FinancialSummaryApi.Tests/
+COPY ./FinancialSummaryApi/FinancialSummaryApi.sln ./
+COPY ./FinancialSummaryApi/FinancialSummaryApi/FinancialSummaryApi.csproj ./FinancialSummaryApi/
+COPY ./FinancialSummaryApi/FinancialSummaryApi.Tests/FinancialSummaryApi.Tests.csproj ./FinancialSummaryApi.Tests/
 
 RUN dotnet restore ./FinancialSummaryApi/FinancialSummaryApi.csproj
 RUN dotnet restore ./FinancialSummaryApi.Tests/FinancialSummaryApi.Tests.csproj
