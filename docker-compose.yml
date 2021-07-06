@@ -26,8 +26,8 @@ services:
   finance-summary-api-test:
     image: finance-summary-api-test
     build:
-      context: FinancialSummaryApi.Tests/
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: FinancialSummaryApi.Tests/Dockerfile
     environment:
       - DynamoDb_LocalMode=true
       - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
