@@ -17,7 +17,7 @@ namespace FinancialSummaryApi.V1.UseCase
 
         public async Task ExecuteAsync(AddRentGroupSummaryRequest rentGroupSummary)
         {
-            if(rentGroupSummary == null)
+            if (rentGroupSummary == null)
             {
                 throw new ArgumentNullException(nameof(rentGroupSummary));
             }

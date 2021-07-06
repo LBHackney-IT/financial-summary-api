@@ -55,7 +55,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         {
             var expectedResult = _fixture.Create<AssetSummary>();
             _mockFinanceGateway.Setup(_ => _.GetAssetSummaryByIdAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
-                .ReturnsAsync((AssetSummary)null);
+                .ReturnsAsync((AssetSummary) null);
 
             var actualResult = await _useCase.ExecuteAsync(Guid.NewGuid(), new DateTime(2021, 06, 28)).ConfigureAwait(false);
 

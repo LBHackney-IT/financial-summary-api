@@ -20,7 +20,7 @@ namespace FinancialSummaryApi.V1.UseCase
 
         public async Task<List<RentGroupSummaryResponse>> ExecuteAsync(DateTime submitDate)
         {
-            if(submitDate == DateTime.MinValue)
+            if (submitDate == DateTime.MinValue)
             {
                 submitDate = DateTime.UtcNow;
             }
