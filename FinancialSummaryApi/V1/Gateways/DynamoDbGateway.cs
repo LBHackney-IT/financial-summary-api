@@ -56,7 +56,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
 
-            return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault()?.ToAssetDomain();  
+            return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault()?.ToAssetDomain();
         }
 
         #endregion
@@ -97,6 +97,6 @@ namespace FinancialSummaryApi.V1.Gateways
         #endregion
 
         private static Tuple<DateTime, DateTime> GetDayRange(DateTime date)
-            => new Tuple<DateTime, DateTime> (date.Date, date.Date.AddHours(23).AddMinutes(59));
+            => new Tuple<DateTime, DateTime>(date.Date, date.Date.AddHours(23).AddMinutes(59));
     }
 }

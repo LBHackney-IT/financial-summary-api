@@ -17,20 +17,20 @@ namespace FinancialSummaryApi.V1.Infrastructure
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            if(value == null)
+            if (value == null)
             {
                 return new ValidationResult($"{validationContext.MemberName} is required.");
             }
 
             var valueType = value.GetType();
-            if(!valueType.IsEnum || !Enum.IsDefined(typeof(TargetType), value))
+            if (!valueType.IsEnum || !Enum.IsDefined(typeof(TargetType), value))
             {
                 return new ValidationResult($"{validationContext.MemberName} should be a type of TargetType enum.");
             }
 
-            var isValid = _allowedEnumItems.Contains((TargetType)value);
+            var isValid = _allowedEnumItems.Contains((TargetType) value);
 
-            if(isValid)
+            if (isValid)
             {
                 return ValidationResult.Success;
             }

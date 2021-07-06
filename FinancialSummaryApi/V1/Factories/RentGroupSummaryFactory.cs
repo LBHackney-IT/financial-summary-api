@@ -9,12 +9,12 @@ namespace FinancialSummaryApi.V1.Factories
     {
         public static RentGroupSummary ToRentGroupDomain(this FinanceSummaryDbEntity databaseEntity)
         {
-            if(databaseEntity == null)
+            if (databaseEntity == null)
             {
                 return null;
             }
 
-            if(databaseEntity.RentGroupSummaryData == null)
+            if (databaseEntity.RentGroupSummaryData == null)
             {
                 throw new Exception("Loaded data from the database cannot be parsed as a RentGroup data. Id: " + databaseEntity.Id);
             }

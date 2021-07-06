@@ -9,7 +9,7 @@ namespace FinancialSummaryApi.V1.Factories
     {
         public static AssetSummary ToAssetDomain(this FinanceSummaryDbEntity databaseEntity)
         {
-            if(databaseEntity == null)
+            if (databaseEntity == null)
             {
                 return null;
             }
@@ -20,7 +20,7 @@ namespace FinancialSummaryApi.V1.Factories
             return new AssetSummary
             {
                 Id = databaseEntity.Id,
-                TargetId =  databaseEntity.TargetId,
+                TargetId = databaseEntity.TargetId,
                 TargetType = databaseEntity.TargetType,
                 AssetName = databaseEntity.AssetSummaryData.AssetName,
                 SubmitDate = databaseEntity.SubmitDate,

@@ -66,7 +66,7 @@ namespace FinancialSummaryApi.V1.Controllers
         {
             var rentGroup = await _getByNameUseCase.ExecuteAsync(rentGroupName, submitDate).ConfigureAwait(false);
 
-            if(rentGroup == null)
+            if (rentGroup == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Rent Group with provided name cannot be found!"));
             }
@@ -93,7 +93,7 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Rent Group Summary model cannot be null"));
             }
 
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
