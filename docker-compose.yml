@@ -4,7 +4,7 @@ services:
   finance-summary-api:
     image: finance-summary-api
     build:
-      context: FinanceSummaryApi/
+      context: FinancialSummaryApi/
       dockerfile: ./Dockerfile
     ports:
       - 3000:3000
@@ -27,7 +27,7 @@ services:
     image: finance-summary-api-test
     build:
       context: .
-      dockerfile: FinanceSummaryApi.Tests/Dockerfile
+      dockerfile: FinancialSummaryApi.Tests/Dockerfile
     environment:
       - DynamoDb_LocalMode=true
       - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000
