@@ -137,10 +137,10 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntity.Message.Should().Contain("The AssetName field is required.");
             apiEntity.Message.Should().Contain("TargetType should be in a range: [0(Estate), 1(Block), 2(Core)].");
-            apiEntity.Message.Should().Contain("The field TotalDwellingRent must be between 0 and 7,922816251426434E+28.");
-            apiEntity.Message.Should().Contain("The field TotalServiceCharges must be between 0 and 7,922816251426434E+28.");
-            apiEntity.Message.Should().Contain("The field TotalNonDwellingRent must be between 0 and 7,922816251426434E+28.");
-            apiEntity.Message.Should().Contain("The field TotalRentalServiceCharge must be between 0 and 7,922816251426434E+28.");
+            apiEntity.Message.Should().Contain($"The field TotalDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TotalServiceCharges must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TotalNonDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TotalRentalServiceCharge must be between 0 and {(double) decimal.MaxValue}.");
         }
 
         [Test]

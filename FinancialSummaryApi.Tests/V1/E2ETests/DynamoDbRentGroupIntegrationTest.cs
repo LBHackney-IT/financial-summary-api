@@ -134,11 +134,11 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.StatusCode.Should().Be(400);
             apiEntity.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain("The field PaidYTD must be between 0 and 7,922816251426434E+28.");
-            apiEntity.Message.Should().Contain("The field TotalPaid must be between 0 and 7,922816251426434E+28.");
-            apiEntity.Message.Should().Contain("The field ArrearsYTD must be between 0 and 7,922816251426434E+28.");
-            apiEntity.Message.Should().Contain("The field ChargedYTD must be between 0 and 7,922816251426434E+28.");
-            apiEntity.Message.Should().Contain("The field TotalCharged must be between 0 and 7,922816251426434E+28.");
+            apiEntity.Message.Should().Contain($"The field PaidYTD must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TotalPaid must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field ArrearsYTD must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field ChargedYTD must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TotalCharged must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain("TargetType should be in a range: [3(RentGroup)].");
         }
 
