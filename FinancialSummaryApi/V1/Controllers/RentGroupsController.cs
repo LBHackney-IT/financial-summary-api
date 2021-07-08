@@ -79,10 +79,10 @@ namespace FinancialSummaryApi.V1.Controllers
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="summaryRequest">Rent Group summary model for create</param>
-        /// <response code="200">Rent Group summary model was created successfully</response>
+        /// <response code="201">Rent Group summary model was created successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(RentGroupSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(RentGroupSummaryResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
@@ -98,9 +98,9 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            await _addUseCase.ExecuteAsync(summaryRequest).ConfigureAwait(false);
+            var resultRentGroupSummary = await _addUseCase.ExecuteAsync(summaryRequest).ConfigureAwait(false);
 
-            return RedirectToAction("Get", new { rentGroupName = summaryRequest.RentGroupName });
+            return CreatedAtAction("Get", new { rentGroupName = summaryRequest.RentGroupName }, resultRentGroupSummary);
         }
     }
 }

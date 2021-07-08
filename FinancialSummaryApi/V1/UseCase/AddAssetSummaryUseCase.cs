@@ -1,4 +1,5 @@
 using FinancialSummaryApi.V1.Boundary.Request;
+using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
@@ -16,7 +17,7 @@ namespace FinancialSummaryApi.V1.UseCase
             _financeSummaryGateway = financeSummaryGateway;
         }
 
-        public async Task ExecuteAsync(AddAssetSummaryRequest assetSummary)
+        public async Task<AssetSummaryResponse> ExecuteAsync(AddAssetSummaryRequest assetSummary)
         {
             if (assetSummary == null)
             {
@@ -28,6 +29,8 @@ namespace FinancialSummaryApi.V1.UseCase
             domainModel.Id = Guid.NewGuid();
 
             await _financeSummaryGateway.AddAsync(domainModel).ConfigureAwait(false);
+
+            return domainModel.ToResponse();
         }
     }
 }

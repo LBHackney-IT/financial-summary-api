@@ -245,10 +245,23 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         }
 
         [Test]
-        public async Task CreateRentGroupSummaryWithValidDataReturns200()
+        public async Task CreateRentGroupSummaryWithValidDataReturns201()
         {
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddRentGroupSummaryRequest>()))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(new RentGroupSummaryResponse()
+                {
+                    Id = new Guid("88cbb60d-4402-490d-9e8c-710472951464"),
+                    TargetType = TargetType.RentGroup,
+                    RentGroupName = "LeaseHolders",
+                    SubmitDate = new DateTime(2021, 7, 2),
+                    TargetDescription = "desc",
+                    ArrearsYTD = 100,
+                    ChargedYTD = 120,
+                    PaidYTD = 0,
+                    TotalCharged = 220,
+                    TotalPaid = 0,
+                    TotalBalance = -220
+                });
 
             var request = new AddRentGroupSummaryRequest
             {
@@ -270,17 +283,23 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             _addUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
 
-            var redirectToActionResult = result as RedirectToActionResult;
+            var createdAtActionResult = result as CreatedAtActionResult;
 
-            redirectToActionResult.Should().NotBeNull();
+            createdAtActionResult.Should().NotBeNull();
 
-            redirectToActionResult.ActionName.Should().Be("Get");
+            createdAtActionResult.ActionName.Should().BeEquivalentTo("Get");
 
-            redirectToActionResult.RouteValues.Should().NotBeNull();
+            createdAtActionResult.RouteValues["rentGroupName"].Should().NotBeNull();
 
-            redirectToActionResult.RouteValues.Should().HaveCount(1);
+            createdAtActionResult.RouteValues["rentGroupName"].Should().BeOfType(typeof(string));
 
-            redirectToActionResult.RouteValues["rentGroupName"].Should().Be("LeaseHolders");
+            createdAtActionResult.Value.Should().NotBeNull();
+
+            var rentGroupResponse = createdAtActionResult.Value as RentGroupSummaryResponse;
+
+            rentGroupResponse.Should().NotBeNull();
+
+            rentGroupResponse.Should().BeEquivalentTo(request);
         }
 
         [Test]

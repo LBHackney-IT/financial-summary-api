@@ -15,6 +15,8 @@
       "launchUrl": "swagger/index.html",
       "environmentVariables": {
         "DynamoDb_LocalServiceUrl": "http://localhost:8000",
+        "DynamoDb_LocalAccessKey": "fco1i2",
+        "DynamoDb_LocalSecretKey": "8kmm3g",
         "DynamoDb_LocalMode": "true",
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

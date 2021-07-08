@@ -1,4 +1,5 @@
 using FinancialSummaryApi.V1.Boundary.Request;
+using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
@@ -15,7 +16,7 @@ namespace FinancialSummaryApi.V1.UseCase
             _gateway = gateway;
         }
 
-        public async Task ExecuteAsync(AddRentGroupSummaryRequest rentGroupSummary)
+        public async Task<RentGroupSummaryResponse> ExecuteAsync(AddRentGroupSummaryRequest rentGroupSummary)
         {
             if (rentGroupSummary == null)
             {
@@ -27,6 +28,8 @@ namespace FinancialSummaryApi.V1.UseCase
             domainModel.Id = Guid.NewGuid();
 
             await _gateway.AddAsync(domainModel).ConfigureAwait(false);
+
+            return domainModel.ToResponse();
         }
     }
 }

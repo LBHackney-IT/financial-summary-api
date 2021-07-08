@@ -86,7 +86,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Test]
-        public async Task CreateAssetCreatedReturns200()
+        public async Task CreateAssetCreatedReturns201()
         {
             var assetDomain = ConstructAssetSummary();
 
@@ -207,7 +207,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
                 using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                response.StatusCode.Should().Be(HttpStatusCode.Created);
 
                 var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);

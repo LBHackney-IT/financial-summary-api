@@ -80,10 +80,10 @@ namespace FinancialSummaryApi.V1.Controllers
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="assetSummary">Asset summary model for create</param>
-        /// <response code="200">Created. Asset summary model was created successfully</response>
+        /// <response code="201">Created. Asset summary model was created successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
@@ -99,9 +99,9 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            await _addUseCase.ExecuteAsync(assetSummary).ConfigureAwait(false);
+            var resultAsset = await _addUseCase.ExecuteAsync(assetSummary).ConfigureAwait(false);
 
-            return RedirectToAction("Get", new { assetId = assetSummary.TargetId });
+            return CreatedAtAction("Get", new { assetId = assetSummary.TargetId }, resultAsset);
         }
     }
 }

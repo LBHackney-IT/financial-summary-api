@@ -85,7 +85,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Test]
-        public async Task CreateRentGroupCreatedReturns200()
+        public async Task CreateRentGroupCreatedReturns201()
         {
             var rentGroupDomain = ConstructRentGroupSummary();
 
@@ -163,7 +163,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var apiEntity = JsonConvert.DeserializeObject<List<RentGroupSummaryResponse>>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Should().HaveCount(2);
+            apiEntity.Count.Should().BeGreaterOrEqualTo(2);
 
             var firstRentGroup = apiEntity.Find(r => r.RentGroupName.Equals(rentGroupDomains[0].RentGroupName));
             var secondRentGroup = apiEntity.Find(r => r.RentGroupName.Equals(rentGroupDomains[1].RentGroupName));
@@ -206,7 +206,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
                 using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
-                response.StatusCode.Should().Be(HttpStatusCode.OK);
+                response.StatusCode.Should().Be(HttpStatusCode.Created);
 
                 var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                 var apiEntity = JsonConvert.DeserializeObject<RentGroupSummaryResponse>(responseContent);

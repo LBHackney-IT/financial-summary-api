@@ -235,9 +235,21 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         }
 
         [Test]
-        public async Task CreateAssetSummaryWithValidDataReturns200()
+        public async Task CreateAssetSummaryWithValidDataReturns201()
         {
-            _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddAssetSummaryRequest>())).Returns(Task.CompletedTask);
+            _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddAssetSummaryRequest>()))
+                .ReturnsAsync(new AssetSummaryResponse()
+                {
+                    Id = new Guid("bae9c9d9-836f-44bc-946f-33cf78584704"),
+                    TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
+                    TargetType = TargetType.Estate,
+                    AssetName = "Estate 2",
+                    SubmitDate = new DateTime(2021, 7, 1),
+                    TotalDwellingRent = 87,
+                    TotalNonDwellingRent = 37,
+                    TotalRentalServiceCharge = 99,
+                    TotalServiceCharges = 109
+                });
 
             var request = new AddAssetSummaryRequest
             {
@@ -258,17 +270,23 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             _addUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
 
-            var redirectToActionResult = result as RedirectToActionResult;
+            var createdAtActionResult = result as CreatedAtActionResult;
 
-            redirectToActionResult.Should().NotBeNull();
+            createdAtActionResult.Should().NotBeNull();
 
-            redirectToActionResult.ActionName.Should().Be("Get");
+            createdAtActionResult.ActionName.Should().BeEquivalentTo("Get");
 
-            redirectToActionResult.RouteValues.Should().NotBeNull();
+            createdAtActionResult.RouteValues["assetId"].Should().NotBeNull();
 
-            redirectToActionResult.RouteValues.Should().HaveCount(1);
+            createdAtActionResult.RouteValues["assetId"].Should().BeOfType(typeof(Guid));
 
-            redirectToActionResult.RouteValues["assetId"].Should().Be(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"));
+            createdAtActionResult.Value.Should().NotBeNull();
+
+            var assetResponse = createdAtActionResult.Value as AssetSummaryResponse;
+
+            assetResponse.Should().NotBeNull();
+
+            assetResponse.Should().BeEquivalentTo(request);
         }
 
         [Test]
