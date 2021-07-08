@@ -7,7 +7,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
 {
     public class AddAssetSummaryRequest
     {
-        [NonEmptyGuid("TargetId")]
+        [NonEmptyGuid]
         public Guid TargetId { get; set; }
 
         [AllowedValues(TargetType.Estate, TargetType.Block, TargetType.Core)]

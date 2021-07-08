@@ -291,7 +291,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             createdAtActionResult.RouteValues["rentGroupName"].Should().NotBeNull();
 
-            createdAtActionResult.RouteValues["rentGroupName"].Should().BeOfType(typeof(string));
+            createdAtActionResult.RouteValues["rentGroupName"].Should().BeEquivalentTo("LeaseHolders");
 
             createdAtActionResult.Value.Should().NotBeNull();
 
