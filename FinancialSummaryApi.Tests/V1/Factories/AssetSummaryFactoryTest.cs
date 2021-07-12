@@ -2,15 +2,14 @@ using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
-using NUnit.Framework;
 using System;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Factories
 {
-    [TestFixture]
     public class AssetSummaryFactoryTest
     {
-        [Test]
+        [Fact]
         public void CanMapADatabaseEntityToADomainObject()
         {
             var databaseEntity = new FinanceSummaryDbEntity
@@ -42,7 +41,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             databaseEntity.AssetSummaryData.TotalServiceCharges.Should().Be(entity.TotalServiceCharges);
         }
 
-        [Test]
+        [Fact]
         public void CanMapADomainEntityToADatabaseObject()
         {
             var entity = new AssetSummary

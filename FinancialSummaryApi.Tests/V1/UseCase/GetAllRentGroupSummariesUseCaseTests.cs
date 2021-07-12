@@ -5,26 +5,25 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
 {
     public class GetAllRentGroupSummariesUseCaseTests
     {
-        private Mock<IFinanceSummaryGateway> _mockFinanceGateway;
-        private GetAllRentGroupSummariesUseCase _getAllRentGroupSummariesUseCase;
+        private readonly Mock<IFinanceSummaryGateway> _mockFinanceGateway;
+        private readonly GetAllRentGroupSummariesUseCase _getAllRentGroupSummariesUseCase;
 
-        [SetUp]
-        public void SetUp()
+        public GetAllRentGroupSummariesUseCaseTests()
         {
             _mockFinanceGateway = new Mock<IFinanceSummaryGateway>();
             _getAllRentGroupSummariesUseCase = new GetAllRentGroupSummariesUseCase(_mockFinanceGateway.Object);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAll_WithCustomDate_ReturnsListOfRentGroupSummaries()
         {
             var rentGroupSummaries = new List<RentGroupSummary>()
@@ -68,7 +67,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAll_WithDefaultDate_ReturnsListOfRentGroupSummaries()
         {
             var rentGroupSummaries = new List<RentGroupSummary>()

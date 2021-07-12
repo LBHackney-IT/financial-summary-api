@@ -1,16 +1,15 @@
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FluentAssertions;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Factories
 {
-    [TestFixture]
     public class ResponseFactoryTest
     {
-        [Test]
+        [Fact]
         public void CanMapAnAssetSummaryDomainObjectToResponse()
         {
             var domain = new AssetSummary()
@@ -39,7 +38,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             response.AssetName.Should().Be("Estate 1");
         }
 
-        [Test]
+        [Fact]
         public void CanMapARentGroupSummaryDomainObjectToResponse()
         {
             var domain = new RentGroupSummary()
@@ -72,7 +71,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             response.RentGroupName.Should().Be("RentGroupName");
         }
 
-        [Test]
+        [Fact]
         public void CanMapListOfAssetSummaryDomainObjectsToResponse()
         {
             var firstDomain = new AssetSummary()
@@ -130,7 +129,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             response[1].AssetName.Should().Be("Estate 2");
         }
 
-        [Test]
+        [Fact]
         public void CanMapListOfRentGroupSummaryDomainObjectsToResponse()
         {
             var firstDomain = new RentGroupSummary()

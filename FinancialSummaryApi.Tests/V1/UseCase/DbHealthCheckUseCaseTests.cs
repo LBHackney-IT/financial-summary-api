@@ -4,22 +4,20 @@ using Bogus;
 using FluentAssertions;
 using Microsoft.Extensions.HealthChecks;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
 {
-    [TestFixture]
     public class DbHealthCheckUseCaseTests
     {
 
-        private Mock<IHealthCheckService> _mockHealthCheckService;
-        private DbHealthCheckUseCase _classUnderTest;
+        private readonly Mock<IHealthCheckService> _mockHealthCheckService;
+        private readonly DbHealthCheckUseCase _classUnderTest;
 
         private readonly Faker _faker = new Faker();
-        private string _description;
+        private readonly string _description;
 
-        [SetUp]
-        public void SetUp()
+        public DbHealthCheckUseCaseTests()
         {
             _description = _faker.Random.Words();
 
@@ -35,7 +33,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             _classUnderTest = new DbHealthCheckUseCase(_mockHealthCheckService.Object);
         }
 
-        [Test]
+        [Fact]
         public void ReturnsResponseWithStatus()
         {
             var response = _classUnderTest.Execute();

@@ -1,13 +1,13 @@
 using FinancialSummaryApi.V1.Infrastructure;
 using FluentAssertions;
-using NUnit.Framework;
 using System;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Infrastructure
 {
     public class ExceptionExtensionsTests
     {
-        [Test]
+        [Fact]
         public void GetFullMessage_WithInnerException_ReturnsFullMessage()
         {
             var exception = new Exception("Test exception", new Exception("Inner Exception 1", new Exception("Inner Exception 2")));
@@ -21,7 +21,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        [Test]
+        [Fact]
         public void GetFullMessage_WithoutInnerException_ReturnsMessageFromException()
         {
             var exception = new Exception("Test exception");
@@ -35,7 +35,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        [Test]
+        [Fact]
         public void GetFullMessage_ExceptionNull_ReturnsStringWithSemicolon()
         {
             var exception = (Exception) null;

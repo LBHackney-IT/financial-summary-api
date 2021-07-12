@@ -5,31 +5,29 @@ using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Gateways
 {
-    [TestFixture]
     public class DynamoDbGatewayTests
     {
         private readonly Fixture _fixture = new Fixture();
-        private Mock<IDynamoDBContext> _dynamoDb;
-        private Mock<DynamoDbContextWrapper> _wrapper;
-        private DynamoDbGateway _gateway;
+        private readonly Mock<IDynamoDBContext> _dynamoDb;
+        private readonly Mock<DynamoDbContextWrapper> _wrapper;
+        private readonly DynamoDbGateway _gateway;
 
-        [SetUp]
-        public void Setup()
+        public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
             _wrapper = new Mock<DynamoDbContextWrapper>();
             _gateway = new DynamoDbGateway(_dynamoDb.Object, _wrapper.Object);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAssetSummaryByTargetIdReturnsNullIfEntityDoesntExist()
         {
             _wrapper.Setup(_ => _.ScanAsync(
@@ -44,7 +42,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummary.Should().BeNull();
         }
 
-        [Test]
+        [Fact]
         public async Task GetAssetSummaryByTargetIdReturnsAssetSummaryIfItExists()
         {
             var firstEntity = _fixture.Create<FinanceSummaryDbEntity>();
@@ -68,7 +66,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummaryDomain.ShouldBeEqualTo(secondEntity);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAllAssetSummariesByDateReturnsList()
         {
             var firstEntity = _fixture.Create<FinanceSummaryDbEntity>();
@@ -95,7 +93,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummaries[1].ShouldBeEqualTo(secondEntity);
         }
 
-        [Test]
+        [Fact]
         public async Task AddAssetSummaryWithValidObject()
         {
             _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<FinanceSummaryDbEntity>(), It.IsAny<CancellationToken>()))
@@ -108,7 +106,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<FinanceSummaryDbEntity>(), default), Times.Once);
         }
 
-        [Test]
+        [Fact]
         public async Task AddAssetSummaryWithInvalidObject()
         {
             _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<FinanceSummaryDbEntity>(), It.IsAny<CancellationToken>()))
@@ -119,7 +117,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<FinanceSummaryDbEntity>(), default), Times.Once);
         }
 
-        [Test]
+        [Fact]
         public async Task GetRentGroupSummaryByRentGroupNameReturnsNullIfEntityDoesntExist()
         {
             _wrapper.Setup(_ => _.ScanAsync(
@@ -134,7 +132,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             rentGroupSummary.Should().BeNull();
         }
 
-        [Test]
+        [Fact]
         public async Task GetRentGroupSummaryByRentGroupNameReturnsRentGroupSummaryIfItExists()
         {
             var firstEntity = _fixture.Create<FinanceSummaryDbEntity>();
@@ -160,7 +158,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             rentGroupSummaryDomain.ShouldBeEqualTo(firstEntity);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAllRentGroupSummariesByDateReturnsList()
         {
             var firstEntity = _fixture.Create<FinanceSummaryDbEntity>();
@@ -187,7 +185,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummaries[1].ShouldBeEqualTo(secondEntity);
         }
 
-        [Test]
+        [Fact]
         public async Task AddRentGroupSummaryWithValidObject()
         {
             _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<FinanceSummaryDbEntity>(), It.IsAny<CancellationToken>()))
@@ -200,7 +198,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<FinanceSummaryDbEntity>(), default), Times.Once);
         }
 
-        [Test]
+        [Fact]
         public async Task AddRentGroupSummaryWithInvalidObject()
         {
             _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<FinanceSummaryDbEntity>(), It.IsAny<CancellationToken>()))

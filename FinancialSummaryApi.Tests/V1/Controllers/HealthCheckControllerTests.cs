@@ -1,26 +1,22 @@
-using System.Collections.Generic;
 using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Framework;
+using System.Collections.Generic;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Controllers
 {
-
-    [TestFixture]
     public class HealthCheckControllerTests
     {
-        private HealthCheckController _classUnderTest;
+        private readonly HealthCheckController _classUnderTest;
 
-
-        [SetUp]
-        public void SetUp()
+        public HealthCheckControllerTests()
         {
             _classUnderTest = new HealthCheckController();
         }
 
-        [Test]
+        [Fact]
         public void ReturnsResponseWithStatus()
         {
             var expected = new Dictionary<string, object> { { "success", true } };
@@ -31,7 +27,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             response.Value.Should().BeEquivalentTo(expected);
         }
 
-        [Test]
+        [Fact]
         public void ThrowErrorThrows()
         {
             Assert.Throws<TestOpsErrorException>(_classUnderTest.ThrowError);

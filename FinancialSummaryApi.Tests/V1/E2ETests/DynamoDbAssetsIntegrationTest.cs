@@ -6,7 +6,6 @@ using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.E2ETests
 {
@@ -50,7 +50,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(entity.Id).ConfigureAwait(false));
         }
 
-        [Test]
+        [Fact]
         public async Task GetAssetByIdNotFoundReturns404()
         {
             Guid id = Guid.NewGuid();
@@ -69,7 +69,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Details.Should().BeEquivalentTo(string.Empty);
         }
 
-        [Test]
+        [Fact]
         public async Task HealchCheckOkReturns200()
         {
             var uri = new Uri($"api/v1/healthcheck/ping", UriKind.Relative);
@@ -85,7 +85,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Success.Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public async Task CreateAssetCreatedReturns201()
         {
             var assetDomain = ConstructAssetSummary();
@@ -93,7 +93,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             await CreateAssetAndValidateResponse(assetDomain).ConfigureAwait(false);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateAssetAndThenGetByTargetId()
         {
             var assetDomain = ConstructAssetSummary();
@@ -103,7 +103,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             await GetAssetByTargetIdAndValidateResponse(assetDomain).ConfigureAwait(false);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateAssetBadRequestReturns400()
         {
             var assetDomain = ConstructAssetSummary();
@@ -143,7 +143,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Message.Should().Contain($"The field TotalRentalServiceCharge must be between 0 and {(double) decimal.MaxValue}.");
         }
 
-        [Test]
+        [Fact]
         public async Task CreateTwoAssetsGetAllReturns200()
         {
             var assetDomains = new[] { ConstructAssetSummary(), ConstructAssetSummary() };
@@ -173,7 +173,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             secondAsset.ShouldBeEqualTo(assetDomains[1]);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateAssetAndGetForYesterdayReturns200()
         {
             var asset = ConstructAssetSummary();
@@ -201,23 +201,21 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             string body = JsonConvert.SerializeObject(assetSummary);
 
-            using (StringContent stringContent = new StringContent(body))
-            {
-                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            using StringContent stringContent = new StringContent(body);
+            stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+            using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Created);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-                var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
 
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
 
-                apiEntity.Should().NotBeNull();
+            apiEntity.Should().NotBeNull();
 
-                apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id));
-            }
+            apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id));
         }
 
         private async Task GetAssetByTargetIdAndValidateResponse(AssetSummary assetSummary)

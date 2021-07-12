@@ -5,9 +5,9 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
 {
@@ -24,7 +24,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             _useCase = new GetAssetSummaryByIdUseCase(_mockFinanceGateway.Object);
         }
 
-        [Test]
+        [Fact]
         public async Task GetById_ValidIdWithDefaultDate_ReturnsAsset()
         {
             var expectedResult = _fixture.Create<AssetSummary>();
@@ -37,7 +37,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             CompareAssetSummary(actualResult, expectedResult);
         }
 
-        [Test]
+        [Fact]
         public async Task GetById_ValidIdWithProvidedDate_ReturnsAsset()
         {
             var expectedResult = _fixture.Create<AssetSummary>();
@@ -50,7 +50,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             CompareAssetSummary(actualResult, expectedResult);
         }
 
-        [Test]
+        [Fact]
         public async Task GetById_GatewayReturnsNull_ReturnsNull()
         {
             var expectedResult = _fixture.Create<AssetSummary>();

@@ -6,7 +6,6 @@ using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.E2ETests
 {
@@ -49,7 +49,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(entity.Id).ConfigureAwait(false));
         }
 
-        [Test]
+        [Fact]
         public async Task GetRentGroupBydIdNotFoundReturns404()
         {
             string rentGroupName = "SomeInvalidName";
@@ -68,7 +68,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Details.Should().BeEquivalentTo(string.Empty);
         }
 
-        [Test]
+        [Fact]
         public async Task HealchCheckOkReturns200()
         {
             var uri = new Uri($"api/v1/healthcheck/ping", UriKind.Relative);
@@ -84,7 +84,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Success.Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public async Task CreateRentGroupCreatedReturns201()
         {
             var rentGroupDomain = ConstructRentGroupSummary();
@@ -92,7 +92,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             await CreateRentGroupAndValidateResponse(rentGroupDomain).ConfigureAwait(false);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateRentGroupAndThenGetByRentGroupName()
         {
             var rentGroupDomain = ConstructRentGroupSummary();
@@ -102,7 +102,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             await GetRentGroupByRentGroupNameAndValidateResponse(rentGroupDomain).ConfigureAwait(false);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateRentGroupBadRequestReturns400()
         {
             var rentGroupDomain = ConstructRentGroupSummary();
@@ -142,7 +142,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Message.Should().Contain("TargetType should be in a range: [3(RentGroup)].");
         }
 
-        [Test]
+        [Fact]
         public async Task CreateTwoRentGroupsGetAllReturns200()
         {
             var rentGroupDomains = new[] { ConstructRentGroupSummary(), ConstructRentGroupSummary() };
@@ -172,7 +172,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             secondRentGroup.ShouldBeEqualTo(rentGroupDomains[1]);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateRentGroupAndGetForYesterdayReturns200()
         {
             var rentGroupDomain = ConstructRentGroupSummary();
@@ -200,23 +200,21 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             string body = JsonConvert.SerializeObject(rentGroupSummary);
 
-            using (StringContent stringContent = new StringContent(body))
-            {
-                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            using StringContent stringContent = new StringContent(body);
+            stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
-                using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+            using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
 
-                response.StatusCode.Should().Be(HttpStatusCode.Created);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
 
-                var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var apiEntity = JsonConvert.DeserializeObject<RentGroupSummaryResponse>(responseContent);
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<RentGroupSummaryResponse>(responseContent);
 
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
 
-                apiEntity.Should().NotBeNull();
+            apiEntity.Should().NotBeNull();
 
-                apiEntity.Should().BeEquivalentTo(rentGroupSummary, options => options.Excluding(a => a.Id));
-            }
+            apiEntity.Should().BeEquivalentTo(rentGroupSummary, options => options.Excluding(a => a.Id));
         }
 
         private async Task GetRentGroupByRentGroupNameAndValidateResponse(RentGroupSummary rentGroupSummary)

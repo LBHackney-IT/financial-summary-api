@@ -1,16 +1,15 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 
 namespace FinancialSummaryApi.Tests
 {
-    public class DynamoDbIntegrationTests<TStartup> where TStartup : class
+    public class DynamoDbIntegrationTests<TStartup> : IDisposable where TStartup : class
     {
         protected HttpClient Client { get; private set; }
-        private DynamoDbMockWebApplicationFactory<TStartup> _factory;
+        private readonly DynamoDbMockWebApplicationFactory<TStartup> _factory;
         protected IDynamoDBContext DynamoDbContext => _factory?.DynamoDbContext;
         protected List<Action> CleanupActions { get; set; }
 
@@ -27,37 +26,39 @@ namespace FinancialSummaryApi.Tests
             }
         }
 
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
+        public DynamoDbIntegrationTests()
         {
             EnsureEnvVarConfigured("DynamoDb_LocalMode", "true");
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
             EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8kmm3g");
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "fco1i2");
             _factory = new DynamoDbMockWebApplicationFactory<TStartup>(_tables);
-        }
 
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            _factory.Dispose();
-        }
-
-        [SetUp]
-        public void BaseSetup()
-        {
             Client = _factory.CreateClient();
             CleanupActions = new List<Action>();
         }
 
-        [TearDown]
-        public void BaseTearDown()
+        public void Dispose()
         {
-            foreach (var act in CleanupActions)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool _disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing && !_disposed)
             {
-                act();
+                foreach (var act in CleanupActions)
+                {
+                    act();
+                }
+                Client.Dispose();
+
+                if (null != _factory)
+                    _factory.Dispose();
+                _disposed = true;
             }
-            Client.Dispose();
         }
     }
 

@@ -9,27 +9,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Controllers
 {
-    [TestFixture]
     public sealed class AssetSummaryControllerTests : IDisposable
     {
-        private AssetSummaryController _assetSummaryController;
-        private ControllerContext _controllerContext;
-        private HttpContext _httpContext;
+        private readonly AssetSummaryController _assetSummaryController;
+        private readonly ControllerContext _controllerContext;
+        private readonly HttpContext _httpContext;
 
-        private Mock<IGetAllAssetSummariesUseCase> _getAllUseCase;
-        private Mock<IGetAssetSummaryByIdUseCase> _getByIdUseCase;
-        private Mock<IAddAssetSummaryUseCase> _addUseCase;
+        private readonly Mock<IGetAllAssetSummariesUseCase> _getAllUseCase;
+        private readonly Mock<IGetAssetSummaryByIdUseCase> _getByIdUseCase;
+        private readonly Mock<IAddAssetSummaryUseCase> _addUseCase;
 
-        [SetUp]
-        public void Init()
+        public AssetSummaryControllerTests()
         {
             _getAllUseCase = new Mock<IGetAllAssetSummariesUseCase>();
 
@@ -45,7 +43,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             };
         }
 
-        [Test]
+        [Fact]
         public async Task GetAllByDateAssetSummaryObjectsReturns200()
         {
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
@@ -91,7 +89,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             assetSummaries[0].TotalServiceCharges.Should().Be(140);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAllByAnotherDateAssetSummaryObjectsReturns200()
         {
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
@@ -130,7 +128,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             assetSummaries.Should().HaveCount(0);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAllByDateAssetSummaryObjectsReturns500()
         {
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
@@ -139,7 +137,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             try
             {
                 var result = await _assetSummaryController.GetAll("", new DateTime(2021, 7, 2)).ConfigureAwait(false);
-                Assert.Fail();
+                Assert.True(false, "Exception must be thrown!");
             }
             catch (Exception ex)
             {
@@ -148,7 +146,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             }
         }
 
-        [Test]
+        [Fact]
         public async Task GetByAssetIdValidIdReturns200()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
@@ -189,7 +187,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             assetSummary.TotalServiceCharges.Should().Be(109);
         }
 
-        [Test]
+        [Fact]
         public async Task GetByAssetIdAndDateWithInvalidIdReturns404()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
@@ -215,7 +213,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             response.Details.Should().Be("");
         }
 
-        [Test]
+        [Fact]
         public async Task GetByAssetIdAndDateReturns500()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
@@ -225,7 +223,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             {
                 var result = await _assetSummaryController.Get("", new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"), new DateTime(2021, 6, 30))
                     .ConfigureAwait(false);
-                Assert.Fail();
+                Assert.True(false, "Exception must be thrown!");
             }
             catch (Exception ex)
             {
@@ -234,7 +232,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             }
         }
 
-        [Test]
+        [Fact]
         public async Task CreateAssetSummaryWithValidDataReturns201()
         {
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddAssetSummaryRequest>()))
@@ -289,7 +287,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             assetResponse.Should().BeEquivalentTo(request);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateAssetSummaryWithInvalidDataReturns400()
         {
             var result = await _assetSummaryController.Create("", null).ConfigureAwait(false);
@@ -311,7 +309,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             response.Message.Should().Be("AssetSummary model cannot be null");
         }
 
-        [Test]
+        [Fact]
         public async Task CreateAssetSummaryReturns500()
         {
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddAssetSummaryRequest>()))
@@ -321,7 +319,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             {
                 var result = await _assetSummaryController.Create("", new AddAssetSummaryRequest { })
                     .ConfigureAwait(false);
-                Assert.Fail();
+                Assert.True(false, "Exception must be thrown!");
             }
             catch (Exception ex)
             {

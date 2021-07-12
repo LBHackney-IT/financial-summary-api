@@ -1,23 +1,21 @@
 using FinancialSummaryApi.V1.Controllers;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using NUnit.Framework;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Infrastructure
 {
-    [TestFixture]
     public class CorrelationMiddlewareTest
     {
-        private CorrelationMiddleware _sut;
+        private readonly CorrelationMiddleware _sut;
 
-        [SetUp]
-        public void Init()
+        public CorrelationMiddlewareTest()
         {
             _sut = new CorrelationMiddleware(null);
         }
 
-        [Test]
+        [Fact]
         public async Task DoesNotReplaceCorrelationIdIfOneExists()
         {
             // Arrange
@@ -33,7 +31,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure
             httpContext.HttpContext.Request.Headers[Constants.CorrelationId].Should().BeEquivalentTo(headerValue);
         }
 
-        [Test]
+        [Fact]
         public async Task AddsCorrelationIdIfOneDoesNotExist()
         {
             // Arrange

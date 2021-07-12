@@ -2,15 +2,14 @@ using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
-using NUnit.Framework;
 using System;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Factories
 {
-    [TestFixture]
     public class RentGroupSummaryFactoryTest
     {
-        [Test]
+        [Fact]
         public void CanMapADatabaseEntityToADomainObject()
         {
             var databaseEntity = new FinanceSummaryDbEntity
@@ -46,7 +45,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             databaseEntity.RentGroupSummaryData.RentGroupName.Should().Be(entity.RentGroupName);
         }
 
-        [Test]
+        [Fact]
         public void CanMapADomainEntityToADatabaseObject()
         {
             var entity = new RentGroupSummary

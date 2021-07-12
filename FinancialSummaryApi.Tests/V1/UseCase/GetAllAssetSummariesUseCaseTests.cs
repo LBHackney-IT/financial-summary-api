@@ -5,26 +5,25 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
 {
     public class GetAllAssetSummariesUseCaseTests
     {
-        private Mock<IFinanceSummaryGateway> _mockFinanceGateway;
-        private GetAllAssetSummariesUseCase _getAllAssetSummariesUseCase;
+        private readonly Mock<IFinanceSummaryGateway> _mockFinanceGateway;
+        private readonly GetAllAssetSummariesUseCase _getAllAssetSummariesUseCase;
 
-        [SetUp]
-        public void SetUp()
+        public GetAllAssetSummariesUseCaseTests()
         {
             _mockFinanceGateway = new Mock<IFinanceSummaryGateway>();
             _getAllAssetSummariesUseCase = new GetAllAssetSummariesUseCase(_mockFinanceGateway.Object);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAll_WithCustomDate_ReturnsListOfAssetSummaries()
         {
             var assetSummaries = new List<AssetSummary>()
@@ -69,7 +68,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAll_WithDefaultDate_ReturnsListOfAssetSummaries()
         {
             var assetSummaries = new List<AssetSummary>()

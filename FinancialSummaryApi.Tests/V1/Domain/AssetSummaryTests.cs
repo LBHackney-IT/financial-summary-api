@@ -1,14 +1,13 @@
 using System;
 using FinancialSummaryApi.V1.Domain;
 using FluentAssertions;
-using NUnit.Framework;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Domain
 {
-    [TestFixture]
     public class AssetSummaryTests
     {
-        [Test]
+        [Fact]
         public void AssetSummaryHasPropertiesSet()
         {
             var assetSummary = new AssetSummary()

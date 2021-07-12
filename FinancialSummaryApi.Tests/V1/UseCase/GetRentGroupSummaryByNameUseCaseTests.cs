@@ -4,9 +4,9 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
 {
@@ -21,7 +21,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             _getRentGroupSummaryByNameUseCase = new GetRentGroupSummaryByNameUseCase(_mockFinanceGateway.Object);
         }
 
-        [Test]
+        [Fact]
         public async Task GetByRentGroupName_WithValidRentGroupNameAndDefaultDate_ReturnsRentGroupSummary()
         {
             var rentGroupSummary = new RentGroupSummary
@@ -51,7 +51,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        [Test]
+        [Fact]
         public async Task GetByRentGroupName_WithValidRentGroupNameAndCustomDate_ReturnsRentGroupSummary()
         {
             var rentGroupSummary = new RentGroupSummary
@@ -81,7 +81,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             result.Should().BeEquivalentTo(expectedResult);
         }
 
-        [Test]
+        [Fact]
         public async Task GetByRentGroupName_GatewayReturnsNull_ReturnsNull()
         {
             _mockFinanceGateway.Setup(_ => _.GetRentGroupSummaryByNameAsync(It.IsAny<string>(), It.IsAny<DateTime>()))

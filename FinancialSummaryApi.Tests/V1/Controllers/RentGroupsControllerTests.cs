@@ -9,27 +9,25 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Routing;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Controllers
 {
-    [TestFixture]
     public class RentGroupsControllerTests
     {
-        private RentGroupsController _rentGroupsController;
-        private ControllerContext _controllerContext;
-        private HttpContext _httpContext;
+        private readonly RentGroupsController _rentGroupsController;
+        private readonly ControllerContext _controllerContext;
+        private readonly HttpContext _httpContext;
 
-        private Mock<IGetAllRentGroupSummariesUseCase> _getAllUseCase;
-        private Mock<IGetRentGroupSummaryByNameUseCase> _getByIdUseCase;
-        private Mock<IAddRentGroupSummaryUseCase> _addUseCase;
+        private readonly Mock<IGetAllRentGroupSummariesUseCase> _getAllUseCase;
+        private readonly Mock<IGetRentGroupSummaryByNameUseCase> _getByIdUseCase;
+        private readonly Mock<IAddRentGroupSummaryUseCase> _addUseCase;
 
-        [SetUp]
-        public void Init()
+        public RentGroupsControllerTests()
         {
             _getAllUseCase = new Mock<IGetAllRentGroupSummariesUseCase>();
 
@@ -45,7 +43,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             };
         }
 
-        [Test]
+        [Fact]
         public async Task GetAllByDateRentGroupSummaryObjectsReturns200()
         {
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
@@ -95,7 +93,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             rentGroupSummaries[0].TotalBalance.Should().Be(-220);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAllByAnotherDateRentGroupSummaryObjectsReturns200()
         {
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
@@ -136,7 +134,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             rentGroupSummaries.Should().HaveCount(0);
         }
 
-        [Test]
+        [Fact]
         public async Task GetAllByDateRentGroupSummaryObjectsReturns500()
         {
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
@@ -154,7 +152,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             }
         }
 
-        [Test]
+        [Fact]
         public async Task GetByRentGroupNameValidNameReturns200()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
@@ -199,7 +197,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             rentGroupSummary.TotalBalance.Should().Be(-220);
         }
 
-        [Test]
+        [Fact]
         public async Task GetByRentGroupNameAndDateWithInvalidNameReturns404()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
@@ -225,7 +223,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             response.Details.Should().Be("");
         }
 
-        [Test]
+        [Fact]
         public async Task GetByRentGroupNameAndDateReturns500()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
@@ -235,7 +233,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             {
                 var result = await _rentGroupsController.Get("", "LeaseHolders", new DateTime(2021, 6, 30))
                     .ConfigureAwait(false);
-                Assert.Fail();
+                Assert.True(false, "Exception must be thrown!");
             }
             catch (Exception ex)
             {
@@ -244,7 +242,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             }
         }
 
-        [Test]
+        [Fact]
         public async Task CreateRentGroupSummaryWithValidDataReturns201()
         {
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddRentGroupSummaryRequest>()))
@@ -302,7 +300,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             rentGroupResponse.Should().BeEquivalentTo(request);
         }
 
-        [Test]
+        [Fact]
         public async Task CreateRentGroupSummaryWithInvalidDataReturns400()
         {
             var result = await _rentGroupsController.Create("", null).ConfigureAwait(false);
@@ -324,7 +322,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             response.Message.Should().Be("Rent Group Summary model cannot be null");
         }
 
-        [Test]
+        [Fact]
         public async Task CreateRentGroupSummaryReturns500()
         {
             _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddRentGroupSummaryRequest>()))
@@ -334,7 +332,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             {
                 var result = await _rentGroupsController.Create("", new AddRentGroupSummaryRequest { })
                     .ConfigureAwait(false);
-                Assert.Fail();
+                Assert.True(false, "Exception must be thrown!");
             }
             catch (Exception ex)
             {

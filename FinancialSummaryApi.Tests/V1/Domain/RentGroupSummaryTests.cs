@@ -1,14 +1,13 @@
 using FinancialSummaryApi.V1.Domain;
 using FluentAssertions;
-using NUnit.Framework;
 using System;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Domain
 {
-    [TestFixture]
     public class RentGroupSummaryTests
     {
-        [Test]
+        [Fact]
         public void RentGroupSummaryHasPropertiesSet()
         {
             var rentGroupSummary = new RentGroupSummary()

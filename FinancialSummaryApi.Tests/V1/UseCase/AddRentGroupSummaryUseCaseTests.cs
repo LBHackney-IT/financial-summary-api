@@ -4,9 +4,9 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
-using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
 {
@@ -21,7 +21,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             _useCase = new AddRentGroupSummaryUseCase(_mockFinanceGateway.Object);
         }
 
-        [Test]
+        [Fact]
         public async Task Add_NullModel_ThrowsArgumentNullException()
         {
             AddRentGroupSummaryRequest assetModel = null;
@@ -33,7 +33,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             {
                 await _useCase.ExecuteAsync(assetModel).ConfigureAwait(false);
 
-                Assert.Fail("ArgumentNullException should be thrown!");
+                Assert.True(false, "ArgumentNullException should be thrown!");
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             }
         }
 
-        [Test]
+        [Fact]
         public async Task Add_ValidModel_CallsGateway()
         {
             var rentGroupModel = new AddRentGroupSummaryRequest();
