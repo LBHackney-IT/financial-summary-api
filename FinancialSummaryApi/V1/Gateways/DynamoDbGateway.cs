@@ -96,7 +96,43 @@ namespace FinancialSummaryApi.V1.Gateways
 
         #endregion
 
+        #region Get Weekly Summary
+        public async Task<List<WeeklySummary>> GetAllWeeklySummaryAsync(Guid targetId, DateTime? startDate, DateTime? endDate)
+        {
+            var scanConditions = new List<ScanCondition>();
+
+            if (targetId != Guid.Parse("00000000-0000-0000-0000-000000000000"))
+                scanConditions.Add(new ScanCondition("TargetId", ScanOperator.Equal, targetId));
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                scanConditions.Add(new ScanCondition("WeekStartDate", ScanOperator.Between, startDate, endDate));
+            }
+            var transactionSummaries = await _wrapper.ScanSummaryAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
+
+            var result = transactionSummaries.Select(p => p.ToWeeklySummaryDomain()).ToList();
+
+            return result.OrderByDescending(r => r.WeekStartDate).ToList();
+        }
+
+        public async Task AddAsync(WeeklySummary weeklySummary)
+        {
+            await _dynamoDbContext.SaveAsync(weeklySummary.ToDatabase()).ConfigureAwait(false);
+        }
+        public async Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid id)
+        {
+            var scanConditions = new List<ScanCondition>();
+
+            scanConditions.Add(new ScanCondition("Id", ScanOperator.Equal, id));
+
+            var data = await _wrapper.LoadSummaryAsync(_dynamoDbContext, id).ConfigureAwait(false);
+
+            return data?.ToWeeklySummaryDomain();
+        }
+        #endregion
+
         private static Tuple<DateTime, DateTime> GetDayRange(DateTime date)
             => new Tuple<DateTime, DateTime>(date.Date, date.Date.AddHours(23).AddMinutes(59));
+
+        
     }
 }

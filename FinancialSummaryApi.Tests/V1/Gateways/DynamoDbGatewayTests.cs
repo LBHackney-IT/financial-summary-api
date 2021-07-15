@@ -208,5 +208,91 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
 
             _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<FinanceSummaryDbEntity>(), default), Times.Once);
         }
+
+        [Fact]
+        public async Task GetWeeklySummaryByTargetIdReturnsNullIfEntityDoesntExist()
+        {
+            _wrapper.Setup(_ => _.ScanSummaryAsync(
+                It.IsAny<IDynamoDBContext>(),
+                It.IsAny<IEnumerable<ScanCondition>>(),
+                It.IsAny<DynamoDBOperationConfig>()))
+                .ReturnsAsync(new List<WeeklySummaryDbEntity>());
+
+            var weeklySummary = await _gateway.GetWeeklySummaryByIdAsync(new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"))
+                .ConfigureAwait(false);
+
+            weeklySummary.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetWeeklySummaryByTargetIdReturnsWeeklySummaryIfItExists()
+        {
+            var firstEntity = _fixture.Create<WeeklySummaryDbEntity>();
+            firstEntity.WeekStartDate = new DateTime(2021, 7, 2, 14, 30, 10);
+            
+            _wrapper.Setup(_ => _.LoadSummaryAsync(
+                It.IsAny<IDynamoDBContext>(),
+                It.IsAny<Guid>(),
+                It.IsAny<DynamoDBOperationConfig>()))
+                .ReturnsAsync(firstEntity);
+
+            var weeklySummaryDomain = await _gateway.GetWeeklySummaryByIdAsync(firstEntity.TargetId)
+                .ConfigureAwait(false);
+
+            weeklySummaryDomain.Should().BeEquivalentTo(firstEntity);
+        }
+
+        [Fact]
+        public async Task GetAllWeeklySummariesByDateReturnsList()
+        {
+            var firstEntity = _fixture.Create<WeeklySummaryDbEntity>();
+            firstEntity.WeekStartDate = new DateTime(2021, 7, 2);
+            var secondEntity = _fixture.Create<WeeklySummaryDbEntity>();
+            secondEntity.WeekStartDate = new DateTime(2021, 7, 2);
+            secondEntity.TargetId = firstEntity.TargetId;
+
+            _wrapper.Setup(_ => _.ScanSummaryAsync(
+                It.IsAny<IDynamoDBContext>(),
+                It.IsAny<IEnumerable<ScanCondition>>(),
+                It.IsAny<DynamoDBOperationConfig>()))
+                .ReturnsAsync(new List<WeeklySummaryDbEntity>()
+                {
+                    firstEntity,
+                    secondEntity
+                });
+
+            var weeklySummaries = await _gateway.GetAllWeeklySummaryAsync(firstEntity.TargetId, new DateTime(2021-6-2), new DateTime(2021-7-2))
+                .ConfigureAwait(false);
+
+            weeklySummaries.Should().HaveCount(2);
+
+            weeklySummaries[0].Should().BeEquivalentTo(firstEntity);
+            weeklySummaries[1].Should().BeEquivalentTo(secondEntity);
+        }
+
+
+        [Fact]
+        public async Task AddWeeklySummaryWithValidObject()
+        {
+            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<WeeklySummaryDbEntity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            var domain = _fixture.Create<WeeklySummary>();
+
+            await _gateway.AddAsync(domain).ConfigureAwait(false);
+
+            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<WeeklySummaryDbEntity>(), default), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddWeeklySummaryWithInvalidObject()
+        {
+            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<WeeklySummaryDbEntity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            await _gateway.AddAsync((WeeklySummary) null).ConfigureAwait(false);
+
+            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<WeeklySummaryDbEntity>(), default), Times.Once);
+        }
     }
 }
