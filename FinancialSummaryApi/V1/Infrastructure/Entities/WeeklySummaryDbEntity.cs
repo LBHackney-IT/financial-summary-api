@@ -1,11 +1,9 @@
 using Amazon.DynamoDBv2.DataModel;
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FinancialSummaryApi.V1.Infrastructure.Entities
 {
-    [Table("transactionsummary")]
-    [DynamoDBTable("transactionsummary", LowerCamelCaseProperties = true)]
+    [DynamoDBTable("transaction_summary_table", LowerCamelCaseProperties = true)]
     public class WeeklySummaryDbEntity
     {
         [DynamoDBHashKey]
