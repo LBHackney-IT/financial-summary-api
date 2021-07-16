@@ -230,11 +230,11 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             var firstEntity = _fixture.Create<WeeklySummaryDbEntity>();
             firstEntity.WeekStartDate = new DateTime(2021, 7, 2, 14, 30, 10);
 
-            _wrapper.Setup(_ => _.ScanSummaryAsync(
+            _wrapper.Setup(_ => _.LoadSummaryAsync(
                 It.IsAny<IDynamoDBContext>(),
-                It.IsAny<IEnumerable<ScanCondition>>(),
+                It.IsAny<Guid>(),
                 It.IsAny<DynamoDBOperationConfig>()))
-                .ReturnsAsync(new List<WeeklySummaryDbEntity>() { firstEntity });
+                .ReturnsAsync(firstEntity);
 
             var weeklySummaryDomain = await _gateway.GetWeeklySummaryByIdAsync(firstEntity.TargetId)
                 .ConfigureAwait(false);

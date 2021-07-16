@@ -124,9 +124,9 @@ namespace FinancialSummaryApi.V1.Gateways
 
             scanConditions.Add(new ScanCondition("Id", ScanOperator.Equal, id));
 
-            var data = await _wrapper.ScanSummaryAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
+            var data = await _wrapper.LoadSummaryAsync(_dynamoDbContext, id).ConfigureAwait(false);
 
-            return data.FirstOrDefault()?.ToWeeklySummaryDomain();
+            return data?.ToWeeklySummaryDomain();
         }
         #endregion
 
