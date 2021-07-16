@@ -120,10 +120,6 @@ namespace FinancialSummaryApi.V1.Gateways
         }
         public async Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid id)
         {
-            var scanConditions = new List<ScanCondition>();
-
-            scanConditions.Add(new ScanCondition("Id", ScanOperator.Equal, id));
-
             var data = await _wrapper.LoadSummaryAsync(_dynamoDbContext, id).ConfigureAwait(false);
 
             return data?.ToWeeklySummaryDomain();

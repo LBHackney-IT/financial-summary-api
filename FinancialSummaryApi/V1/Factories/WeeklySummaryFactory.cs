@@ -13,10 +13,6 @@ namespace FinancialSummaryApi.V1.Factories
             {
                 return null;
             }
-            if (databaseEntity.Id == null)
-            {
-                throw new Exception("Loaded data from the database cannot be parsed as a Asset data. Id: " + databaseEntity.Id);
-            }
             return new WeeklySummary
             {
                 Id = databaseEntity.Id,

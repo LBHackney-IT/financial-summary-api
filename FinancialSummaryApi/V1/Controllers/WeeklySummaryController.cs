@@ -4,6 +4,7 @@ using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -31,12 +32,12 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Get Weekly summary model by provided Id
         /// </summary>
-        /// <param name="id">The value by which we are looking for an weekly summary</param>
+        /// <param name="id">The id by which we are looking for an weekly summary</param>
         /// <response code="200">Success. Weekly summary models is saved successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">Weekly Summary with provided id cannot be found</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(WeeklySummaryResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -44,27 +45,27 @@ namespace FinancialSummaryApi.V1.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Get([FromRoute] Guid id)
         {
-            var assetSummary = await _getWeeklySummaryByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
+            var weeklySummary = await _getWeeklySummaryByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
 
-            if (assetSummary == null)
+            if (weeklySummary == null)
             {
                 return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "Weekly Summary by provided Id not found!"));
             }
 
-            return Ok(assetSummary);
+            return Ok(weeklySummary);
         }
 
         /// <summary>
-        /// Get Weekly Transaction summary for a given date range
+        /// Get Weekly Transaction summary for a target id and given start date and end date range
         /// </summary>
-        /// <param name="targetId">The date when the requested data was generated</param>
-        /// <param name="startDate">The value by which we are looking for an weekly summary</param>
-        /// <param name="endDate">The value by which we are looking for an weekly summary</param>
-        /// <response code="200">Success. Weekly summary models was received successfully</response>
+        /// <param name="targetId">The target id for which we want the summaries result</param>
+        /// <param name="startDate">The start date from when we want to filter for weekly summaries</param>
+        /// <param name="endDate">The end date untill whene want to filter for weekly summaries</param>
+        /// <response code="200">Success. Weekly summaries received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="404">Weekly Summary with provided id cannot be found</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(WeeklySummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<WeeklySummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -88,7 +89,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <response code="201">Created. Weekly summary model was created successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(WeeklySummaryResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
