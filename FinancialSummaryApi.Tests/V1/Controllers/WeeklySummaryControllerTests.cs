@@ -247,8 +247,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var weeklySummaryResponse = createdAtActionResult.Value as WeeklySummaryResponse;
 
             weeklySummaryResponse.Should().NotBeNull();
-            request.Id = new Guid("bae9c9d9-836f-44bc-946f-33cf78584704");
-            weeklySummaryResponse.Should().BeEquivalentTo(request);
+            request.Should().BeEquivalentTo(weeklySummaryResponse, opt => opt.Excluding(a => a.Id));
         }
         [Fact]
         public async Task CreateWeeklySummaryWithInvalidDataReturns400()
