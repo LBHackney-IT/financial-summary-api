@@ -36,6 +36,5 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "housing_benefit_amount")]
         public decimal HousingBenefitAmount { get; set; }
-       
     }
 }

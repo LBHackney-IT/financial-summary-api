@@ -17,7 +17,7 @@ using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Controllers
 {
-    public sealed class WeeklySummaryControllerTests:IDisposable
+    public sealed class WeeklySummaryControllerTests : IDisposable
     {
         private readonly WeeklySummaryController _weeklySummaryController;
         private readonly ControllerContext _controllerContext;
@@ -158,7 +158,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((WeeklySummaryResponse) null);
 
-            var result = await _weeklySummaryController.Get( new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"))
+            var result = await _weeklySummaryController.Get(new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -186,7 +186,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _weeklySummaryController.Get( new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
+                var result = await _weeklySummaryController.Get(new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
@@ -256,7 +256,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task CreateWeeklySummaryWithInvalidDataReturns400()
         {
-            var result = await _weeklySummaryController.Create( null).ConfigureAwait(false);
+            var result = await _weeklySummaryController.Create(null).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -283,7 +283,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _weeklySummaryController.Create( new AddWeeklySummaryRequest { })
+                var result = await _weeklySummaryController.Create(new AddWeeklySummaryRequest { })
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }

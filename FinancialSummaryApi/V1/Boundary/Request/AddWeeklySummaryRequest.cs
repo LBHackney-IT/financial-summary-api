@@ -8,13 +8,13 @@ namespace FinancialSummaryApi.V1.Boundary.Request
     {
         [NonEmptyGuid]
         public Guid TargetId { get; set; }
-        
+   
         [Range(0, short.MaxValue)]
         public short PeriodNo { get; set; }
-       
+    
         [Range(0, short.MaxValue)]
         public short FinancialYear { get; set; }
-        
+
         [Range(0, short.MaxValue)]
         public short FinancialMonth { get; set; }
 
