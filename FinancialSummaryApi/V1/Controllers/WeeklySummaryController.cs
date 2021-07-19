@@ -70,7 +70,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll( [FromQuery] Guid targetId, [FromQuery] string startDate, [FromQuery] string endDate)
+        public async Task<IActionResult> GetAll([FromQuery] Guid targetId, [FromQuery] string startDate, [FromQuery] string endDate)
         {
             var weeklySummary = await _getAllWeeklySummariesUseCase.ExecuteAsync(targetId, startDate, endDate).ConfigureAwait(false);
 
@@ -93,7 +93,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Create( [FromBody] AddWeeklySummaryRequest weeklySummary)
+        public async Task<IActionResult> Create([FromBody] AddWeeklySummaryRequest weeklySummary)
         {
             if (weeklySummary == null)
             {

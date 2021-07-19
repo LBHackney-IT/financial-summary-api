@@ -261,7 +261,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                     secondEntity
                 });
 
-            var weeklySummaries = await _gateway.GetAllWeeklySummaryAsync(firstEntity.TargetId, new DateTime(2021-6-2), new DateTime(2021-7-2))
+            var weeklySummaries = await _gateway.GetAllWeeklySummaryAsync(firstEntity.TargetId, new DateTime(2021 - 6 - 2), new DateTime(2021 - 7 - 2))
                 .ConfigureAwait(false);
 
             weeklySummaries.Should().HaveCount(2);

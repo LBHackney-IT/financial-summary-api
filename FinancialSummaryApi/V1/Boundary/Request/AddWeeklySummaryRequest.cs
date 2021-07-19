@@ -6,7 +6,6 @@ namespace FinancialSummaryApi.V1.Boundary.Request
 {
     public class AddWeeklySummaryRequest
     {
-
         [NonEmptyGuid]
         public Guid TargetId { get; set; }
         

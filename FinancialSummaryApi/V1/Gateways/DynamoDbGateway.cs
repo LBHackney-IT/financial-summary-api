@@ -127,8 +127,6 @@ namespace FinancialSummaryApi.V1.Gateways
         #endregion
 
         private static Tuple<DateTime, DateTime> GetDayRange(DateTime date)
-            => new Tuple<DateTime, DateTime>(date.Date, date.Date.AddHours(23).AddMinutes(59));
-
-        
+            => new Tuple<DateTime, DateTime>(date.Date, date.Date.AddHours(23).AddMinutes(59)); 
     }
 }

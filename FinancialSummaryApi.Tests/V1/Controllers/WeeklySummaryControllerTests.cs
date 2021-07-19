@@ -42,6 +42,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 ControllerContext = _controllerContext
             };
         }
+
         [Fact]
         public async Task GetAllByDateWeeklySummaryObjectsReturns200()
         {
@@ -89,6 +90,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             weeklySummaries[0].HousingBenefitAmount.Should().Be(10);
             weeklySummaries[0].WeekStartDate.Should().Be(new DateTime(2021, 7, 2));
         }
+
         [Fact]
         public async Task GetAllByWeeklySummaryObjectsReturns500()
         {
@@ -106,6 +108,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 ex.Message.Should().Be("Test exception");
             }
         }
+
         [Fact]
         public async Task GetByAssetIdValidIdReturns200()
         {
@@ -249,6 +252,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             weeklySummaryResponse.Should().NotBeNull();
             request.Should().BeEquivalentTo(weeklySummaryResponse, opt => opt.Excluding(a => a.Id));
         }
+
         [Fact]
         public async Task CreateWeeklySummaryWithInvalidDataReturns400()
         {
@@ -289,6 +293,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 ex.Message.Should().Be("Test exception");
             }
         }
+
         public void Dispose()
         {
             _weeklySummaryController.Dispose();
