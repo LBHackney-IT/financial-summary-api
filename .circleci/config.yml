@@ -79,13 +79,13 @@ commands:
       - run:
           name: Build lambda
           command: |
-            cd ./BaseApi/
+            cd ./FinancialSummaryApi/
             chmod +x ./build.sh
             ./build.sh
       - run:
           name: Deploy lambda
           command: |
-            cd ./BaseApi/
+            cd ./FinancialSummaryApi/
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
 
 jobs:
@@ -106,10 +106,12 @@ jobs:
       - setup_remote_docker
       - run:
           name: build
-          command: docker-compose build base-api-test
+          command: docker-compose build finance-summary-api-test
       - run:
           name: Run tests
-          command: docker-compose run base-api-test
+          command: docker-compose run finance-summary-api-test
+      - store_test_results:
+          path: /tmp/test-reports
   assume-role-development:
     executor: docker-python
     steps:
