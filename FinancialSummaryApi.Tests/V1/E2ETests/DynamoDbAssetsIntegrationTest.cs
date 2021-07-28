@@ -94,6 +94,20 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Fact]
+        public async Task CreateAssetWithSomeEmptyFieldsCreatedReturns201()
+        {
+            var request = new AssetSummary
+            {
+                TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
+                TargetType = TargetType.Estate,
+                AssetName = "Estate 2",
+                SubmitDate = new DateTime(2021, 7, 1)
+            };
+
+            await CreateAssetAndValidateResponse(request).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task CreateAssetAndThenGetByTargetId()
         {
             var assetDomain = ConstructAssetSummary();
