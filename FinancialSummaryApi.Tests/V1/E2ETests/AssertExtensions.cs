@@ -17,6 +17,8 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             response.TotalNonDwellingRent.Should().Be(model.TotalNonDwellingRent);
             response.TotalRentalServiceCharge.Should().Be(model.TotalRentalServiceCharge);
             response.TotalServiceCharges.Should().Be(model.TotalServiceCharges);
+            response.TotalIncome.Should().Be(model.TotalIncome);
+            response.TotalExpenditure.Should().Be(model.TotalExpenditure);
             response.SubmitDate.Should().Be(model.SubmitDate);
         }
     }

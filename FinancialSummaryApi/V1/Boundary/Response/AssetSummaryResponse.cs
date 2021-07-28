@@ -55,6 +55,16 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         public decimal TotalRentalServiceCharge { get; set; }
 
         /// <summary>
+        /// 125.2
+        /// </summary>
+        public decimal TotalIncome { get; set; }
+
+        /// <summary>
+        /// 675.62
+        /// </summary>
+        public decimal TotalExpenditure { get; set; }
+
+        /// <summary>
         /// Date and time when summary was calculated and saved
         /// </summary>
         /// <example>
