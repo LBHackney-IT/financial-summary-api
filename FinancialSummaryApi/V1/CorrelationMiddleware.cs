@@ -16,13 +16,13 @@ namespace FinancialSummaryApi.V1.Controllers
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // ToDo: Do we need to throw an error here?
             if (context.Request.Headers[Constants.CorrelationId].Count == 0)
             {
                 var correlationId = Guid.NewGuid().ToString();
                 context.Request.Headers[Constants.CorrelationId] = correlationId;
-                context.Response.Headers[Constants.CorrelationId] = correlationId;
             }
+
+            context.Response.Headers[Constants.CorrelationId] = context.Request.Headers[Constants.CorrelationId];
 
             if (_next != null)
             {
