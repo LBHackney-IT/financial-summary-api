@@ -17,6 +17,7 @@ using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.E2ETests
 {
+    [Collection("Collection1")]
     public class DynamoDbRentGroupIntegrationTest : DynamoDbIntegrationTests<Startup>
     {
         private readonly Fixture _fixture = new Fixture();
