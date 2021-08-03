@@ -20,6 +20,8 @@ namespace FinancialSummaryApi.Tests.V1.Domain
                 TotalNonDwellingRent = 67,
                 TotalRentalServiceCharge = 120,
                 TotalServiceCharges = 213,
+                TotalIncome = 242,
+                TotalExpenditure = 111,
                 AssetName = "Estate 1"
             };
 
@@ -31,6 +33,8 @@ namespace FinancialSummaryApi.Tests.V1.Domain
             assetSummary.TotalNonDwellingRent.Should().Be(67);
             assetSummary.TotalRentalServiceCharge.Should().Be(120);
             assetSummary.TotalServiceCharges.Should().Be(213);
+            assetSummary.TotalIncome.Should().Be(242);
+            assetSummary.TotalExpenditure.Should().Be(111);
             assetSummary.AssetName.Should().Be("Estate 1");
         }
     }

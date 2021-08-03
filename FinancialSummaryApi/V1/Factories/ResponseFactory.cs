@@ -42,6 +42,8 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalNonDwellingRent = domain.TotalNonDwellingRent,
                 TotalRentalServiceCharge = domain.TotalRentalServiceCharge,
                 TotalServiceCharges = domain.TotalServiceCharges,
+                TotalIncome = domain.TotalIncome,
+                TotalExpenditure = domain.TotalExpenditure,
                 AssetName = domain.AssetName
             };
         }
