@@ -38,25 +38,6 @@ commands:
           root: *workspace_root
           paths:
             - .aws
-  terraform-init-then-apply:
-    description: "Initializes and applies terraform configuration"
-    parameters:
-      environment:
-        type: string
-    steps:
-      - *attach_workspace
-      - checkout
-      - run:
-          command: |
-            cd ./terraform/<<parameters.environment>>/
-            terraform get -update=true
-            terraform init
-          name: get and init
-      - run:
-          name: apply
-          command: |
-            cd ./terraform/<<parameters.environment>>/
-            terraform apply -auto-approve
   deploy-lambda:
     description: "Deploys API via Serverless"
     parameters:
@@ -127,21 +108,6 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_PRODUCTION
-  terraform-init-and-apply-to-development:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "development"
-  terraform-init-and-apply-to-staging:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "staging"
-  terraform-init-and-apply-to-production:
-    executor: docker-terraform
-    steps:
-      - terraform-init-then-apply:
-          environment: "production"
   deploy-to-development:
     executor: docker-dotnet
     steps:
@@ -170,22 +136,16 @@ workflows:
           context: api-assume-role-housing-development-context
           requires:
             - build-and-test
-          # filters:
-            # branches:
-              # only: development
-      - terraform-init-and-apply-to-development:
-          requires:
-            - assume-role-development
-          # filters:
-            # branches:
-              # only: development
+          filters:
+            branches:
+              only: development
       - deploy-to-development:
           context: api-assume-role-housing-development-context
           requires:
             - terraform-init-and-apply-to-development
-          # filters:
-            # branches:
-              # only: development
+          filters:
+            branches:
+              only: development
 #   check-and-deploy-staging-and-production:
 #       jobs:
 #       - build-and-test:
@@ -199,22 +159,12 @@ workflows:
 #           filters:
 #              branches:
 #                only: master
-#       - terraform-init-and-apply-to-staging:
-#           requires:
-#             - assume-role-staging
-#           filters:
-#             branches:
-#               only: master
 #       - deploy-to-staging:
 #           requires:
 #             - terraform-init-and-apply-to-staging
 #           filters:
 #             branches:
 #               only: master
-#       - permit-production-terraform-release:
-#           type: approval
-#           requires:
-#             - deploy-to-staging
 #       - assume-role-production:
 #           context: api-assume-role-production-context
 #           requires:
@@ -222,12 +172,6 @@ workflows:
 #           filters:
 #              branches:
 #                only: master
-#       - terraform-init-and-apply-to-production:
-#           requires:
-#             - assume-role-production
-#           filters:
-#             branches:
-#               only: master
 #       - permit-production-release:
 #           type: approval
 #           requires:
