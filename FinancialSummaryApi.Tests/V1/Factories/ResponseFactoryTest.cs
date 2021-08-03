@@ -22,6 +22,8 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 TotalNonDwellingRent = 67,
                 TotalRentalServiceCharge = 120,
                 TotalServiceCharges = 213,
+                TotalIncome = 111,
+                TotalExpenditure = 123,
                 AssetName = "Estate 1"
             };
 
@@ -35,6 +37,8 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             response.TotalNonDwellingRent.Should().Be(67);
             response.TotalRentalServiceCharge.Should().Be(120);
             response.TotalServiceCharges.Should().Be(213);
+            response.TotalIncome.Should().Be(111);
+            response.TotalExpenditure.Should().Be(123);
             response.AssetName.Should().Be("Estate 1");
         }
 
@@ -84,6 +88,8 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 TotalNonDwellingRent = 67,
                 TotalRentalServiceCharge = 120,
                 TotalServiceCharges = 213,
+                TotalIncome = 123,
+                TotalExpenditure = 111,
                 AssetName = "Estate 1"
             };
 
@@ -97,6 +103,8 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 TotalNonDwellingRent = 53,
                 TotalRentalServiceCharge = 178,
                 TotalServiceCharges = 196,
+                TotalIncome = 124,
+                TotalExpenditure = 122,
                 AssetName = "Estate 2"
             };
 
@@ -116,6 +124,8 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             response[0].TotalNonDwellingRent.Should().Be(67);
             response[0].TotalRentalServiceCharge.Should().Be(120);
             response[0].TotalServiceCharges.Should().Be(213);
+            response[0].TotalIncome.Should().Be(123);
+            response[0].TotalExpenditure.Should().Be(111);
             response[0].AssetName.Should().Be("Estate 1");
 
             response[1].Id.Should().Be(new Guid("ac17ff09-4a3d-4202-ae50-45b6c12110df"));
@@ -126,6 +136,8 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             response[1].TotalNonDwellingRent.Should().Be(53);
             response[1].TotalRentalServiceCharge.Should().Be(178);
             response[1].TotalServiceCharges.Should().Be(196);
+            response[1].TotalIncome.Should().Be(124);
+            response[1].TotalExpenditure.Should().Be(122);
             response[1].AssetName.Should().Be("Estate 2");
         }
 

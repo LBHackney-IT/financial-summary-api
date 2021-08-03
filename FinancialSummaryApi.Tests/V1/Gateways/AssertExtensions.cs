@@ -19,6 +19,8 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummary.TotalNonDwellingRent.Should().Be(dbEntity.AssetSummaryData.TotalNonDwellingRent);
             assetSummary.TotalRentalServiceCharge.Should().Be(dbEntity.AssetSummaryData.TotalRentalServiceCharge);
             assetSummary.TotalServiceCharges.Should().Be(dbEntity.AssetSummaryData.TotalServiceCharges);
+            assetSummary.TotalIncome.Should().Be(dbEntity.AssetSummaryData.TotalIncome);
+            assetSummary.TotalExpenditure.Should().Be(dbEntity.AssetSummaryData.TotalExpenditure);
         }
 
         public static void ShouldBeEqualTo(this AssetSummary thisAssetSummary, AssetSummary assetSummary)
@@ -34,6 +36,8 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             thisAssetSummary.TotalNonDwellingRent.Should().Be(assetSummary.TotalNonDwellingRent);
             thisAssetSummary.TotalRentalServiceCharge.Should().Be(assetSummary.TotalRentalServiceCharge);
             thisAssetSummary.TotalServiceCharges.Should().Be(assetSummary.TotalServiceCharges);
+            thisAssetSummary.TotalIncome.Should().Be(assetSummary.TotalIncome);
+            thisAssetSummary.TotalExpenditure.Should().Be(assetSummary.TotalExpenditure);
         }
 
         public static FinanceSummaryDbEntity ToDatabase(this AssetSummary entity)
@@ -50,7 +54,9 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                     TotalDwellingRent = entity.TotalDwellingRent,
                     TotalNonDwellingRent = entity.TotalNonDwellingRent,
                     TotalRentalServiceCharge = entity.TotalRentalServiceCharge,
-                    TotalServiceCharges = entity.TotalServiceCharges
+                    TotalServiceCharges = entity.TotalServiceCharges,
+                    TotalIncome = entity.TotalIncome,
+                    TotalExpenditure = entity.TotalExpenditure
                 }
             };
         }

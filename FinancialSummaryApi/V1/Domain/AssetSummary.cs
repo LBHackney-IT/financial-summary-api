@@ -23,6 +23,10 @@ namespace FinancialSummaryApi.V1.Domain
 
         public decimal TotalRentalServiceCharge { get; set; }
 
+        public decimal TotalIncome { get; set; }
+
+        public decimal TotalExpenditure { get; set; }
+
         public DateTime SubmitDate { get; set; }
     }
 }

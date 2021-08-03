@@ -18,5 +18,11 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "total_rental_service_charge")]
         public decimal TotalRentalServiceCharge { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_income")]
+        public decimal TotalIncome { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_expenditure")]
+        public decimal TotalExpenditure { get; set; }
     }
 }

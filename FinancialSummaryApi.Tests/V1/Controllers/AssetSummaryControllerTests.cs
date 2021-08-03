@@ -60,7 +60,9 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                             TotalDwellingRent = 100,
                             TotalNonDwellingRent = 50,
                             TotalRentalServiceCharge = 120,
-                            TotalServiceCharges = 140
+                            TotalServiceCharges = 140,
+                            TotalIncome = 111,
+                            TotalExpenditure = 123
                         }
                     });
 
@@ -87,6 +89,8 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             assetSummaries[0].TotalNonDwellingRent.Should().Be(50);
             assetSummaries[0].TotalRentalServiceCharge.Should().Be(120);
             assetSummaries[0].TotalServiceCharges.Should().Be(140);
+            assetSummaries[0].TotalIncome.Should().Be(111);
+            assetSummaries[0].TotalExpenditure.Should().Be(123);
         }
 
         [Fact]
@@ -106,7 +110,9 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                             TotalDwellingRent = 100,
                             TotalNonDwellingRent = 50,
                             TotalRentalServiceCharge = 120,
-                            TotalServiceCharges = 140
+                            TotalServiceCharges = 140,
+                            TotalIncome = 111,
+                            TotalExpenditure = 123
                         }
                     });
 
@@ -160,7 +166,9 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                    TotalDwellingRent = 87,
                    TotalNonDwellingRent = 37,
                    TotalRentalServiceCharge = 99,
-                   TotalServiceCharges = 109
+                   TotalServiceCharges = 109,
+                   TotalIncome = 111,
+                   TotalExpenditure = 123
                });
 
             var result = await _assetSummaryController.Get("", new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"), new DateTime(2021, 7, 1))
@@ -185,6 +193,8 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             assetSummary.TotalNonDwellingRent.Should().Be(37);
             assetSummary.TotalRentalServiceCharge.Should().Be(99);
             assetSummary.TotalServiceCharges.Should().Be(109);
+            assetSummary.TotalIncome.Should().Be(111);
+            assetSummary.TotalExpenditure.Should().Be(123);
         }
 
         [Fact]
@@ -246,7 +256,9 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                     TotalDwellingRent = 87,
                     TotalNonDwellingRent = 37,
                     TotalRentalServiceCharge = 99,
-                    TotalServiceCharges = 109
+                    TotalServiceCharges = 109,
+                    TotalIncome = 111,
+                    TotalExpenditure = 123
                 });
 
             var request = new AddAssetSummaryRequest
@@ -258,7 +270,9 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 TotalDwellingRent = 87,
                 TotalNonDwellingRent = 37,
                 TotalRentalServiceCharge = 99,
-                TotalServiceCharges = 109
+                TotalServiceCharges = 109,
+                TotalIncome = 111,
+                TotalExpenditure = 123
             };
 
             var result = await _assetSummaryController.Create("", request)
@@ -285,6 +299,69 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             assetResponse.Should().NotBeNull();
 
             assetResponse.Should().BeEquivalentTo(request);
+        }
+
+        [Fact]
+        public async Task CreateAssetSummaryWithSomeEmptyFieldsValidModelReturns201()
+        {
+            _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddAssetSummaryRequest>()))
+                .ReturnsAsync(new AssetSummaryResponse()
+                {
+                    Id = new Guid("bae9c9d9-836f-44bc-946f-33cf78584704"),
+                    TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
+                    TargetType = TargetType.Estate,
+                    AssetName = "Estate 2",
+                    SubmitDate = new DateTime(2021, 7, 1),
+                    TotalDwellingRent = 0,
+                    TotalNonDwellingRent = 0,
+                    TotalRentalServiceCharge = 0,
+                    TotalServiceCharges = 0,
+                    TotalIncome = 0,
+                    TotalExpenditure = 0
+                });
+
+            var request = new AddAssetSummaryRequest
+            {
+                TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
+                TargetType = TargetType.Estate,
+                AssetName = "Estate 2",
+                SubmitDate = new DateTime(2021, 7, 1)
+            };
+
+            var result = await _assetSummaryController.Create("", request)
+                .ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            _addUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
+
+            var createdAtActionResult = result as CreatedAtActionResult;
+
+            createdAtActionResult.Should().NotBeNull();
+
+            createdAtActionResult.ActionName.Should().BeEquivalentTo("Get");
+
+            createdAtActionResult.RouteValues["assetId"].Should().NotBeNull();
+
+            createdAtActionResult.RouteValues["assetId"].Should().BeOfType(typeof(Guid));
+
+            createdAtActionResult.Value.Should().NotBeNull();
+
+            var assetResponse = createdAtActionResult.Value as AssetSummaryResponse;
+
+            assetResponse.Should().NotBeNull();
+
+            assetResponse.Id.Should().Be(new Guid("bae9c9d9-836f-44bc-946f-33cf78584704"));
+            assetResponse.TargetId.Should().Be(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"));
+            assetResponse.TargetType.Should().Be(TargetType.Estate);
+            assetResponse.AssetName.Should().Be("Estate 2");
+            assetResponse.SubmitDate.Should().Be(new DateTime(2021, 7, 1));
+            assetResponse.TotalDwellingRent.Should().Be(0);
+            assetResponse.TotalNonDwellingRent.Should().Be(0);
+            assetResponse.TotalRentalServiceCharge.Should().Be(0);
+            assetResponse.TotalServiceCharges.Should().Be(0);
+            assetResponse.TotalIncome.Should().Be(0);
+            assetResponse.TotalExpenditure.Should().Be(0);
         }
 
         [Fact]

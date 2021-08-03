@@ -24,7 +24,9 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                     TotalDwellingRent = 100,
                     TotalNonDwellingRent = 50,
                     TotalRentalServiceCharge = 76,
-                    TotalServiceCharges = 120
+                    TotalServiceCharges = 120,
+                    TotalIncome = 123,
+                    TotalExpenditure = 99
                 }
             };
 
@@ -39,6 +41,8 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             databaseEntity.AssetSummaryData.TotalNonDwellingRent.Should().Be(entity.TotalNonDwellingRent);
             databaseEntity.AssetSummaryData.TotalRentalServiceCharge.Should().Be(entity.TotalRentalServiceCharge);
             databaseEntity.AssetSummaryData.TotalServiceCharges.Should().Be(entity.TotalServiceCharges);
+            databaseEntity.AssetSummaryData.TotalIncome.Should().Be(entity.TotalIncome);
+            databaseEntity.AssetSummaryData.TotalExpenditure.Should().Be(entity.TotalExpenditure);
         }
 
         [Fact]
@@ -54,7 +58,9 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 TotalDwellingRent = 100,
                 TotalNonDwellingRent = 70,
                 TotalRentalServiceCharge = 40,
-                TotalServiceCharges = 150
+                TotalServiceCharges = 150,
+                TotalIncome = 111,
+                TotalExpenditure = 99
             };
 
             var databaseEntity = entity.ToDatabase();
@@ -68,6 +74,8 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             entity.TotalNonDwellingRent.Should().Be(databaseEntity.AssetSummaryData.TotalNonDwellingRent);
             entity.TotalRentalServiceCharge.Should().Be(databaseEntity.AssetSummaryData.TotalRentalServiceCharge);
             entity.TotalServiceCharges.Should().Be(databaseEntity.AssetSummaryData.TotalServiceCharges);
+            entity.TotalIncome.Should().Be(databaseEntity.AssetSummaryData.TotalIncome);
+            entity.TotalExpenditure.Should().Be(databaseEntity.AssetSummaryData.TotalExpenditure);
         }
     }
 }

@@ -94,6 +94,20 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Fact]
+        public async Task CreateAssetWithSomeEmptyFieldsCreatedReturns201()
+        {
+            var request = new AssetSummary
+            {
+                TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
+                TargetType = TargetType.Estate,
+                AssetName = "Estate 2",
+                SubmitDate = new DateTime(2021, 7, 1)
+            };
+
+            await CreateAssetAndValidateResponse(request).ConfigureAwait(false);
+        }
+
+        [Fact]
         public async Task CreateAssetAndThenGetByTargetId()
         {
             var assetDomain = ConstructAssetSummary();
@@ -113,6 +127,8 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             assetDomain.TotalNonDwellingRent = -1;
             assetDomain.TotalRentalServiceCharge = -1;
             assetDomain.TotalServiceCharges = -1;
+            assetDomain.TotalIncome = -1;
+            assetDomain.TotalExpenditure = -1;
             assetDomain.AssetName = string.Empty;
 
             var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
@@ -141,6 +157,8 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Message.Should().Contain($"The field TotalServiceCharges must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalNonDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalRentalServiceCharge must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TotalIncome must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TotalExpenditure must be between 0 and {(double) decimal.MaxValue}.");
         }
 
         [Fact]

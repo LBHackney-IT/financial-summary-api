@@ -27,7 +27,9 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalDwellingRent = databaseEntity.AssetSummaryData.TotalDwellingRent,
                 TotalNonDwellingRent = databaseEntity.AssetSummaryData.TotalNonDwellingRent,
                 TotalRentalServiceCharge = databaseEntity.AssetSummaryData.TotalRentalServiceCharge,
-                TotalServiceCharges = databaseEntity.AssetSummaryData.TotalServiceCharges
+                TotalServiceCharges = databaseEntity.AssetSummaryData.TotalServiceCharges,
+                TotalIncome = databaseEntity.AssetSummaryData.TotalIncome,
+                TotalExpenditure = databaseEntity.AssetSummaryData.TotalExpenditure
             };
         }
 
@@ -45,7 +47,9 @@ namespace FinancialSummaryApi.V1.Factories
                     TotalDwellingRent = entity.TotalDwellingRent,
                     TotalNonDwellingRent = entity.TotalNonDwellingRent,
                     TotalRentalServiceCharge = entity.TotalRentalServiceCharge,
-                    TotalServiceCharges = entity.TotalServiceCharges
+                    TotalServiceCharges = entity.TotalServiceCharges,
+                    TotalIncome = entity.TotalIncome,
+                    TotalExpenditure = entity.TotalExpenditure
                 }
             };
         }
@@ -61,7 +65,9 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalDwellingRent = requestModel.TotalDwellingRent,
                 TotalNonDwellingRent = requestModel.TotalNonDwellingRent,
                 TotalRentalServiceCharge = requestModel.TotalRentalServiceCharge,
-                TotalServiceCharges = requestModel.TotalServiceCharges
+                TotalServiceCharges = requestModel.TotalServiceCharges,
+                TotalIncome = requestModel.TotalIncome,
+                TotalExpenditure = requestModel.TotalExpenditure
             };
         }
     }
