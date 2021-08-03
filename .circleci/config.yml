@@ -142,7 +142,7 @@ workflows:
       - deploy-to-development:
           context: api-assume-role-housing-development-context
           requires:
-            - terraform-init-and-apply-to-development
+            - assume-role-development
           filters:
             branches:
               only: development
@@ -161,14 +161,14 @@ workflows:
 #                only: master
 #       - deploy-to-staging:
 #           requires:
-#             - terraform-init-and-apply-to-staging
+#             - assume-role-staging
 #           filters:
 #             branches:
 #               only: master
 #       - assume-role-production:
 #           context: api-assume-role-production-context
 #           requires:
-#               - permit-production-terraform-release
+#               - deploy-to-staging
 #           filters:
 #              branches:
 #                only: master
@@ -183,7 +183,6 @@ workflows:
 #           context: api-assume-role-housing-production-context
 #           requires:
 #             - permit-production-release
-#             - terraform-init-and-apply-to-production
 #           filters:
 #             branches:
 #               only: master
