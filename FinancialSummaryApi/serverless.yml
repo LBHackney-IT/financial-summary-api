@@ -108,6 +108,19 @@ resources:
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
                           - 'table/FinancialSummaries'
+                - Effect: Allow
+                  Action:
+                    - "dynamodb:BatchGet*"
+                    - "dynamodb:BatchWrite"
+                    - "dynamodb:DeleteItem"
+                    - "dynamodb:DescribeStream"
+                    - "dynamodb:DescribeTable"
+                    - "dynamodb:Get*"
+                    - "dynamodb:PutItem"
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                    - "dynamodb:UpdateItem"
+                  Resource:
                     - 'Fn::Join':
                         - ':'
                         - - 'arn:aws:dynamodb'
