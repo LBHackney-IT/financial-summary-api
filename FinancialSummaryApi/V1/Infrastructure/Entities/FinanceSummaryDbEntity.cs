@@ -8,7 +8,7 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
     /// <summary>
     /// DynamoDB model for the table finance_summary
     /// </summary>
-    [DynamoDBTable("finance_summary_table", LowerCamelCaseProperties = true)]
+    [DynamoDBTable("FinancialSummaries", LowerCamelCaseProperties = true)]
     public class FinanceSummaryDbEntity
     {
         [DynamoDBHashKey(AttributeName = "id")]
