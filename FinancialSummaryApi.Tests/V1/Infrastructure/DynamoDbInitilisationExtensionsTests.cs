@@ -9,7 +9,10 @@ using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Infrastructure
 {
-    [Collection("Collection1")]
+    // Hanna Holasava, [03.08.2021]
+    // We need to specify a collection for unit tests to prevent parallelism for E2E tests
+    // https://xunit.net/docs/running-tests-in-parallel
+    [Collection("MainCollection")]
     public class DynamoDbInitilisationExtensionsTests
     {
         [Theory]
