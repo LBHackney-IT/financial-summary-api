@@ -85,7 +85,7 @@ resources:
                   Action:
                     - "lambda:InvokeFunction"
                   Resource: "*"
- 	  - PolicyName: transactionSummariesDynamoDBAccess
+          - PolicyName: transactionSummariesDynamoDBAccess
             PolicyDocument:
               Version: '2021-08-19'
               Statement:
