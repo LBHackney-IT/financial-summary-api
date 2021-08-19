@@ -28,8 +28,7 @@ namespace FinancialSummaryApi.V1.Infrastructure
             }
             else
             {
-                var client = new AmazonDynamoDBClient();
-                services.AddSingleton<IAmazonDynamoDB>(client);
+                services.AddAWSService<IAmazonDynamoDB>();
             }
 
             services.AddScoped<IDynamoDBContext>(sp =>
