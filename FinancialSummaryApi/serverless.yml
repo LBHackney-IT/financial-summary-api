@@ -85,6 +85,30 @@ resources:
                   Action:
                     - "lambda:InvokeFunction"
                   Resource: "*"
+ 	  - PolicyName: transactionSummariesDynamoDBAccess
+            PolicyDocument:
+              Version: '2021-08-19'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "dynamodb:BatchGet*"
+                    - "dynamodb:BatchWrite"
+                    - "dynamodb:DeleteItem"
+                    - "dynamodb:DescribeStream"
+                    - "dynamodb:DescribeTable"
+                    - "dynamodb:Get*"
+                    - "dynamodb:PutItem"
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                    - "dynamodb:UpdateItem"
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:dynamodb'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'table/FinancialSummaries'
+                          - 'table/TransactionSummaries'
 custom:
   vpc:
     development:
