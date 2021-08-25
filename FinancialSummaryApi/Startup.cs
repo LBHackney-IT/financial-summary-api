@@ -119,6 +119,11 @@ namespace FinancialSummaryApi
             RegisterGateways(services);
             RegisterUseCases(services);
 
+            services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
+                builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()));
+
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -176,6 +181,8 @@ namespace FinancialSummaryApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseCors("corsPolicy");
+
             app.UseCorrelation();
 
             if (env.IsDevelopment())
