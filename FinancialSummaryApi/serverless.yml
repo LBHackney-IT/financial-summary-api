@@ -27,7 +27,6 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialSummaryApi::FinancialSummaryApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
-    environment:
     events:
       - http:
           path: /{proxy+}
