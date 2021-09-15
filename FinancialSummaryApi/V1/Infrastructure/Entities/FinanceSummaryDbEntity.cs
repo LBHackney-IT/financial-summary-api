@@ -14,6 +14,7 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
         [DynamoDBHashKey(AttributeName = "id")]
         public Guid Id { get; set; }
 
+        [DynamoDBGlobalSecondaryIndexHashKey("target_id_dx")]
         [DynamoDBProperty(AttributeName = "target_id")]
         public Guid TargetId { get; set; }
 
