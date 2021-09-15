@@ -7,6 +7,7 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
     public class WeeklySummaryDbEntity
     {
         [DynamoDBHashKey]
+        [DynamoDBGlobalSecondaryIndexHashKey("id_dx")]
         [DynamoDBProperty(AttributeName = "id")]
         public Guid Id { get; set; }
 

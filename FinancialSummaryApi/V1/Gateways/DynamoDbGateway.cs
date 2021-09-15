@@ -1,5 +1,7 @@
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
@@ -14,10 +16,11 @@ namespace FinancialSummaryApi.V1.Gateways
     public class DynamoDbGateway : IFinanceSummaryGateway
     {
         private readonly DynamoDbContextWrapper _wrapper;
+        private readonly IAmazonDynamoDB _amazonDynamoDb; 
         private readonly IDynamoDBContext _dynamoDbContext;
 
         public DynamoDbGateway(IDynamoDBContext dynamoDbContext,
-            DynamoDbContextWrapper wrapper)
+            DynamoDbContextWrapper wrapper, IAmazonDynamoDB amazonDynamoDb)
         {
             _dynamoDbContext = dynamoDbContext;
 
@@ -25,6 +28,7 @@ namespace FinancialSummaryApi.V1.Gateways
             // We need this wrapper only for unit tests purposes.
             // If you will find other way to test this, please contact me!
             _wrapper = wrapper;
+            _amazonDynamoDb = amazonDynamoDb;
         }
 
         #region Asset Summary
@@ -48,15 +52,27 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
+            QueryRequest getAllAssetSummaryRequest = new QueryRequest
+            {
+                TableName = "FinancialSummaries",
+                IndexName = "target_id_dx",
+                FilterExpression = "target_type in (:V_target_type_estate, :V_target_type_block, :V_target_type_core) " +
+                                   "and submit_date between :V_submit_date_start and :V_submit_date_end",
+                KeyConditionExpression = "target_id = :V_target_id",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    { ":V_target_id", new AttributeValue{ S = assetId.ToString() } },
+                    { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_target_type_estate", new AttributeValue { S =TargetType.Estate.ToString() } },
+                    { ":V_target_type_block", new AttributeValue { S =TargetType.Block.ToString() } },
+                    { ":V_target_type_core", new AttributeValue { S =TargetType.Core.ToString() } }
+                }
+            };
 
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
-            scanConditions.Add(new ScanCondition("TargetId", ScanOperator.Equal, assetId));
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block, TargetType.Core));
+            var data = await _amazonDynamoDb.QueryAsync(getAllAssetSummaryRequest).ConfigureAwait(false);
 
-            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
-
-            return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault()?.ToAssetDomain();
+            return data.ToAssets().OrderByDescending(r => r.SubmitDate).ToList().FirstOrDefault();
         }
 
         #endregion
@@ -118,11 +134,23 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             await _dynamoDbContext.SaveAsync(weeklySummary.ToDatabase()).ConfigureAwait(false);
         }
+
         public async Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid id)
         {
-            var data = await _wrapper.LoadSummaryAsync(_dynamoDbContext, id).ConfigureAwait(false);
+            QueryRequest getWeeklySummaryById = new QueryRequest
+            {
+                TableName = "TransactionSummaries",
+                IndexName = "id_dx",
+                KeyConditionExpression = "id = :V_id",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    { ":V_id", new AttributeValue{ S = id.ToString() } }
+                }
+            };
 
-            return data?.ToWeeklySummaryDomain();
+            var data = await _amazonDynamoDb.QueryAsync(getWeeklySummaryById).ConfigureAwait(false);
+
+            return data?.ToWeeklySummary();
         }
         #endregion
 
