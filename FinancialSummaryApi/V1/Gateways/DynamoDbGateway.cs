@@ -1,11 +1,9 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
-using FinancialSummaryApi.V1.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,19 +13,12 @@ namespace FinancialSummaryApi.V1.Gateways
 {
     public class DynamoDbGateway : IFinanceSummaryGateway
     {
-        private readonly DynamoDbContextWrapper _wrapper;
         private readonly IAmazonDynamoDB _amazonDynamoDb; 
         private readonly IDynamoDBContext _dynamoDbContext;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext,
-            DynamoDbContextWrapper wrapper, IAmazonDynamoDB amazonDynamoDb)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb)
         {
             _dynamoDbContext = dynamoDbContext;
-
-            // Hanna Holasava
-            // We need this wrapper only for unit tests purposes.
-            // If you will find other way to test this, please contact me!
-            _wrapper = wrapper;
             _amazonDynamoDb = amazonDynamoDb;
         }
 
@@ -40,14 +31,25 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(DateTime submitDate)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
+            QueryRequest getSummaryRequest = new QueryRequest
+            {
+                TableName = "FinancialSummaries",
+                IndexName = "target_type_dx",
+                KeyConditionExpression = "target_type in (:V_target_type_estate, :V_target_type_block, :V_target_type_core) ",
+                FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_target_type_estate", new AttributeValue { S =TargetType.Estate.ToString() } },
+                    { ":V_target_type_block", new AttributeValue { S =TargetType.Block.ToString() } },
+                    { ":V_target_type_core", new AttributeValue { S =TargetType.Core.ToString() } }
+                }
+            };
 
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block, TargetType.Core));
+            var data = await _amazonDynamoDb.QueryAsync(getSummaryRequest).ConfigureAwait(false);
 
-            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
-
-            return data.Select(s => s.ToAssetDomain()).OrderByDescending(r => r.SubmitDate).ToList();
+            return data.ToAssets().OrderByDescending(r => r.SubmitDate).ToList();
         }
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
@@ -72,7 +74,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             var data = await _amazonDynamoDb.QueryAsync(getAllAssetSummaryRequest).ConfigureAwait(false);
 
-            return data.ToAssets().OrderByDescending(r => r.SubmitDate).ToList().FirstOrDefault();
+            return data.ToAssets().OrderByDescending(r => r.SubmitDate).FirstOrDefault();
         }
 
         #endregion
@@ -86,28 +88,44 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
+            QueryRequest getSummaryRequest = new QueryRequest
+            {
+                TableName = "FinancialSummaries",
+                IndexName = "target_type_dx",
+                KeyConditionExpression = "target_type = :V_target_type",
+                FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_target_type", new AttributeValue { S = TargetType.RentGroup.ToString() } },
+                }
+            };
 
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.RentGroup));
+            var data = await _amazonDynamoDb.QueryAsync(getSummaryRequest).ConfigureAwait(false);
 
-            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
-
-            return data.Select(s => s.ToRentGroupDomain()).OrderByDescending(r => r.SubmitDate).ToList();
+            return data.ToRentGroupSummary().OrderByDescending(r => r.SubmitDate).ToList();
         }
 
         public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName, DateTime submitDate)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
+            QueryRequest getSummaryRequest = new QueryRequest
+            {
+                TableName = "FinancialSummaries",
+                IndexName = "rent_group_name_dx",
+                KeyConditionExpression = "rent_group_name = :V_rent_group_name",
+                FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_rent_group_name", new AttributeValue { S = rentGroupName } },
+                }
+            };
 
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.Equal, TargetType.RentGroup));
-            // ToDo: Change way to search by rent_group_name
-            //scanConditions.Add(new ScanCondition("RentGroupSummaryData.rent_group_name", ScanOperator.Equal, rentGroupName));
+            var data = await _amazonDynamoDb.QueryAsync(getSummaryRequest).ConfigureAwait(false);
 
-            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
-
-            return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault(s => string.Equals(s.RentGroupSummaryData?.RentGroupName, rentGroupName)).ToRentGroupDomain();
+            return data.ToRentGroupSummary().OrderByDescending(r => r.SubmitDate).FirstOrDefault();
         }
 
         #endregion
@@ -115,19 +133,27 @@ namespace FinancialSummaryApi.V1.Gateways
         #region Get Weekly Summary
         public async Task<List<WeeklySummary>> GetAllWeeklySummaryAsync(Guid targetId, DateTime? startDate, DateTime? endDate)
         {
-            var scanConditions = new List<ScanCondition>();
+            QueryRequest getSummaryRequest = new QueryRequest
+            {
+                TableName = "TransactionSummaries",
+                IndexName = "target_id_dx",
+                KeyConditionExpression = "target_id = :V_target_id",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
+                }
+            };
 
-            if (targetId != Guid.Parse("00000000-0000-0000-0000-000000000000"))
-                scanConditions.Add(new ScanCondition("TargetId", ScanOperator.Equal, targetId));
             if (startDate.HasValue && endDate.HasValue)
             {
-                scanConditions.Add(new ScanCondition("WeekStartDate", ScanOperator.Between, startDate, endDate));
+                getSummaryRequest.FilterExpression += "submit_date between :V_submit_date_start and :V_submit_date_end";
+                getSummaryRequest.ExpressionAttributeValues.Add(":V_submit_date_start", new AttributeValue { S = startDate.Value.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") });
+                getSummaryRequest.ExpressionAttributeValues.Add(":V_submit_date_end", new AttributeValue { S = endDate.Value.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") });
             }
-            var transactionSummaries = await _wrapper.ScanSummaryAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
 
-            var result = transactionSummaries.Select(p => p.ToWeeklySummaryDomain()).ToList();
+            var data = await _amazonDynamoDb.QueryAsync(getSummaryRequest).ConfigureAwait(false);
 
-            return result.OrderByDescending(r => r.WeekStartDate).ToList();
+            return data.ToWeeklySummary().OrderByDescending(r => r.WeekStartDate).ToList();
         }
 
         public async Task AddAsync(WeeklySummary weeklySummary)
@@ -140,7 +166,6 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getWeeklySummaryById = new QueryRequest
             {
                 TableName = "TransactionSummaries",
-                IndexName = "id_dx",
                 KeyConditionExpression = "id = :V_id",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
@@ -150,7 +175,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             var data = await _amazonDynamoDb.QueryAsync(getWeeklySummaryById).ConfigureAwait(false);
 
-            return data?.ToWeeklySummary();
+            return data.ToWeeklySummary().OrderByDescending(r => r.WeekStartDate).FirstOrDefault();
         }
         #endregion
 

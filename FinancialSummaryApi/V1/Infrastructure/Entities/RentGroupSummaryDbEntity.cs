@@ -11,6 +11,7 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
         public string TargetDescription { get; set; }
 
         [DynamoDBProperty(AttributeName = "rent_group_name")]
+        [DynamoDBGlobalSecondaryIndexHashKey("rent_group_name_dx")]
         public string RentGroupName { get; set; }
 
         [DynamoDBProperty(AttributeName = "total_charged")]

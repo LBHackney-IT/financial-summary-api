@@ -19,6 +19,7 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
         public Guid TargetId { get; set; }
 
         [DynamoDBProperty(AttributeName = "target_type", Converter = typeof(DynamoDbEnumConverter<TargetType>))]
+        [DynamoDBGlobalSecondaryIndexHashKey("target_type_dx")]
         public TargetType TargetType { get; set; }
 
         [DynamoDBProperty(AttributeName = "submit_date", Converter = typeof(DynamoDbDateTimeConverter))]

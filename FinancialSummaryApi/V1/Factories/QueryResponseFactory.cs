@@ -2,7 +2,6 @@ using Amazon.DynamoDBv2.Model;
 using FinancialSummaryApi.V1.Domain;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace FinancialSummaryApi.V1.Factories
 {
@@ -37,7 +36,7 @@ namespace FinancialSummaryApi.V1.Factories
             return assets;
         }
 
-        public static WeeklySummary ToWeeklySummary(this QueryResponse response)
+        public static List<WeeklySummary> ToWeeklySummary(this QueryResponse response)
         {
             if (response is null)
             {
@@ -62,9 +61,38 @@ namespace FinancialSummaryApi.V1.Factories
                 });
             }
 
-            // Hanna Holasava
-            // weeklySummaries must contain only 1 element
-            return weeklySummaries.SingleOrDefault();
+            return weeklySummaries;
+        }
+
+        public static List<RentGroupSummary> ToRentGroupSummary(this QueryResponse response)
+        {
+            if (response is null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            List<RentGroupSummary> summaries = new List<RentGroupSummary>();
+            foreach (Dictionary<string, AttributeValue> item in response.Items)
+            {
+                // ToDo:
+                // Add error handling for all parsing statements
+                summaries.Add(new RentGroupSummary
+                {
+                    Id = Guid.Parse(item["id"].S),
+                    TargetType = (TargetType) Enum.Parse(typeof(TargetType), item["target_type"].S),
+                    ArrearsYTD = decimal.Parse(item["arrears_ytd"].N),
+                    ChargedYTD = decimal.Parse(item["charged_ytd"].N),
+                    PaidYTD = decimal.Parse(item["paid_ytd"].N),
+                    RentGroupName = item["rent_group_name"].S,
+                    TargetDescription = item["target_description"].S,
+                    TotalBalance = decimal.Parse(item["total_balance"].N),
+                    TotalCharged = decimal.Parse(item["total_charged"].N),
+                    TotalPaid = decimal.Parse(item["total_paid"].N),
+                    SubmitDate = DateTime.Parse(item["submit_date"].S),
+                });
+            }
+
+            return summaries;
         }
     }
 }
