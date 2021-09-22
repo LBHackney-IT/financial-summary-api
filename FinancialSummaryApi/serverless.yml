@@ -1,4 +1,4 @@
-service: financial-summary-api-name
+service: financial-summary-api
 provider:
   name: aws
   runtime: dotnetcore3.1
