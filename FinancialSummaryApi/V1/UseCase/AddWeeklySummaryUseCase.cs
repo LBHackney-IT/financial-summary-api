@@ -26,6 +26,9 @@ namespace FinancialSummaryApi.V1.UseCase
             var domainModel = weeklySummary.ToDomain();
 
             domainModel.Id = Guid.NewGuid();
+            // Hanna Holasava
+            // Do we need to set here UTC time or server time?
+            domainModel.SubmitDate = DateTime.UtcNow;
 
             await _financeSummaryGateway.AddAsync(domainModel).ConfigureAwait(false);
 

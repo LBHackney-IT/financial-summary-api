@@ -2,6 +2,7 @@ using Amazon.DynamoDBv2.Model;
 using FinancialSummaryApi.V1.Domain;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace FinancialSummaryApi.V1.Factories
 {
@@ -22,14 +23,14 @@ namespace FinancialSummaryApi.V1.Factories
                     Id = Guid.Parse(item["id"].S),
                     TargetId = Guid.Parse(item["target_id"].S),
                     TargetType = (TargetType)Enum.Parse(typeof(TargetType), item["target_type"].S),
-                    AssetName = item["asset_summary"].M["assetName"].S,
+                    AssetName = item["target_name"].S,
                     SubmitDate = DateTime.Parse(item["submit_date"].S),
-                    TotalDwellingRent = decimal.Parse(item["asset_summary"].M["totalDwellingRent"].N),
-                    TotalNonDwellingRent = decimal.Parse(item["asset_summary"].M["totalNonDwellingRent"].N),
-                    TotalRentalServiceCharge = decimal.Parse(item["asset_summary"].M["totalRentalServiceCharge"].N),
-                    TotalServiceCharges = decimal.Parse(item["asset_summary"].M["totalServiceCharges"].N),
-                    TotalIncome = decimal.Parse(item["asset_summary"].M["totalIncome"].N),
-                    TotalExpenditure = decimal.Parse(item["asset_summary"].M["totalExpenditure"].N)
+                    TotalDwellingRent = decimal.Parse(item["total_dwelling_rent"].N, CultureInfo.InvariantCulture),
+                    TotalNonDwellingRent = decimal.Parse(item["total_non_dwelling_rent"].N, CultureInfo.InvariantCulture),
+                    TotalRentalServiceCharge = decimal.Parse(item["total_rental_service_charge"].N, CultureInfo.InvariantCulture),
+                    TotalServiceCharges = decimal.Parse(item["total_service_charges"].N, CultureInfo.InvariantCulture),
+                    TotalIncome = decimal.Parse(item["total_income"].N, CultureInfo.InvariantCulture),
+                    TotalExpenditure = decimal.Parse(item["total_expenditure"].N, CultureInfo.InvariantCulture),
                 });
             }
 
@@ -54,10 +55,11 @@ namespace FinancialSummaryApi.V1.Factories
                     FinancialYear = short.Parse(item["financial_year"].N),
                     FinancialMonth = short.Parse(item["financial_month"].N),
                     WeekStartDate = DateTime.Parse(item["week_start_date"].S),
-                    ChargedAmount = decimal.Parse(item["charged_amount"].N),
-                    PaidAmount = decimal.Parse(item["paid_amount"].N),
-                    BalanceAmount = decimal.Parse(item["balance_amount"].N),
-                    HousingBenefitAmount = decimal.Parse(item["housing_benefit_amount"].N)
+                    ChargedAmount = decimal.Parse(item["charged_amount"].N, CultureInfo.InvariantCulture),
+                    PaidAmount = decimal.Parse(item["paid_amount"].N, CultureInfo.InvariantCulture),
+                    BalanceAmount = decimal.Parse(item["balance_amount"].N, CultureInfo.InvariantCulture),
+                    HousingBenefitAmount = decimal.Parse(item["housing_benefit_amount"].N, CultureInfo.InvariantCulture),
+                    SubmitDate = DateTime.Parse(item["submit_date"].S),
                 });
             }
 
@@ -79,15 +81,14 @@ namespace FinancialSummaryApi.V1.Factories
                 summaries.Add(new RentGroupSummary
                 {
                     Id = Guid.Parse(item["id"].S),
-                    TargetType = (TargetType) Enum.Parse(typeof(TargetType), item["target_type"].S),
-                    ArrearsYTD = decimal.Parse(item["arrears_ytd"].N),
-                    ChargedYTD = decimal.Parse(item["charged_ytd"].N),
-                    PaidYTD = decimal.Parse(item["paid_ytd"].N),
-                    RentGroupName = item["rent_group_name"].S,
+                    ArrearsYTD = decimal.Parse(item["arrears_ytd"].N, CultureInfo.InvariantCulture),
+                    ChargedYTD = decimal.Parse(item["charged_ytd"].N, CultureInfo.InvariantCulture),
+                    PaidYTD = decimal.Parse(item["paid_ytd"].N, CultureInfo.InvariantCulture),
+                    RentGroupName = item["target_name"].S,
                     TargetDescription = item["target_description"].S,
-                    TotalBalance = decimal.Parse(item["total_balance"].N),
-                    TotalCharged = decimal.Parse(item["total_charged"].N),
-                    TotalPaid = decimal.Parse(item["total_paid"].N),
+                    TotalBalance = decimal.Parse(item["total_balance"].N, CultureInfo.InvariantCulture),
+                    TotalCharged = decimal.Parse(item["total_charged"].N, CultureInfo.InvariantCulture),
+                    TotalPaid = decimal.Parse(item["total_paid"].N, CultureInfo.InvariantCulture),
                     SubmitDate = DateTime.Parse(item["submit_date"].S),
                 });
             }

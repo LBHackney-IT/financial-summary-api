@@ -1,7 +1,6 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
-using System;
 
 namespace FinancialSummaryApi.V1.Factories
 {
@@ -9,11 +8,7 @@ namespace FinancialSummaryApi.V1.Factories
     {
         public static WeeklySummary ToWeeklySummaryDomain(this WeeklySummaryDbEntity databaseEntity)
         {
-            if (databaseEntity == null)
-            {
-                return null;
-            }
-            return new WeeklySummary
+            return databaseEntity == null ? null : new WeeklySummary
             {
                 Id = databaseEntity.Id,
                 TargetId = databaseEntity.TargetId,
@@ -24,7 +19,8 @@ namespace FinancialSummaryApi.V1.Factories
                 HousingBenefitAmount = databaseEntity.HousingBenefitAmount,
                 PaidAmount = databaseEntity.PaidAmount,
                 PeriodNo = databaseEntity.PeriodNo,
-                WeekStartDate = databaseEntity.WeekStartDate
+                WeekStartDate = databaseEntity.WeekStartDate,
+                SubmitDate = databaseEntity.SubmitDate
             };
         }
 
@@ -41,7 +37,9 @@ namespace FinancialSummaryApi.V1.Factories
                 HousingBenefitAmount = entity.HousingBenefitAmount,
                 PaidAmount = entity.PaidAmount,
                 PeriodNo = entity.PeriodNo,
-                WeekStartDate = entity.WeekStartDate
+                WeekStartDate = entity.WeekStartDate,
+                SummaryType = SummaryType.WeeklySummary,
+                SubmitDate = entity.SubmitDate
             };
         }
 
