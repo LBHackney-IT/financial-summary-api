@@ -12,7 +12,6 @@ namespace FinancialSummaryApi.V1.Factories
             return domain == null ? null : new RentGroupSummaryResponse()
             {
                 Id = domain.Id,
-                TargetType = domain.TargetType,
                 SubmitDate = domain.SubmitDate,
                 ArrearsYTD = domain.ArrearsYTD,
                 ChargedYTD = domain.ChargedYTD,
@@ -21,7 +20,7 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalBalance = domain.TotalBalance,
                 TotalCharged = domain.TotalCharged,
                 TotalPaid = domain.TotalPaid,
-                RentGroupName = domain.RentGroupName
+                RentGroupName = domain.RentGroupName,
             };
         }
 
@@ -44,7 +43,7 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalServiceCharges = domain.TotalServiceCharges,
                 TotalIncome = domain.TotalIncome,
                 TotalExpenditure = domain.TotalExpenditure,
-                AssetName = domain.AssetName
+                AssetName = domain.AssetName,
             };
         }
 
@@ -66,7 +65,7 @@ namespace FinancialSummaryApi.V1.Factories
                 HousingBenefitAmount = domain.HousingBenefitAmount,
                 PaidAmount = domain.PaidAmount,
                 PeriodNo = domain.PeriodNo,
-                WeekStartDate = domain.WeekStartDate
+                WeekStartDate = domain.WeekStartDate,
             };
         }
 

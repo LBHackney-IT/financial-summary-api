@@ -34,16 +34,14 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "target_type_dx",
-                KeyConditionExpression = "target_type in (:V_target_type_estate, :V_target_type_block, :V_target_type_core) ",
+                IndexName = "summary_type_dx",
+                KeyConditionExpression = "summary_type = :V_summary_type ",
                 FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_target_type_estate", new AttributeValue { S =TargetType.Estate.ToString() } },
-                    { ":V_target_type_block", new AttributeValue { S =TargetType.Block.ToString() } },
-                    { ":V_target_type_core", new AttributeValue { S =TargetType.Core.ToString() } }
+                    { ":V_summary_type", new AttributeValue { S = SummaryType.AssetSummary.ToString() } },
                 }
             };
 
@@ -58,17 +56,15 @@ namespace FinancialSummaryApi.V1.Gateways
             {
                 TableName = "FinancialSummaries",
                 IndexName = "target_id_dx",
-                FilterExpression = "target_type in (:V_target_type_estate, :V_target_type_block, :V_target_type_core) " +
-                                   "and submit_date between :V_submit_date_start and :V_submit_date_end",
                 KeyConditionExpression = "target_id = :V_target_id",
+                FilterExpression = "summary_type = :V_summary_type " +
+                                   "and submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_target_id", new AttributeValue{ S = assetId.ToString() } },
                     { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_target_type_estate", new AttributeValue { S =TargetType.Estate.ToString() } },
-                    { ":V_target_type_block", new AttributeValue { S =TargetType.Block.ToString() } },
-                    { ":V_target_type_core", new AttributeValue { S =TargetType.Core.ToString() } }
+                    { ":V_summary_type", new AttributeValue { S = SummaryType.AssetSummary.ToString() } },
                 }
             };
 
@@ -91,14 +87,14 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "target_type_dx",
-                KeyConditionExpression = "target_type = :V_target_type",
+                IndexName = "summary_type_dx",
+                KeyConditionExpression = "summary_type = :V_summary_type",
                 FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_target_type", new AttributeValue { S = TargetType.RentGroup.ToString() } },
+                    { ":V_summary_type", new AttributeValue { S = SummaryType.RentGroupSummary.ToString() } },
                 }
             };
 
@@ -112,14 +108,16 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "rent_group_name_dx",
-                KeyConditionExpression = "rent_group_name = :V_rent_group_name",
-                FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
+                IndexName = "target_name_dx",
+                KeyConditionExpression = "target_name = :V_target_name",
+                FilterExpression = "summary_type = :V_summary_type " +
+                                   "and submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_rent_group_name", new AttributeValue { S = rentGroupName } },
+                    { ":V_target_name", new AttributeValue { S = rentGroupName } },
+                    { ":V_summary_type", new AttributeValue { S = SummaryType.RentGroupSummary.ToString() } },
                 }
             };
 
@@ -135,12 +133,14 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             QueryRequest getSummaryRequest = new QueryRequest
             {
-                TableName = "TransactionSummaries",
+                TableName = "FinancialSummaries",
                 IndexName = "target_id_dx",
-                KeyConditionExpression = "target_id = :V_target_id",
+                KeyConditionExpression = "target_id = :V_target_id ",
+                FilterExpression = "summary_type = :V_summary_type ",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
+                    { ":V_summary_type", new AttributeValue { S = SummaryType.WeeklySummary.ToString() } },
                 }
             };
 
@@ -165,11 +165,13 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             QueryRequest getWeeklySummaryById = new QueryRequest
             {
-                TableName = "TransactionSummaries",
+                TableName = "FinancialSummaries",
                 KeyConditionExpression = "id = :V_id",
+                FilterExpression = "summary_type = :V_summary_type ",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
-                    { ":V_id", new AttributeValue{ S = id.ToString() } }
+                    { ":V_id", new AttributeValue{ S = id.ToString() } },
+                    { ":V_summary_type", new AttributeValue { S = SummaryType.WeeklySummary.ToString() } },
                 }
             };
 

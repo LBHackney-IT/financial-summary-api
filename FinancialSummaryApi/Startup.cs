@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using FinancialSummaryApi.V1.Controllers;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using FinancialSummaryApi.V1;
+using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Gateways;
+using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
@@ -15,15 +12,17 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using FinancialSummaryApi.V1.Gateways.Abstracts;
-using FinancialSummaryApi.V1;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace FinancialSummaryApi
 {
@@ -128,14 +127,6 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-        }
-
-        private static void ConfigureDbContext(IServiceCollection services)
-        {
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-
-            services.AddDbContext<FinanceSummaryContext>(
-                opt => opt.UseNpgsql(connectionString).AddXRayInterceptor(true));
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
