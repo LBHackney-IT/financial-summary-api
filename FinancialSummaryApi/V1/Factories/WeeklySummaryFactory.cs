@@ -6,7 +6,7 @@ namespace FinancialSummaryApi.V1.Factories
 {
     public static class WeeklySummaryFactory
     {
-        public static WeeklySummary ToWeeklySummaryDomain(this WeeklySummaryDbEntity databaseEntity)
+        public static WeeklySummary ToDomain(this WeeklySummaryDbEntity databaseEntity)
         {
             return databaseEntity == null ? null : new WeeklySummary
             {

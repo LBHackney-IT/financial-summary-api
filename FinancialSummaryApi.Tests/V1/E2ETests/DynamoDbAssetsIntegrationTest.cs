@@ -50,7 +50,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
@@ -125,7 +125,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             var assetDomain = ConstructAssetSummary();
 
-            assetDomain.TargetType = TargetType.RentGroup;
             assetDomain.TotalDwellingRent = -1;
             assetDomain.TotalNonDwellingRent = -1;
             assetDomain.TotalRentalServiceCharge = -1;
@@ -155,7 +154,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Details.Should().Be(string.Empty);
 
             apiEntity.Message.Should().Contain("The AssetName field is required.");
-            apiEntity.Message.Should().Contain("TargetType should be in a range: [0(Estate), 1(Block), 2(Core)].");
             apiEntity.Message.Should().Contain($"The field TotalDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalServiceCharges must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalNonDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
@@ -232,7 +230,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 

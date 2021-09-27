@@ -1,5 +1,6 @@
 using Amazon.DynamoDBv2.Model;
 using FinancialSummaryApi.V1.Domain;
+using FinancialSummaryApi.V1.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +9,7 @@ namespace FinancialSummaryApi.V1.Factories
 {
     public static class QueryResponseFactory
     {
-        public static List<AssetSummary> ToAssets(this QueryResponse response)
+        public static List<AssetSummary> ToAssetSummary(this QueryResponse response)
         {
             if (response is null)
             {
@@ -45,6 +46,7 @@ namespace FinancialSummaryApi.V1.Factories
             }
 
             List<WeeklySummary> weeklySummaries = new List<WeeklySummary>();
+
             foreach (Dictionary<string, AttributeValue> item in response.Items)
             {
                 weeklySummaries.Add(new WeeklySummary

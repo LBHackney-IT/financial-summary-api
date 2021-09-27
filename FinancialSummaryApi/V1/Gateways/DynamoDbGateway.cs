@@ -47,7 +47,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             var data = await _amazonDynamoDb.QueryAsync(getSummaryRequest).ConfigureAwait(false);
 
-            return data.ToAssets().OrderByDescending(r => r.SubmitDate).ToList();
+            return data.ToAssetSummary().OrderByDescending(r => r.SubmitDate).ToList();
         }
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
@@ -70,7 +70,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             var data = await _amazonDynamoDb.QueryAsync(getAllAssetSummaryRequest).ConfigureAwait(false);
 
-            return data.ToAssets().OrderByDescending(r => r.SubmitDate).FirstOrDefault();
+            return data.ToAssetSummary().OrderByDescending(r => r.SubmitDate).FirstOrDefault();
         }
 
         #endregion
@@ -146,7 +146,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             if (startDate.HasValue && endDate.HasValue)
             {
-                getSummaryRequest.FilterExpression += "submit_date between :V_submit_date_start and :V_submit_date_end";
+                getSummaryRequest.FilterExpression += "and submit_date between :V_submit_date_start and :V_submit_date_end";
                 getSummaryRequest.ExpressionAttributeValues.Add(":V_submit_date_start", new AttributeValue { S = startDate.Value.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") });
                 getSummaryRequest.ExpressionAttributeValues.Add(":V_submit_date_end", new AttributeValue { S = endDate.Value.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") });
             }

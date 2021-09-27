@@ -11,7 +11,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             response.Should().NotBeNull();
             model.Should().NotBeNull();
 
-            response.TargetType.Should().Be(model.TargetType);
             response.SubmitDate.Should().Be(model.SubmitDate);
             response.ArrearsYTD.Should().Be(model.ArrearsYTD);
             response.ChargedYTD.Should().Be(model.ChargedYTD);
