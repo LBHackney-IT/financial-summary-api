@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 
 namespace FinancialSummaryApi.Tests
@@ -52,15 +53,54 @@ namespace FinancialSummaryApi.Tests
                     // Amazon.XRay.Recorder.Core.Exceptions.EntityNotAvailableException : Entity doesn't exist in AsyncLocal
                     AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
 
-                    var request = new CreateTableRequest(table.Name,
-                        new List<KeySchemaElement> { new KeySchemaElement(table.KeyName, KeyType.HASH) },
-                        new List<AttributeDefinition> { new AttributeDefinition(table.KeyName, table.KeyType) },
-                        new ProvisionedThroughput(3, 3));
+                    List<AttributeDefinition> attributeDefinitions = new List<AttributeDefinition>();
+                    List<GlobalSecondaryIndex> globalSecondaryIndexes = new List<GlobalSecondaryIndex>();
+
+                    attributeDefinitions.Add(new AttributeDefinition(table.PartitionKey.KeyName,
+                        table.PartitionKey.KeyScalarType));
+
+                    foreach (var index in table.Indices)
+                    {
+                        globalSecondaryIndexes.Add(
+                            new GlobalSecondaryIndex()
+                            {
+                                IndexName = index.IndexName,
+                                ProvisionedThroughput =
+                                    new ProvisionedThroughput { ReadCapacityUnits = 1L, WriteCapacityUnits = 1L },
+                                KeySchema =
+                                {
+                                    new KeySchemaElement
+                                    {
+                                        AttributeName = index.KeyName, KeyType = index.KeyType
+                                    }
+                                },
+                                Projection = new Projection { ProjectionType = index.ProjectionType }
+                            });
+                        attributeDefinitions.Add(new AttributeDefinition(index.KeyName, index.KeyScalarType));
+                    }
+
+                    CreateTableRequest request = new CreateTableRequest
+                    {
+                        TableName = table.TableName,
+                        ProvisionedThroughput =
+                            new ProvisionedThroughput { ReadCapacityUnits = (long) 3, WriteCapacityUnits = (long) 3 },
+                        AttributeDefinitions = attributeDefinitions,
+                        KeySchema = new List<KeySchemaElement>
+                        {
+                            new KeySchemaElement(table.PartitionKey.KeyName, table.PartitionKey.KeyType)
+                        },
+                        GlobalSecondaryIndexes = globalSecondaryIndexes
+                    };
+
                     _ = dynamoDb.CreateTableAsync(request).GetAwaiter().GetResult();
                 }
                 catch (ResourceInUseException)
                 {
                     // It already exists :-)
+                }
+                catch (Exception exception)
+                {
+                    throw new Exception("Exception in checking table existence", exception);
                 }
             }
         }
