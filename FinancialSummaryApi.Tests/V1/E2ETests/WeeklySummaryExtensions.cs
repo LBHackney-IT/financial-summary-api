@@ -18,7 +18,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             response.ChargedAmount.Should().Be(model.ChargedAmount);
             response.PaidAmount.Should().Be(model.PaidAmount);
             response.BalanceAmount.Should().Be(model.BalanceAmount);
-            response.WeekStartDate.Date.Should().Be(model.WeekStartDate.Date);
+            response.WeekStartDate.Date.Should().BeSameDateAs(model.WeekStartDate.Date);
             response.HousingBenefitAmount.Should().Be(model.HousingBenefitAmount);
         }
     }

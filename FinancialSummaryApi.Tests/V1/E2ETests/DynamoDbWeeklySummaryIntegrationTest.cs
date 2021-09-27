@@ -152,6 +152,9 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             var weeklySummaryDomains = new[] { ConstructWeeklySummary(), ConstructWeeklySummary() };
 
+            var targetId = weeklySummaryDomains[0].TargetId;
+            weeklySummaryDomains[1].TargetId = targetId;
+
             foreach (var summary in weeklySummaryDomains)
             {
                 var createdEntity = await CreateWeeklySummaryAndValidateResponse(summary).ConfigureAwait(false);
@@ -159,7 +162,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 await GetWeeklySummaryByTargetIdAndValidateResponse(summary).ConfigureAwait(false);
             }
 
-            var uri = new Uri($"api/v1/weekly-summary", UriKind.Relative);
+            var uri = new Uri($"api/v1/weekly-summary?targetId={targetId}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -170,8 +173,8 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Should().NotBeNull();
             apiEntity.Count.Should().BeGreaterOrEqualTo(2);
 
-            var firstSummary = apiEntity.Find(a => a.TargetId == weeklySummaryDomains[0].TargetId);
-            var secondSummary = apiEntity.Find(a => a.TargetId == weeklySummaryDomains[1].TargetId);
+            var firstSummary = apiEntity.Find(a => a.Id == weeklySummaryDomains[0].Id);
+            var secondSummary = apiEntity.Find(a => a.Id == weeklySummaryDomains[1].Id);
 
             firstSummary.ShouldBeEqualTo(weeklySummaryDomains[0]);
             secondSummary.ShouldBeEqualTo(weeklySummaryDomains[1]);
@@ -219,7 +222,9 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntity.Should().NotBeNull();
 
-            apiEntity.Should().BeEquivalentTo(weeklySummary, options => options.Excluding(a => a.Id));
+            apiEntity.Should().BeEquivalentTo(weeklySummary, options => options
+                                .Excluding(a => a.Id)
+                                .Excluding(a => a.SubmitDate));
             return apiEntity;
         }
 

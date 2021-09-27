@@ -26,7 +26,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 HousingBenefitAmount = 10
             };
 
-            var entity = databaseEntity.ToWeeklySummaryDomain();
+            var entity = databaseEntity.ToDomain();
 
             databaseEntity.Id.Should().Be(entity.Id);
             databaseEntity.TargetId.Should().Be(entity.TargetId);
