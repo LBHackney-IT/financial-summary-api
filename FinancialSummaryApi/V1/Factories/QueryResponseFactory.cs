@@ -1,6 +1,5 @@
 using Amazon.DynamoDBv2.Model;
 using FinancialSummaryApi.V1.Domain;
-using FinancialSummaryApi.V1.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,7 +22,7 @@ namespace FinancialSummaryApi.V1.Factories
                 {
                     Id = Guid.Parse(item["id"].S),
                     TargetId = Guid.Parse(item["target_id"].S),
-                    TargetType = (TargetType)Enum.Parse(typeof(TargetType), item["target_type"].S),
+                    TargetType = (TargetType) Enum.Parse(typeof(TargetType), item["target_type"].S),
                     AssetName = item["target_name"].S,
                     SubmitDate = DateTime.Parse(item["submit_date"].S),
                     TotalDwellingRent = decimal.Parse(item["total_dwelling_rent"].N, CultureInfo.InvariantCulture),

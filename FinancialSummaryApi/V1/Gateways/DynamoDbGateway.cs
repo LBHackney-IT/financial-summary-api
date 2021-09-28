@@ -13,7 +13,7 @@ namespace FinancialSummaryApi.V1.Gateways
 {
     public class DynamoDbGateway : IFinanceSummaryGateway
     {
-        private readonly IAmazonDynamoDB _amazonDynamoDb; 
+        private readonly IAmazonDynamoDB _amazonDynamoDb;
         private readonly IDynamoDBContext _dynamoDbContext;
 
         public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb)

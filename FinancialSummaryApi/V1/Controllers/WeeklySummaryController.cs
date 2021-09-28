@@ -72,7 +72,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] Guid targetId, [FromQuery] string startDate, [FromQuery] string endDate)
         {
-            if(targetId == Guid.Empty)
+            if (targetId == Guid.Empty)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "TargetId should be provided!"));
             }
