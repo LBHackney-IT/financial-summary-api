@@ -87,7 +87,6 @@ commands:
           command: |
             cd ./FinancialSummaryApi/
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
-
 jobs:
   check-code-formatting:
     executor: docker-dotnet
@@ -110,8 +109,6 @@ jobs:
       - run:
           name: Run tests
           command: docker-compose run finance-summary-api-test
-      - store_test_results:
-          path: /tmp/test-reports
   assume-role-development:
     executor: docker-python
     steps:
@@ -169,6 +166,7 @@ workflows:
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
+            - check-code-formatting
             - build-and-test
           filters:
             branches:
@@ -180,66 +178,48 @@ workflows:
             branches:
               only: development
       - deploy-to-development:
-          context: api-assume-role-housing-development-context
           requires:
             - terraform-init-and-apply-to-development
           filters:
             branches:
               only: development
-#   check-and-deploy-staging-and-production:
-#       jobs:
-#       - build-and-test:
-#           filters:
-#             branches:
-#               only: master
-#       - assume-role-staging:
-#           context: api-assume-role-staging-context
-#           requires:
-#               - build-and-test
-#           filters:
-#              branches:
-#                only: master
-#       - terraform-init-and-apply-to-staging:
-#           requires:
-#             - assume-role-staging
-#           filters:
-#             branches:
-#               only: master
-#       - deploy-to-staging:
-#           requires:
-#             - terraform-init-and-apply-to-staging
-#           filters:
-#             branches:
-#               only: master
-#       - permit-production-terraform-release:
-#           type: approval
-#           requires:
-#             - deploy-to-staging
-#       - assume-role-production:
-#           context: api-assume-role-production-context
-#           requires:
-#               - permit-production-terraform-release
-#           filters:
-#              branches:
-#                only: master
-#       - terraform-init-and-apply-to-production:
-#           requires:
-#             - assume-role-production
-#           filters:
-#             branches:
-#               only: master
-#       - permit-production-release:
-#           type: approval
-#           requires:
-#             - deploy-to-staging
-#           filters:
-#             branches:
-#               only: master
-#       - deploy-to-production:
-#           context: api-assume-role-housing-production-context
-#           requires:
-#             - permit-production-release
-#             - terraform-init-and-apply-to-production
-#           filters:
-#             branches:
-#               only: master
+  check-and-deploy-staging-and-production:
+      jobs:
+      - build-and-test:
+          filters:
+            branches:
+              only: master
+      - assume-role-staging:
+          context: api-assume-role-staging-context
+          requires:
+              - build-and-test
+          filters:
+             branches:
+               only: master
+      - deploy-to-staging:
+          requires:
+            - assume-role-staging
+          filters:
+            branches:
+              only: master
+      - assume-role-production:
+          context: api-assume-role-production-context
+          requires:
+              - deploy-to-staging
+          filters:
+             branches:
+               only: master
+      - permit-production-release:
+          type: approval
+          requires:
+            - deploy-to-staging
+          filters:
+            branches:
+              only: master
+      - deploy-to-production:
+          context: api-assume-role-housing-production-context
+          requires:
+            - permit-production-release
+          filters:
+            branches:
+              only: master

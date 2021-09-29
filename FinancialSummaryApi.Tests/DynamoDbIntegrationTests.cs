@@ -15,8 +15,8 @@ namespace FinancialSummaryApi.Tests
 
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            new TableDef { Name = "finance_summary_table", KeyName = "id", KeyType = ScalarAttributeType.S },
-            new TableDef { Name = "transaction_summary_table", KeyName = "id", KeyType = ScalarAttributeType.S }
+            new TableDef { Name = "FinancialSummaries", KeyName = "id", KeyType = ScalarAttributeType.S },
+            new TableDef { Name = "TransactionSummaries", KeyName = "id", KeyType = ScalarAttributeType.S }
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)

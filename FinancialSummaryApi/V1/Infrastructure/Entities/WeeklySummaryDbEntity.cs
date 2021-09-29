@@ -3,7 +3,7 @@ using System;
 
 namespace FinancialSummaryApi.V1.Infrastructure.Entities
 {
-    [DynamoDBTable("transaction_summary_table", LowerCamelCaseProperties = true)]
+    [DynamoDBTable("TransactionSummaries", LowerCamelCaseProperties = true)]
     public class WeeklySummaryDbEntity
     {
         [DynamoDBHashKey]
