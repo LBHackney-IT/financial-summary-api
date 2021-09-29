@@ -1,4 +1,4 @@
-service: financial-summary-api-name
+service: financial-summary-api
 provider:
   name: aws
   runtime: dotnetcore3.1
@@ -8,8 +8,7 @@ provider:
     apiGateway: true
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
-  # TODO: Enable this line if DynamoDb is in use
-  #account: ${opt:account}
+  account: ${opt:account}
   region: eu-west-2
   apiKeys:
     - secureAccess:
@@ -21,25 +20,30 @@ provider:
           rateLimit: 100
 
 package:
-# TODO: Rename zipfile in build.sh and build.cmd to match this
-  artifact: ./bin/release/netcoreapp3.1/your-api-name.zip
+  artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
 
 functions:
   FinancialSummaryApi:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialSummaryApi::FinancialSummaryApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
-    environment:
-# TODO: Create ssm variables for this API's postgres mirror then rename base-api below to match api name
-# TODO: Remove this line if DynamoDb is being used
-      CONNECTION_STRING: Host=${ssm:/base-api/${self:provider.stage}/postgres-hostname};Port=${ssm:/base-api/${self:provider.stage}/postgres-port};Database=base-api-mirror;Username=${ssm:/base-api/${self:provider.stage}/postgres-username};Password=${ssm:/base-api/${self:provider.stage}/postgres-password}
     events:
       - http:
           path: /{proxy+}
           method: ANY
           private: true
+          cors: true
 resources:
   Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
     lambdaExecutionRole:
       Type: AWS::IAM::Role
       Properties:
@@ -56,8 +60,6 @@ resources:
         ManagedPolicyArns:
           - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
           - arn:aws:iam::aws:policy/AWSXRayDaemonWriteAccess
-# TODO: Enable this line and set the correct policy name if DynamoDb is in use
-#          - arn:aws:iam::${self:provider.account}:policy/base-api/lambda-dynamodb-base-api
         Policies:
           - PolicyName: manageLogs
             PolicyDocument:
@@ -92,6 +94,48 @@ resources:
                   Action:
                     - "lambda:InvokeFunction"
                   Resource: "*"
+          - PolicyName: financialSummaryTableDynamoDBAccess
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "dynamodb:BatchGet*"
+                    - "dynamodb:BatchWrite"
+                    - "dynamodb:DeleteItem"
+                    - "dynamodb:DescribeStream"
+                    - "dynamodb:DescribeTable"
+                    - "dynamodb:Get*"
+                    - "dynamodb:PutItem"
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                    - "dynamodb:UpdateItem"
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:dynamodb'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'table/FinancialSummaries'
+                - Effect: Allow
+                  Action:
+                    - "dynamodb:BatchGet*"
+                    - "dynamodb:BatchWrite"
+                    - "dynamodb:DeleteItem"
+                    - "dynamodb:DescribeStream"
+                    - "dynamodb:DescribeTable"
+                    - "dynamodb:Get*"
+                    - "dynamodb:PutItem"
+                    - "dynamodb:Query"
+                    - "dynamodb:Scan"
+                    - "dynamodb:UpdateItem"
+                  Resource:
+                    - 'Fn::Join':
+                        - ':'
+                        - - 'arn:aws:dynamodb'
+                          - Ref: 'AWS::Region'
+                          - Ref: 'AWS::AccountId'
+                          - 'table/TransactionSummaries'
 custom:
   vpc:
     development:

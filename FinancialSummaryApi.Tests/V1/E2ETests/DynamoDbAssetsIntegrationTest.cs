@@ -17,7 +17,10 @@ using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.E2ETests
 {
-    // For guidance on writing integration tests see the wiki page https://github.com/LBHackney-IT/lbh-base-api/wiki/Writing-Integration-Tests
+    // Hanna Holasava, [03.08.2021]
+    // We need to specify a collection for unit tests to prevent parallelism for E2E tests
+    // https://xunit.net/docs/running-tests-in-parallel
+    [Collection("MainCollection")]
     public class DynamoDbAssetsIntegrationTest : DynamoDbIntegrationTests<Startup>
     {
         private readonly Fixture _fixture = new Fixture();
