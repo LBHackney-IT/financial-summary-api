@@ -61,8 +61,8 @@ namespace FinancialSummaryApi
                     new OpenApiSecurityScheme
                     {
                         In = ParameterLocation.Header,
-                        Description = "Your Hackney API Key",
-                        Name = "X-Api-Key",
+                        Description = "Your JWT token",
+                        Name = "Authorization",
                         Type = SecuritySchemeType.ApiKey
                     });
 
