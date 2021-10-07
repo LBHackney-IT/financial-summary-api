@@ -33,7 +33,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Get Weekly summary model by provided Id
         /// </summary>
         /// <param name="id">The id by which we are looking for an weekly summary</param>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <response code="200">Success. Weekly summary models is saved successfully</response>
         /// <response code="400">Bad Request</response>
@@ -45,7 +45,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{id}")]
-        public async Task<IActionResult> Get([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> Get([FromHeader(Name = "Authorization")] string token,
                                              [FromHeader(Name = "x-correlation-id")] string correlationId,
                                              [FromRoute] Guid id)
         {
@@ -63,7 +63,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Get Weekly Transaction summary for a target id and given start date and end date range
         /// </summary>
         /// <param name="targetId">The target id for which we want the summaries result</param>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="startDate">The start date from when we want to filter for weekly summaries</param>
         /// <param name="endDate">The end date untill whene want to filter for weekly summaries</param>
@@ -76,7 +76,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> GetAll([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromQuery] Guid targetId,
                                                 [FromQuery] string startDate,
@@ -96,7 +96,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Create new Weekly summary model
         /// </summary>
         /// <param name="weeklySummary">Weekly summary model for create</param>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <response code="201">Created. Weekly summary model was created successfully</response>
         /// <response code="400">Bad Request</response>
@@ -105,7 +105,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Create([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromBody] AddWeeklySummaryRequest weeklySummary)
         {

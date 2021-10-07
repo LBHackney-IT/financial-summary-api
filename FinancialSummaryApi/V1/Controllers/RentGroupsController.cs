@@ -33,14 +33,14 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Get a list of Rent Group summary models
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Rent Group summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<RentGroupSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> GetAll([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromQuery] DateTime submitDate)
         {
@@ -53,7 +53,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Get Rent Group summary model by provided groupName
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="rentGroupName">The rent group name to get the data for</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Rent Group summary models was received successfully</response>
@@ -66,7 +66,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{rentGroupName}")]
-        public async Task<IActionResult> Get([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> Get([FromHeader(Name = "Authorization")] string token,
                                              [FromHeader(Name = "x-correlation-id")] string correlationId,
                                              [FromRoute] string rentGroupName,
                                              [FromQuery] DateTime submitDate)
@@ -85,7 +85,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Create new Rent Group summary model
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="summaryRequest">Rent Group summary model for create</param>
         /// <response code="201">Rent Group summary model was created successfully</response>
         /// <response code="400">Bad Request</response>
@@ -94,7 +94,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Create([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromBody] AddRentGroupSummaryRequest summaryRequest)
         {

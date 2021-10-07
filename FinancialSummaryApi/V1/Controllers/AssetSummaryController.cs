@@ -34,14 +34,14 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Get a list of Asset summary models
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> GetAll([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromQuery] DateTime submitDate)
         {
@@ -54,7 +54,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Get Asset summary model by provided assetId
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <param name="assetId">The value by which we are looking for an asset summary</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
@@ -67,7 +67,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{assetId}")]
-        public async Task<IActionResult> Get([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> Get([FromHeader(Name = "Authorization")] string token,
                                              [FromHeader(Name = "x-correlation-id")] string correlationId,
                                              [FromRoute] Guid assetId,
                                              [FromQuery] DateTime submitDate)
@@ -85,7 +85,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <summary>
         /// Create new Asset summary model
         /// </summary>
-        /// <param name="apiKey">The api key value</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="assetSummary">Asset summary model for create</param>
         /// <response code="201">Created. Asset summary model was created successfully</response>
@@ -95,7 +95,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Create([FromHeader(Name = "x-api-key")] string apiKey,
+        public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromBody] AddAssetSummaryRequest assetSummary)
         {
