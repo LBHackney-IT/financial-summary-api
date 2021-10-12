@@ -31,7 +31,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 new RentGroupSummary
                 {
                     Id = new Guid("c4b19453-4e1c-40ba-b937-db41a46eca45"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders",
                     TargetDescription = "desc",
                     ArrearsYTD = 100,
@@ -45,7 +44,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 new RentGroupSummary
                 {
                     Id = new Guid("814ab48c-090e-42fc-9e17-67bf6b3eb48f"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders2",
                     TargetDescription = "desc",
                     ArrearsYTD = 100,
@@ -75,7 +73,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 new RentGroupSummary
                 {
                     Id = new Guid("c4b19453-4e1c-40ba-b937-db41a46eca45"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders",
                     TargetDescription = "desc",
                     ArrearsYTD = 100,
@@ -89,7 +86,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 new RentGroupSummary
                 {
                     Id = new Guid("814ab48c-090e-42fc-9e17-67bf6b3eb48f"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders2",
                     TargetDescription = "desc",
                     ArrearsYTD = 100,

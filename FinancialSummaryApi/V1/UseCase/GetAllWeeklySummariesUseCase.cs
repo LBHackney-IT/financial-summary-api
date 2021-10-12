@@ -20,7 +20,6 @@ namespace FinancialSummaryApi.V1.UseCase
 
         public async Task<List<WeeklySummaryResponse>> ExecuteAsync(Guid targetId, string startDate, string endDate)
         {
-
             return (await _financeSummaryGateway.GetAllWeeklySummaryAsync(targetId, startDate.CheckAndConvertDateTime(), endDate.CheckAndConvertDateTime()).ConfigureAwait(false)).ToResponse();
         }
     }

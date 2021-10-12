@@ -23,7 +23,7 @@ namespace FinancialSummaryApi.V1.UseCase
                 throw new ArgumentNullException(nameof(rentGroupSummary));
             }
 
-            var domainModel = rentGroupSummary.ToRentGroupDomain();
+            var domainModel = rentGroupSummary.ToDomain();
 
             domainModel.Id = Guid.NewGuid();
 

@@ -34,7 +34,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             var entity = _fixture.Create<RentGroupSummary>();
 
-            entity.TargetType = TargetType.RentGroup;
             entity.SubmitDate = DateTime.UtcNow;
 
             return entity;
@@ -50,7 +49,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
@@ -116,7 +115,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             rentGroupDomain.PaidYTD = -500;
             rentGroupDomain.TotalCharged = -100;
             rentGroupDomain.TotalPaid = -200;
-            rentGroupDomain.TargetType = TargetType.Block;
 
             var uri = new Uri("api/v1/rent-group-summary", UriKind.Relative);
             string body = JsonConvert.SerializeObject(rentGroupDomain);
@@ -143,7 +141,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Message.Should().Contain($"The field ArrearsYTD must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field ChargedYTD must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalCharged must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain("TargetType should be in a range: [3(RentGroup)].");
         }
 
         [Fact]
@@ -214,7 +211,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<RentGroupSummaryResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 

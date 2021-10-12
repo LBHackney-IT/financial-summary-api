@@ -27,7 +27,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             var rentGroupSummary = new RentGroupSummary
             {
                 Id = new Guid("32d8365a-d0ea-405b-a46e-2e563b043abd"),
-                TargetType = TargetType.RentGroup,
                 RentGroupName = "LeaseHolder",
                 TargetDescription = "desc",
                 SubmitDate = DateTime.UtcNow.Date,
@@ -57,7 +56,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             var rentGroupSummary = new RentGroupSummary
             {
                 Id = new Guid("32d8365a-d0ea-405b-a46e-2e563b043abd"),
-                TargetType = TargetType.RentGroup,
                 RentGroupName = "LeaseHolder",
                 TargetDescription = "desc",
                 SubmitDate = new DateTime(2021, 7, 2),

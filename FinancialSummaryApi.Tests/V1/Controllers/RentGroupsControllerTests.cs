@@ -53,7 +53,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         new RentGroupSummaryResponse
                         {
                             Id = new Guid("a264d9c1-d419-463e-9df7-e82dff2b9539"),
-                            TargetType = TargetType.RentGroup,
                             RentGroupName = "LeaseHolders",
                             SubmitDate = new DateTime(2021, 7, 2),
                             TargetDescription = "desc",
@@ -81,7 +80,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             rentGroupSummaries.Should().HaveCount(1);
 
             rentGroupSummaries[0].Id.Should().Be(new Guid("a264d9c1-d419-463e-9df7-e82dff2b9539"));
-            rentGroupSummaries[0].TargetType.Should().Be(TargetType.RentGroup);
             rentGroupSummaries[0].RentGroupName.Should().Be("LeaseHolders");
             rentGroupSummaries[0].SubmitDate.Should().Be(new DateTime(2021, 7, 2));
             rentGroupSummaries[0].TargetDescription.Should().Be("desc");
@@ -103,7 +101,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         new RentGroupSummaryResponse
                         {
                             Id = new Guid("a264d9c1-d419-463e-9df7-e82dff2b9539"),
-                            TargetType = TargetType.RentGroup,
                             RentGroupName = "LeaseHolders",
                             SubmitDate = new DateTime(2021, 7, 2),
                             TargetDescription = "desc",
@@ -159,7 +156,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 .ReturnsAsync(new RentGroupSummaryResponse
                 {
                     Id = new Guid("a264d9c1-d419-463e-9df7-e82dff2b9539"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders",
                     SubmitDate = new DateTime(2021, 7, 2),
                     TargetDescription = "desc",
@@ -185,7 +181,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             rentGroupSummary.Should().NotBeNull();
 
             rentGroupSummary.Id.Should().Be(new Guid("a264d9c1-d419-463e-9df7-e82dff2b9539"));
-            rentGroupSummary.TargetType.Should().Be(TargetType.RentGroup);
             rentGroupSummary.RentGroupName.Should().Be("LeaseHolders");
             rentGroupSummary.SubmitDate.Should().Be(new DateTime(2021, 7, 2));
             rentGroupSummary.TargetDescription.Should().Be("desc");
@@ -249,7 +244,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 .ReturnsAsync(new RentGroupSummaryResponse()
                 {
                     Id = new Guid("88cbb60d-4402-490d-9e8c-710472951464"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders",
                     SubmitDate = new DateTime(2021, 7, 2),
                     TargetDescription = "desc",
@@ -263,7 +257,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             var request = new AddRentGroupSummaryRequest
             {
-                TargetType = TargetType.RentGroup,
                 RentGroupName = "LeaseHolders",
                 SubmitDate = new DateTime(2021, 7, 2),
                 TargetDescription = "desc",

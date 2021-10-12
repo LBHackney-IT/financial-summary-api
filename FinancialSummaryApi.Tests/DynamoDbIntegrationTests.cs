@@ -15,8 +15,41 @@ namespace FinancialSummaryApi.Tests
 
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            new TableDef { Name = "FinancialSummaries", KeyName = "id", KeyType = ScalarAttributeType.S },
-            new TableDef { Name = "TransactionSummaries", KeyName = "id", KeyType = ScalarAttributeType.S }
+            new TableDef {
+                TableName = "FinancialSummaries",
+                PartitionKey = new AttributeDef()
+                {
+                    KeyName = "id",
+                    KeyType = KeyType.HASH,
+                    KeyScalarType = ScalarAttributeType.S
+                },
+                Indices = new List<GlobalIndexDef>{
+                    new GlobalIndexDef()
+                    {
+                        KeyName = "summary_type",
+                        KeyType = KeyType.HASH,
+                        KeyScalarType = ScalarAttributeType.S,
+                        IndexName = "summary_type_dx",
+                        ProjectionType = "ALL"
+                    },
+                    new GlobalIndexDef()
+                    {
+                        KeyName = "target_id",
+                        KeyType = KeyType.HASH,
+                        KeyScalarType = ScalarAttributeType.S,
+                        IndexName = "target_id_dx",
+                        ProjectionType = "ALL"
+                    },
+                    new GlobalIndexDef()
+                    {
+                        KeyName = "target_name",
+                        KeyType = KeyType.HASH,
+                        KeyScalarType = ScalarAttributeType.S,
+                        IndexName = "target_name_dx",
+                        ProjectionType = "ALL"
+                    }
+                }
+            },
         };
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
@@ -65,8 +98,21 @@ namespace FinancialSummaryApi.Tests
 
     public class TableDef
     {
-        public string Name { get; set; }
+        public string TableName { get; set; }
+        public AttributeDef PartitionKey { get; set; }
+        public List<GlobalIndexDef> Indices { get; set; }
+    }
+
+    public class AttributeDef
+    {
         public string KeyName { get; set; }
-        public ScalarAttributeType KeyType { get; set; }
+        public ScalarAttributeType KeyScalarType { get; set; }
+        public KeyType KeyType { get; set; }
+    }
+
+    public class GlobalIndexDef : AttributeDef
+    {
+        public string IndexName { get; set; }
+        public string ProjectionType { get; set; }
     }
 }
