@@ -65,7 +65,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         }
                     });
 
-            var result = await _weeklySummaryController.GetAll(Guid.NewGuid(), "2021-06-30", "2021-07-30").ConfigureAwait(false);
+            var result = await _weeklySummaryController.GetAll(string.Empty, string.Empty, Guid.NewGuid(), "2021-06-30", "2021-07-30").ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -99,7 +99,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _weeklySummaryController.GetAll(Guid.NewGuid(), "2021-06-30", "2021-07-30").ConfigureAwait(false);
+                var result = await _weeklySummaryController.GetAll(string.Empty, string.Empty, Guid.NewGuid(), "2021-06-30", "2021-07-30").ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
             catch (Exception ex)
@@ -127,7 +127,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                    HousingBenefitAmount = 12
                });
 
-            var result = await _weeklySummaryController.Get(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"))
+            var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -158,7 +158,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync((WeeklySummaryResponse) null);
 
-            var result = await _weeklySummaryController.Get(new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"))
+            var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -186,7 +186,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _weeklySummaryController.Get(new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
+                var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
@@ -229,7 +229,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 HousingBenefitAmount = 12
             };
 
-            var result = await _weeklySummaryController.Create(request)
+            var result = await _weeklySummaryController.Create(string.Empty, string.Empty, request)
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -258,7 +258,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task CreateWeeklySummaryWithInvalidDataReturns400()
         {
-            var result = await _weeklySummaryController.Create(null).ConfigureAwait(false);
+            var result = await _weeklySummaryController.Create(string.Empty, string.Empty, null).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -285,7 +285,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _weeklySummaryController.Create(new AddWeeklySummaryRequest { })
+                var result = await _weeklySummaryController.Create(string.Empty, string.Empty, new AddWeeklySummaryRequest { })
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
