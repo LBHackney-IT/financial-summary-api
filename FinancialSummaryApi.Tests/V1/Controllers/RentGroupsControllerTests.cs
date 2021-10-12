@@ -65,7 +65,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         }
                     });
 
-            var result = await _rentGroupsController.GetAll("", new DateTime(2021, 7, 2)).ConfigureAwait(false);
+            var result = await _rentGroupsController.GetAll(string.Empty, string.Empty, new DateTime(2021, 7, 2)).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -116,7 +116,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<RentGroupSummaryResponse> { });
 
-            var result = await _rentGroupsController.GetAll("", new DateTime(2021, 7, 1)).ConfigureAwait(false);
+            var result = await _rentGroupsController.GetAll(string.Empty, string.Empty, new DateTime(2021, 7, 1)).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -139,7 +139,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _rentGroupsController.GetAll("", new DateTime(2021, 7, 2))
+                var result = await _rentGroupsController.GetAll(string.Empty, string.Empty, new DateTime(2021, 7, 2))
                     .ConfigureAwait(false);
             }
             catch (Exception ex)
@@ -167,7 +167,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                     TotalBalance = -220
                 });
 
-            var result = await _rentGroupsController.Get("", "LeaseHolders", new DateTime(2021, 7, 2))
+            var result = await _rentGroupsController.Get(string.Empty, string.Empty, "LeaseHolders", new DateTime(2021, 7, 2))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -198,7 +198,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<string>(), It.IsAny<DateTime>()))
                 .ReturnsAsync((RentGroupSummaryResponse) null);
 
-            var result = await _rentGroupsController.Get("", "LeaseHolder", new DateTime(2021, 6, 30))
+            var result = await _rentGroupsController.Get(string.Empty, string.Empty, "LeaseHolder", new DateTime(2021, 6, 30))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -226,7 +226,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _rentGroupsController.Get("", "LeaseHolders", new DateTime(2021, 6, 30))
+                var result = await _rentGroupsController.Get(string.Empty, string.Empty, "LeaseHolders", new DateTime(2021, 6, 30))
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
@@ -268,7 +268,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 TotalBalance = -220
             };
 
-            var result = await _rentGroupsController.Create("", request).ConfigureAwait(false);
+            var result = await _rentGroupsController.Create(string.Empty, string.Empty, request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -296,7 +296,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task CreateRentGroupSummaryWithInvalidDataReturns400()
         {
-            var result = await _rentGroupsController.Create("", null).ConfigureAwait(false);
+            var result = await _rentGroupsController.Create(string.Empty, string.Empty, null).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -323,7 +323,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _rentGroupsController.Create("", new AddRentGroupSummaryRequest { })
+                var result = await _rentGroupsController.Create(string.Empty, string.Empty, new AddRentGroupSummaryRequest { })
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }

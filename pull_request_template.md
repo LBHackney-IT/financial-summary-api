@@ -1,4 +1,4 @@
-## Link to JIRA ticket
+## Link to ClickUp ticket
 
 Add a link to the JIRA ticket that the changes in this PR describe.
 
