@@ -45,5 +45,9 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// 125.23
         /// </summary>
         public decimal HousingBenefitAmount { get; set; }
+        /// <summary>
+        /// 125.23
+        /// </summary>
+        public DateTime SubmitDate { get; set; }
     }
 }

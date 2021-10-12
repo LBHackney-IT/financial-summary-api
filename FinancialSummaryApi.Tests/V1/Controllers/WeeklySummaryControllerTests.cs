@@ -212,7 +212,8 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                     BalanceAmount = 50,
                     PaidAmount = 37,
                     ChargedAmount = 99,
-                    HousingBenefitAmount = 12
+                    HousingBenefitAmount = 12,
+                    SubmitDate = DateTime.Now
                 });
 
             var request = new AddWeeklySummaryRequest
@@ -250,7 +251,8 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var weeklySummaryResponse = createdAtActionResult.Value as WeeklySummaryResponse;
 
             weeklySummaryResponse.Should().NotBeNull();
-            request.Should().BeEquivalentTo(weeklySummaryResponse, opt => opt.Excluding(a => a.Id));
+            request.Should().BeEquivalentTo(weeklySummaryResponse, opt => opt.Excluding(a => a.Id).Excluding(a => a.SubmitDate));
+            weeklySummaryResponse.SubmitDate.Should().BeSameDateAs(DateTime.Now);
         }
 
         [Fact]

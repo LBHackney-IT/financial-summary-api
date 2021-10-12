@@ -12,37 +12,35 @@ namespace FinancialSummaryApi.Tests.V1.Factories
         [Fact]
         public void CanMapADatabaseEntityToADomainObject()
         {
-            var databaseEntity = new FinanceSummaryDbEntity
+            var databaseEntity = new AssetSummaryDbEntity
             {
                 Id = new Guid("4983a920-dcac-48e5-90f6-31195a2dcb69"),
                 TargetId = new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"),
                 TargetType = TargetType.Estate,
                 SubmitDate = new DateTime(2021, 7, 2),
-                AssetSummaryData = new AssetSummaryDbEntity
-                {
-                    AssetName = "Estate 1",
-                    TotalDwellingRent = 100,
-                    TotalNonDwellingRent = 50,
-                    TotalRentalServiceCharge = 76,
-                    TotalServiceCharges = 120,
-                    TotalIncome = 123,
-                    TotalExpenditure = 99
-                }
+                TargetName = "Estate 1",
+                TotalDwellingRent = 100,
+                TotalNonDwellingRent = 50,
+                TotalRentalServiceCharge = 76,
+                TotalServiceCharges = 120,
+                TotalIncome = 123,
+                TotalExpenditure = 99
             };
 
-            var entity = databaseEntity.ToAssetDomain();
+            var entity = databaseEntity.ToDomain();
 
             databaseEntity.Id.Should().Be(entity.Id);
+            databaseEntity.SummaryType = SummaryType.AssetSummary;
             databaseEntity.TargetId.Should().Be(entity.TargetId);
             databaseEntity.TargetType.Should().Be(entity.TargetType);
             databaseEntity.SubmitDate.Should().Be(entity.SubmitDate);
-            databaseEntity.AssetSummaryData.AssetName.Should().Be(entity.AssetName);
-            databaseEntity.AssetSummaryData.TotalDwellingRent.Should().Be(entity.TotalDwellingRent);
-            databaseEntity.AssetSummaryData.TotalNonDwellingRent.Should().Be(entity.TotalNonDwellingRent);
-            databaseEntity.AssetSummaryData.TotalRentalServiceCharge.Should().Be(entity.TotalRentalServiceCharge);
-            databaseEntity.AssetSummaryData.TotalServiceCharges.Should().Be(entity.TotalServiceCharges);
-            databaseEntity.AssetSummaryData.TotalIncome.Should().Be(entity.TotalIncome);
-            databaseEntity.AssetSummaryData.TotalExpenditure.Should().Be(entity.TotalExpenditure);
+            databaseEntity.TargetName.Should().Be(entity.AssetName);
+            databaseEntity.TotalDwellingRent.Should().Be(entity.TotalDwellingRent);
+            databaseEntity.TotalNonDwellingRent.Should().Be(entity.TotalNonDwellingRent);
+            databaseEntity.TotalRentalServiceCharge.Should().Be(entity.TotalRentalServiceCharge);
+            databaseEntity.TotalServiceCharges.Should().Be(entity.TotalServiceCharges);
+            databaseEntity.TotalIncome.Should().Be(entity.TotalIncome);
+            databaseEntity.TotalExpenditure.Should().Be(entity.TotalExpenditure);
         }
 
         [Fact]
@@ -69,13 +67,13 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             entity.TargetId.Should().Be(databaseEntity.TargetId);
             entity.TargetType.Should().Be(databaseEntity.TargetType);
             entity.SubmitDate.Should().Be(databaseEntity.SubmitDate);
-            entity.AssetName.Should().Be(databaseEntity.AssetSummaryData.AssetName);
-            entity.TotalDwellingRent.Should().Be(databaseEntity.AssetSummaryData.TotalDwellingRent);
-            entity.TotalNonDwellingRent.Should().Be(databaseEntity.AssetSummaryData.TotalNonDwellingRent);
-            entity.TotalRentalServiceCharge.Should().Be(databaseEntity.AssetSummaryData.TotalRentalServiceCharge);
-            entity.TotalServiceCharges.Should().Be(databaseEntity.AssetSummaryData.TotalServiceCharges);
-            entity.TotalIncome.Should().Be(databaseEntity.AssetSummaryData.TotalIncome);
-            entity.TotalExpenditure.Should().Be(databaseEntity.AssetSummaryData.TotalExpenditure);
+            entity.AssetName.Should().Be(databaseEntity.TargetName);
+            entity.TotalDwellingRent.Should().Be(databaseEntity.TotalDwellingRent);
+            entity.TotalNonDwellingRent.Should().Be(databaseEntity.TotalNonDwellingRent);
+            entity.TotalRentalServiceCharge.Should().Be(databaseEntity.TotalRentalServiceCharge);
+            entity.TotalServiceCharges.Should().Be(databaseEntity.TotalServiceCharges);
+            entity.TotalIncome.Should().Be(databaseEntity.TotalIncome);
+            entity.TotalExpenditure.Should().Be(databaseEntity.TotalExpenditure);
         }
     }
 }

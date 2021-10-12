@@ -13,7 +13,6 @@ namespace FinancialSummaryApi.Tests.V1.Domain
             var rentGroupSummary = new RentGroupSummary()
             {
                 Id = new Guid("98d1a25e-4a88-4117-b789-c8b7a1e8e758"),
-                TargetType = TargetType.RentGroup,
                 SubmitDate = new DateTime(2021, 7, 1),
                 ArrearsYTD = 150,
                 ChargedYTD = 113,
@@ -26,7 +25,6 @@ namespace FinancialSummaryApi.Tests.V1.Domain
             };
 
             rentGroupSummary.Id.Should().Be(new Guid("98d1a25e-4a88-4117-b789-c8b7a1e8e758"));
-            rentGroupSummary.TargetType.Should().Be(TargetType.RentGroup);
             rentGroupSummary.SubmitDate.Should().Be(new DateTime(2021, 7, 1));
             rentGroupSummary.ArrearsYTD.Should().Be(150);
             rentGroupSummary.ChargedYTD.Should().Be(113);

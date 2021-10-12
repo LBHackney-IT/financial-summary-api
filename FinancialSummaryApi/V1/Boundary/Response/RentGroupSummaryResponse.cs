@@ -13,14 +13,6 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// </example>
         public Guid Id { get; set; }
 
-        /// <summary>
-        /// Values: [RentGroup]
-        /// </summary>
-        /// <example>
-        /// RentGroup
-        /// </example>
-        public TargetType TargetType { get; set; }
-
         /// <example>
         /// Leaseholders
         /// </example>

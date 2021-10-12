@@ -9,8 +9,6 @@ namespace FinancialSummaryApi.V1.Domain
     {
         public Guid Id { get; set; }
 
-        public TargetType TargetType { get; set; }
-
         public string TargetDescription { get; set; }
 
         public string RentGroupName { get; set; }

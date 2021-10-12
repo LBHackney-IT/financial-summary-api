@@ -23,5 +23,7 @@ namespace FinancialSummaryApi.V1.Domain
         public decimal BalanceAmount { get; set; }
 
         public decimal HousingBenefitAmount { get; set; }
+
+        public DateTime SubmitDate { get; set; }
     }
 }
