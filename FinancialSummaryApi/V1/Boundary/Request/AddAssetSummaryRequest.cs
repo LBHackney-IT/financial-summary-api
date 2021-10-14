@@ -19,7 +19,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         [NonEmptyGuid]
         public Guid TargetId { get; set; }
         /// <summary>
-        /// Type of the target Id. Values: [0 - Estate, 1 - Block, 2 - Core]
+        /// Type of the target Id. Values: [0 - Estate, 1 - Block, 2 - Core, 3 - Property]
         /// </summary>
         /// <example>
         /// 0

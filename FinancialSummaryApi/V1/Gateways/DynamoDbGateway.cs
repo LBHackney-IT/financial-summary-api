@@ -1,6 +1,8 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using FinancialSummaryApi.V1.Boundary.Request;
+using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
@@ -69,7 +71,7 @@ namespace FinancialSummaryApi.V1.Gateways
             };
 
             var data = await _amazonDynamoDb.QueryAsync(getAllAssetSummaryRequest).ConfigureAwait(false);
-
+            
             return data.ToAssetSummary().OrderByDescending(r => r.SubmitDate).FirstOrDefault();
         }
 
@@ -179,6 +181,58 @@ namespace FinancialSummaryApi.V1.Gateways
 
             return data.ToWeeklySummary().OrderByDescending(r => r.WeekStartDate).FirstOrDefault();
         }
+        #endregion
+
+        #region Statement
+
+        public async Task<GetStatementListResponse> GetStatementsListAsync(Guid targetId, GetStatementListRequest request)
+        {
+            QueryResponse data = null;
+            int currentPage = 1;
+            Dictionary<string, AttributeValue> lastEvaluatedKey = null;
+
+            do
+            {
+                var getStatementRequest = new QueryRequest
+                {
+                    Limit = request.PageSize,
+                    ExclusiveStartKey = lastEvaluatedKey,
+                    TableName = "FinancialSummaries",
+                    IndexName = "target_id_dx",
+                    KeyConditionExpression = "target_id = :V_target_id ",
+                    FilterExpression = "summary_type = :V_summary_type " +
+                                       "and statement_period_end_date between :V_start_date and :V_end_date",
+                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                    {
+                        { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
+                        { ":V_summary_type", new AttributeValue { S = SummaryType.Statement.ToString() } },
+                        { ":V_start_date", new AttributeValue { S = request.StartDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                        { ":V_end_date", new AttributeValue { S = request.EndDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
+                    },
+                };
+                data = await _amazonDynamoDb.QueryAsync(getStatementRequest).ConfigureAwait(false);
+
+                if (request.PageNumber == 0 || currentPage == request.PageNumber)
+                {
+                    break;
+                }
+
+                lastEvaluatedKey = data.LastEvaluatedKey;
+                ++currentPage;
+            } while (data.Count == request.PageSize && currentPage <= request.PageNumber);
+
+            return new GetStatementListResponse
+            {
+                Statements = data.ToStatement().ToResponse(),
+                Total = data.Count
+            };
+        }
+
+        public async Task AddAsync(Statement statement)
+        {
+            await _dynamoDbContext.SaveAsync(statement.ToDatabase()).ConfigureAwait(false);
+        }
+
         #endregion
 
         private static Tuple<DateTime, DateTime> GetDayRange(DateTime date)

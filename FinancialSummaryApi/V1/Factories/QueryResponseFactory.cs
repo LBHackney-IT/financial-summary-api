@@ -1,4 +1,5 @@
 using Amazon.DynamoDBv2.Model;
+using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using System;
 using System.Collections.Generic;
@@ -95,6 +96,37 @@ namespace FinancialSummaryApi.V1.Factories
             }
 
             return summaries;
+        }
+
+        public static List<Statement> ToStatement(this QueryResponse response)
+        {
+            if (response is null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            List<Statement> statements = new List<Statement>();
+
+            foreach (Dictionary<string, AttributeValue> item in response.Items)
+            {
+                statements.Add(new Statement
+                {
+                    Id = Guid.Parse(item["id"].S),
+                    TargetId = Guid.Parse(item["target_id"].S),
+                    TargetType = (TargetType) Enum.Parse(typeof(TargetType), item["target_type"].S),
+                    StatementPeriodEndDate = DateTime.Parse(item["statement_period_end_date"].S),
+                    RentAccountNumber = item["rent_account_number"].S,
+                    Address = item["address"].S,
+                    StatementType = (StatementType) Enum.Parse(typeof(StatementType), item["statement_type"].S),
+                    ChargedAmount = decimal.Parse(item["charged_amount"].N, CultureInfo.InvariantCulture),
+                    PaidAmount = decimal.Parse(item["paid_amount"].N, CultureInfo.InvariantCulture),
+                    HousingBenefitAmount = decimal.Parse(item["housing_benefit_amount"].N, CultureInfo.InvariantCulture),
+                    StartBalance = decimal.Parse(item["start_balance"].N, CultureInfo.InvariantCulture),
+                    EndBalance = decimal.Parse(item["end_balance"].N, CultureInfo.InvariantCulture),
+                });
+            }
+
+            return statements;
         }
     }
 }

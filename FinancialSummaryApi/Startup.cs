@@ -166,6 +166,8 @@ namespace FinancialSummaryApi
             services.AddScoped<IAddWeeklySummaryUseCase, AddWeeklySummaryUseCase>();
             services.AddScoped<IGetWeeklySummaryByIdUseCase, GetWeeklySummaryByIdUseCase>();
             services.AddScoped<IDbHealthCheckUseCase, DbHealthCheckUseCase>();
+            services.AddScoped<IAddStatementUseCase, AddStatementUseCase>();
+            services.AddScoped<IGetStatementsListUseCase, GetStatementsListUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
