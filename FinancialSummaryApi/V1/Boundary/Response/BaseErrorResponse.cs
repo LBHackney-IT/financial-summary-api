@@ -31,7 +31,7 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// Stack Trace of Exception
         /// </summary>
         /// <example>
-        /// at FinancialSummaryApi.V1.UseCase.AddAssetSummaryUseCase.ExecuteAsync(AddAssetSummaryRequest assetSummary)
+        /// The field PaidAmount must be from 0 to 79228162514264337593543950335
         /// </example>
         public string Details { get; set; }
     }

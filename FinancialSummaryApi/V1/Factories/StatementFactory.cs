@@ -21,7 +21,7 @@ namespace FinancialSummaryApi.V1.Factories
                 PaidAmount = databaseEntity.PaidAmount,
                 HousingBenefitAmount = databaseEntity.HousingBenefitAmount,
                 StartBalance = databaseEntity.StartBalance,
-                EndBalance = databaseEntity.EndBalance
+                FinishBalance = databaseEntity.FinishBalance
             };
         }
 
@@ -41,7 +41,7 @@ namespace FinancialSummaryApi.V1.Factories
                 PaidAmount = entity.PaidAmount,
                 HousingBenefitAmount = entity.HousingBenefitAmount,
                 StartBalance = entity.StartBalance,
-                EndBalance = entity.EndBalance
+                FinishBalance = entity.FinishBalance
             };
         }
 
@@ -59,7 +59,7 @@ namespace FinancialSummaryApi.V1.Factories
                 PaidAmount = requestModel.PaidAmount,
                 HousingBenefitAmount = requestModel.HousingBenefitAmount,
                 StartBalance = requestModel.StartBalance,
-                EndBalance = requestModel.EndBalance
+                FinishBalance = requestModel.FinishBalance
             };
         }
     }

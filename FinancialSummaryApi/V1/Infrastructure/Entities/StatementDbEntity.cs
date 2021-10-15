@@ -45,7 +45,7 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "start_balance")]
         public decimal StartBalance { get; set; }
 
-        [DynamoDBProperty(AttributeName = "end_balance")]
-        public decimal EndBalance { get; set; }
+        [DynamoDBProperty(AttributeName = "finish_balance")]
+        public decimal FinishBalance { get; set; }
     }
 }

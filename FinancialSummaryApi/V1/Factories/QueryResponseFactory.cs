@@ -122,7 +122,7 @@ namespace FinancialSummaryApi.V1.Factories
                     PaidAmount = decimal.Parse(item["paid_amount"].N, CultureInfo.InvariantCulture),
                     HousingBenefitAmount = decimal.Parse(item["housing_benefit_amount"].N, CultureInfo.InvariantCulture),
                     StartBalance = decimal.Parse(item["start_balance"].N, CultureInfo.InvariantCulture),
-                    EndBalance = decimal.Parse(item["end_balance"].N, CultureInfo.InvariantCulture),
+                    FinishBalance = decimal.Parse(item["finish_balance"].N, CultureInfo.InvariantCulture),
                 });
             }
 

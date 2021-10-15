@@ -29,6 +29,6 @@ namespace FinancialSummaryApi.V1.Domain
 
         public decimal StartBalance { get; set; }
 
-        public decimal EndBalance { get; set; }
+        public decimal FinishBalance { get; set; }
     }
 }

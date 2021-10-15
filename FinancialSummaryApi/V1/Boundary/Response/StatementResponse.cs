@@ -75,6 +75,6 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// <example>
         /// 400
         /// </example>
-        public decimal EndBalance { get; set; }
+        public decimal FinishBalance { get; set; }
     }
 }

@@ -89,7 +89,7 @@ namespace FinancialSummaryApi.V1.Factories
                 PaidAmount = domain.PaidAmount,
                 HousingBenefitAmount = domain.HousingBenefitAmount,
                 StartBalance = domain.StartBalance,
-                EndBalance = domain.EndBalance
+                FinishBalance = domain.FinishBalance
             };
         }
 
