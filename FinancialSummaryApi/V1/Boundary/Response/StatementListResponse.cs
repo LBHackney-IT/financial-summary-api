@@ -1,13 +1,13 @@
-using FinancialSummaryApi.V1.Domain;
 using System.Collections.Generic;
 
 namespace FinancialSummaryApi.V1.Boundary.Response
 {
-    public class GetStatementListResponse
+    public class StatementListResponse
     {
         public long Total { get; set; }
         public List<StatementResponse> Statements { get; set; }
-        public GetStatementListResponse()
+
+        public StatementListResponse()
         {
             Statements = new List<StatementResponse>();
         }

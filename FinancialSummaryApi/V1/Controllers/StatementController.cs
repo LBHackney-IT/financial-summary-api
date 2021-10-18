@@ -4,7 +4,6 @@ using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -16,11 +15,11 @@ namespace FinancialSummaryApi.V1.Controllers
     [ApiVersion("1.0")]
     public class StatementController : BaseController
     {
-        private readonly IGetStatementsListUseCase _getListUseCase;
+        private readonly IGetStatementListUseCase _getListUseCase;
         private readonly IAddStatementUseCase _addUseCase;
 
         public StatementController(
-            IGetStatementsListUseCase getListUseCase,
+            IGetStatementListUseCase getListUseCase,
             IAddStatementUseCase addStatementUseCase)
         {
             _getListUseCase = getListUseCase;
@@ -36,11 +35,9 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <param name="request">The parameter containing fields for pagination (page number and page size)  </param>
         /// <response code="200">Success. Statement models for specified asset were received successfully</response>
         /// <response code="400">Bad Request</response>
-        /// <response code="404">Not Found</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(GetStatementListResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(StatementListResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet("{assetId}")]
         public async Task<IActionResult> GetList([FromHeader(Name = "Authorization")] string token,
@@ -48,7 +45,7 @@ namespace FinancialSummaryApi.V1.Controllers
                                                 [FromRoute] Guid assetId,
                                                 [FromQuery] GetStatementListRequest request) 
         {
-            if(assetId == Guid.Empty)
+            if (assetId == Guid.Empty)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "AssetId should be provided!"));
             }
@@ -58,14 +55,9 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            var statementsList = await _getListUseCase.ExecuteAsync(assetId, request).ConfigureAwait(false);
+            var statementList = await _getListUseCase.ExecuteAsync(assetId, request).ConfigureAwait(false);
 
-            if(statementsList == null)
-            {
-                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No statements for provided assetId found!"));
-            }
-
-            return Ok(statementsList);
+            return Ok(statementList);
         }
 
         /// <summary>
@@ -77,7 +69,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <response code="201">Created. Statement model was created successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(StatementResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
@@ -97,7 +89,7 @@ namespace FinancialSummaryApi.V1.Controllers
 
             var resultStatement = await _addUseCase.ExecuteAsync(statement).ConfigureAwait(false);
 
-            return Created((Uri)null, resultStatement);
+            return StatusCode((int) HttpStatusCode.Created, resultStatement);
         }
     }
 }

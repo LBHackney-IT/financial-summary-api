@@ -95,25 +95,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         public async Task GetAllByAnotherDateRentGroupSummaryObjectsReturns200()
         {
             _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
-                .ReturnsAsync(
-                    new List<RentGroupSummaryResponse>()
-                    {
-                        new RentGroupSummaryResponse
-                        {
-                            Id = new Guid("a264d9c1-d419-463e-9df7-e82dff2b9539"),
-                            RentGroupName = "LeaseHolders",
-                            SubmitDate = new DateTime(2021, 7, 2),
-                            TargetDescription = "desc",
-                            ArrearsYTD = 100,
-                            ChargedYTD = 120,
-                            PaidYTD = 0,
-                            TotalCharged = 220,
-                            TotalPaid = 0,
-                            TotalBalance = -220
-                        }
-                    });
-
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<RentGroupSummaryResponse> { });
 
             var result = await _rentGroupsController.GetAll(string.Empty, string.Empty, new DateTime(2021, 7, 1)).ConfigureAwait(false);

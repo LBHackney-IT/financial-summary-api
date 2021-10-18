@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.UseCase.Interfaces
 {
-    public interface IGetStatementsListUseCase
+    public interface IGetStatementListUseCase
     {
-        Task<GetStatementListResponse> ExecuteAsync(Guid targetId, GetStatementListRequest request);
+        Task<StatementListResponse> ExecuteAsync(Guid targetId, GetStatementListRequest request);
     }
 }

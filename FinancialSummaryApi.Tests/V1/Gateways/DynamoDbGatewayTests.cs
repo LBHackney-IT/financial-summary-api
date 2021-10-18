@@ -2,6 +2,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using AutoFixture;
+using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways;
@@ -259,6 +260,99 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         }
         #endregion
 
+        #region Statements
+       
+        [Fact]
+        public async Task GetListStatementsFirstPageReturnsList()
+        {
+            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.Is<QueryRequest>(q => q.Select == Select.COUNT), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new QueryResponse()
+                {
+                    ScannedCount = 3
+                });
+            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.Is<QueryRequest>(q => q.Select != Select.COUNT), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new QueryResponse()
+                {
+                    Items = new List<Dictionary<string, AttributeValue>>()
+                    { StatementDbResponse.Items[0], StatementDbResponse.Items[1] }
+                });
+            var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
+            var request = new GetStatementListRequest()
+            {
+                PageNumber = 1,
+                PageSize = 2,
+                StartDate = new DateTime(2021, 8, 15),
+                EndDate = new DateTime(2021, 10, 15)
+            };
+            var statementList = await _gateway.GetStatementListAsync(targetId, request)
+                .ConfigureAwait(false);
+
+            statementList.Should().NotBeNull();
+            statementList.Total.Should().Be(3);
+            statementList.Statements.Should().HaveCount(2);
+
+            statementList.Statements[0].Should().BeEquivalentTo(StatementDbResponse.ToStatement()[0]);
+            statementList.Statements[1].Should().BeEquivalentTo(StatementDbResponse.ToStatement()[1]);
+        }
+
+        [Fact]
+        public async Task GetListStatementsSecondPageReturnsList()
+        {
+            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.Is<QueryRequest>(q => q.Select == Select.COUNT), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new QueryResponse()
+                {
+                    ScannedCount = 3
+                });
+            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.Is<QueryRequest>(q => q.Select != Select.COUNT), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new QueryResponse()
+                {
+                    Items = new List<Dictionary<string, AttributeValue>>()
+                    { StatementDbResponse.Items[2] }
+                });
+
+            var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
+            var request = new GetStatementListRequest()
+            {
+                PageNumber = 2,
+                PageSize = 2,
+                StartDate = new DateTime(2021, 8, 15),
+                EndDate = new DateTime(2021, 10, 15)
+            };
+            var statementList = await _gateway.GetStatementListAsync(targetId, request)
+                .ConfigureAwait(false);
+
+            statementList.Should().NotBeNull();
+            statementList.Total.Should().Be(3);
+            statementList.Statements.Should().HaveCount(1);
+
+            statementList.Statements[0].Should().BeEquivalentTo(StatementDbResponse.ToStatement()[2]);
+        }
+
+        [Fact]
+        public async Task AddStatementWithValidObject()
+        {
+            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<StatementDbEntity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            var domain = _fixture.Create<Statement>();
+
+            await _gateway.AddAsync(domain).ConfigureAwait(false);
+
+            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<StatementDbEntity>(), default), Times.Once);
+        }
+
+        [Fact]
+        public async Task AddStatementWithInvalidObject()
+        {
+            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<StatementDbEntity>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+
+            await _gateway.AddAsync((Statement) null).ConfigureAwait(false);
+
+            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<StatementDbEntity>(), default), Times.Once);
+        }
+        #endregion
+
         private QueryResponse _rentGroupDbResponse;
         private QueryResponse RentGroupDbResponse
         {
@@ -285,10 +379,12 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         private static Dictionary<string, AttributeValue> CreateRentGroupDbRecord(string rentGroupName, DateTime submitDate)
         {
             Random rand = new Random();
+            var summaryTypes = Enum.GetValues(typeof(SummaryType));
 
             return new Dictionary<string, AttributeValue>()
             {
                 { "id", new AttributeValue(Guid.NewGuid().ToString()) },
+                { "summary_type", new AttributeValue(summaryTypes.GetValue(rand.Next(0, summaryTypes.Length - 1)).ToString()) },
                 { "arrears_ytd", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
                 { "charged_ytd", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
                 { "paid_ytd", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
@@ -328,13 +424,15 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         {
             Random rand = new Random();
 
-            var types = Enum.GetValues(typeof(TargetType));
+            var targetTypes = Enum.GetValues(typeof(TargetType));
+            var summaryTypes = Enum.GetValues(typeof(SummaryType));
 
             return new Dictionary<string, AttributeValue>()
             {
                 { "id", new AttributeValue(Guid.NewGuid().ToString()) },
                 { "target_id", new AttributeValue(targetId.ToString()) },
-                { "target_type", new AttributeValue(types.GetValue(rand.Next(0, types.Length - 1)).ToString()) },
+                { "summary_type", new AttributeValue(summaryTypes.GetValue(rand.Next(0, summaryTypes.Length - 1)).ToString()) },
+                { "target_type", new AttributeValue(targetTypes.GetValue(rand.Next(0, targetTypes.Length - 1)).ToString()) },
                 { "target_name", new AttributeValue("Some target name") },
                 { "submit_date", new AttributeValue(submitDate.ToString()) },
                 { "total_dwelling_rent", new AttributeValue(){ N = (rand.NextDouble() * 50).ToString() } },
@@ -372,10 +470,12 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         private static Dictionary<string, AttributeValue> CreateWeeklyDbRecord(Guid id, DateTime weeklyStartDate)
         {
             Random rand = new Random();
+            var summaryTypes = Enum.GetValues(typeof(SummaryType));
 
             return new Dictionary<string, AttributeValue>()
             {
                 { "id", new AttributeValue(id.ToString()) },
+                { "summary_type", new AttributeValue(summaryTypes.GetValue(rand.Next(0, summaryTypes.Length - 1)).ToString()) },
                 { "target_id", new AttributeValue(Guid.NewGuid().ToString()) },
                 { "period_no", new AttributeValue(){ N = rand.Next(0, 10).ToString() } },
                 { "financial_year", new AttributeValue(){ N = rand.Next(2018, 2021).ToString() } },
@@ -386,6 +486,57 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 { "balance_amount", new AttributeValue(){ N = (rand.NextDouble() * 50).ToString() } },
                 { "housing_benefit_amount", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
                 { "submit_date", new AttributeValue(DateTime.Now.ToString()) },
+            };
+        }
+
+        private QueryResponse _statementDbResponse;
+        private QueryResponse StatementDbResponse
+        {
+            get
+            {
+                if (_statementDbResponse == null)
+                {
+                    _statementDbResponse = new QueryResponse()
+                    {
+                        Items = new List<Dictionary<string, AttributeValue>>()
+                        {
+                            CreateStatementDbRecord(Guid.Parse("fdd9c513-50b0-4fde-ae75-176f8208c4cd"), new DateTime(2021, 8, 15)),
+                            CreateStatementDbRecord(Guid.Parse("fdd9c513-50b0-4fde-ae75-176f8208c4cd"), new DateTime(2021, 9, 15)),
+                            CreateStatementDbRecord(Guid.Parse("fdd9c513-50b0-4fde-ae75-176f8208c4cd"), new DateTime(2021, 10, 15)),
+                            CreateStatementDbRecord(Guid.Parse("333244c1-d125-4c04-a306-6f2e337961a2"), new DateTime(2020, 9, 9)),
+                            CreateStatementDbRecord(Guid.Parse("4fc2872e-5131-4399-8959-c4a17b611f9c"), new DateTime(2020, 9, 9)),
+                            CreateStatementDbRecord(Guid.Parse("9f84f01b-fb23-43bf-9bf3-6cb37faa89c7"), new DateTime(2020, 8, 15))
+                        }
+                    };
+                }
+
+                return _statementDbResponse;
+            }
+        }
+
+        private static Dictionary<string, AttributeValue> CreateStatementDbRecord(Guid targetId, DateTime statementPeriodEndDate)
+        {
+            Random rand = new Random();
+
+            var targetTypes = Enum.GetValues(typeof(TargetType));
+            var summaryTypes = Enum.GetValues(typeof(SummaryType));
+            var statementTypes = Enum.GetValues(typeof(StatementType));
+
+            return new Dictionary<string, AttributeValue>()
+            {
+                { "id", new AttributeValue(Guid.NewGuid().ToString()) },
+                { "target_id", new AttributeValue(targetId.ToString()) },
+                { "target_type", new AttributeValue(targetTypes.GetValue(rand.Next(0, targetTypes.Length - 1)).ToString()) },
+                { "summary_type", new AttributeValue(summaryTypes.GetValue(rand.Next(0, summaryTypes.Length - 1)).ToString()) },
+                { "statement_period_end_date", new AttributeValue(statementPeriodEndDate.ToString()) },
+                { "rent_account_number", new AttributeValue("Some account number") },
+                { "address", new AttributeValue("Some address") },
+                { "statement_type", new AttributeValue(statementTypes.GetValue(rand.Next(0, statementTypes.Length - 1)).ToString()) },
+                { "charged_amount", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
+                { "paid_amount", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
+                { "housing_benefit_amount", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
+                { "start_balance", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
+                { "finish_balance", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
             };
         }
     }

@@ -1,8 +1,8 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using Amazon.Runtime.Internal.Transform;
 using FinancialSummaryApi.V1.Boundary.Request;
-using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
@@ -33,6 +33,8 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(DateTime submitDate)
         {
+            var (submitDateStart, submitDateEnd) = GetDayRange(submitDate);
+
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
@@ -41,8 +43,8 @@ namespace FinancialSummaryApi.V1.Gateways
                 FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
-                    { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.AssetSummary.ToString() } },
                 }
             };
@@ -54,6 +56,8 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
         {
+            var (submitDateStart, submitDateEnd) = GetDayRange(submitDate);
+
             QueryRequest getAllAssetSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
@@ -64,8 +68,8 @@ namespace FinancialSummaryApi.V1.Gateways
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_target_id", new AttributeValue{ S = assetId.ToString() } },
-                    { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.AssetSummary.ToString() } },
                 }
             };
@@ -86,6 +90,8 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
         {
+            var (submitDateStart, submitDateEnd) = GetDayRange(submitDate);
+
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
@@ -94,8 +100,8 @@ namespace FinancialSummaryApi.V1.Gateways
                 FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
-                    { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.RentGroupSummary.ToString() } },
                 }
             };
@@ -107,6 +113,8 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName, DateTime submitDate)
         {
+            var (submitDateStart, submitDateEnd) = GetDayRange(submitDate); 
+
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
@@ -116,8 +124,8 @@ namespace FinancialSummaryApi.V1.Gateways
                                    "and submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
-                    { ":V_submit_date_start", new AttributeValue { S = GetDayRange(submitDate).Item1.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_submit_date_end", new AttributeValue { S = GetDayRange(submitDate).Item2.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_target_name", new AttributeValue { S = rentGroupName } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.RentGroupSummary.ToString() } },
                 }
@@ -184,13 +192,38 @@ namespace FinancialSummaryApi.V1.Gateways
         #endregion
 
         #region Statement
-
-        public async Task<GetStatementListResponse> GetStatementsListAsync(Guid targetId, GetStatementListRequest request)
+        public async Task<StatementList> GetStatementListAsync(Guid targetId, GetStatementListRequest request)
         {
+            var startDate = request.StartDate.Date;
+            var endDate = request.EndDate.Date;
+
+            if (startDate == endDate)
+            {
+               (startDate, endDate) = GetDayRange(startDate);
+            }
+
+            var countRequest = new QueryRequest
+            {
+                TableName = "FinancialSummaries",
+                IndexName = "target_id_dx",
+                KeyConditionExpression = "target_id = :V_target_id ",
+                FilterExpression = "summary_type = :V_summary_type " +
+                                      "and statement_period_end_date between :V_start_date and :V_end_date",
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                    {
+                        { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
+                        { ":V_summary_type", new AttributeValue { S = SummaryType.Statement.ToString() } },
+                        { ":V_start_date", new AttributeValue { S = startDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                        { ":V_end_date", new AttributeValue { S = endDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
+                    },
+                Select = Select.COUNT
+            };
+            var countResult = await _amazonDynamoDb.QueryAsync(countRequest).ConfigureAwait(false);
+            long total = countResult.ScannedCount;
+
+            Dictionary<string, AttributeValue> lastEvaluatedKey = null;
             QueryResponse data = null;
             int currentPage = 1;
-            Dictionary<string, AttributeValue> lastEvaluatedKey = null;
-
             do
             {
                 var getStatementRequest = new QueryRequest
@@ -206,10 +239,12 @@ namespace FinancialSummaryApi.V1.Gateways
                     {
                         { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
                         { ":V_summary_type", new AttributeValue { S = SummaryType.Statement.ToString() } },
-                        { ":V_start_date", new AttributeValue { S = request.StartDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                        { ":V_end_date", new AttributeValue { S = request.EndDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
+                        { ":V_start_date", new AttributeValue { S = startDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                        { ":V_end_date", new AttributeValue { S = endDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
                     },
+                    
                 };
+                
                 data = await _amazonDynamoDb.QueryAsync(getStatementRequest).ConfigureAwait(false);
 
                 if (request.PageNumber == 0 || currentPage == request.PageNumber)
@@ -221,10 +256,10 @@ namespace FinancialSummaryApi.V1.Gateways
                 ++currentPage;
             } while (data.Count == request.PageSize && currentPage <= request.PageNumber);
 
-            return new GetStatementListResponse
+            return new StatementList
             {
-                Statements = data.ToStatement().ToResponse(),
-                Total = data.Count
+                Total = total,
+                Statements = data.ToStatement()
             };
         }
 

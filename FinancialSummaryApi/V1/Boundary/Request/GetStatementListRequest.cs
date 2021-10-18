@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace FinancialSummaryApi.V1.Boundary.Request
 {
@@ -8,11 +9,13 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// <summary>
         /// The size of a page
         /// </summary>
+        [Range(1, int.MaxValue)]
         public int PageSize { get; set; } = _defaultPageSize;
 
         /// <summary>
         /// The number of a page
         /// </summary>
+        [Range(1, int.MaxValue)]
         public int PageNumber { get; set; } = 1;
 
         /// <summary>
