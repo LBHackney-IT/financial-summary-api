@@ -1,8 +1,6 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
-using Amazon.Runtime.Internal.Transform;
-using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
@@ -192,75 +190,41 @@ namespace FinancialSummaryApi.V1.Gateways
         #endregion
 
         #region Statement
-        public async Task<StatementList> GetStatementListAsync(Guid targetId, GetStatementListRequest request)
+        public async Task<long> GetStatementsTotalAsync(Guid targetId, DateTime startDate, DateTime endDate)
         {
-            var startDate = request.StartDate.Date;
-            var endDate = request.EndDate.Date;
+            var data = await GetStatementsByDateRangeQueryResponse(targetId, startDate, endDate, Select.COUNT).ConfigureAwait(false);
 
-            if (startDate == endDate)
-            {
-               (startDate, endDate) = GetDayRange(startDate);
-            }
+            return data.Count;
+        }
 
-            var countRequest = new QueryRequest
+        public async Task<List<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, int pageNumber)
+        {
+            var data = await GetStatementsByDateRangeQueryResponse(targetId, startDate, endDate, Select.ALL_ATTRIBUTES).ConfigureAwait(false);
+            var pagedStatements = data.ToStatement().Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+            return new List<Statement>(pagedStatements);
+        }
+
+        private async Task<QueryResponse> GetStatementsByDateRangeQueryResponse(Guid targetId, DateTime startDate, DateTime endDate, Select select)
+        {
+            var request = new QueryRequest
             {
                 TableName = "FinancialSummaries",
                 IndexName = "target_id_dx",
                 KeyConditionExpression = "target_id = :V_target_id ",
                 FilterExpression = "summary_type = :V_summary_type " +
-                                      "and statement_period_end_date between :V_start_date and :V_end_date",
+                                   "and statement_period_end_date between :V_start_date and :V_end_date",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                    {
-                        { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
-                        { ":V_summary_type", new AttributeValue { S = SummaryType.Statement.ToString() } },
-                        { ":V_start_date", new AttributeValue { S = startDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                        { ":V_end_date", new AttributeValue { S = endDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
-                    },
-                Select = Select.COUNT
-            };
-            var countResult = await _amazonDynamoDb.QueryAsync(countRequest).ConfigureAwait(false);
-            long total = countResult.ScannedCount;
-
-            Dictionary<string, AttributeValue> lastEvaluatedKey = null;
-            QueryResponse data = null;
-            int currentPage = 1;
-            do
-            {
-                var getStatementRequest = new QueryRequest
                 {
-                    Limit = request.PageSize,
-                    ExclusiveStartKey = lastEvaluatedKey,
-                    TableName = "FinancialSummaries",
-                    IndexName = "target_id_dx",
-                    KeyConditionExpression = "target_id = :V_target_id ",
-                    FilterExpression = "summary_type = :V_summary_type " +
-                                       "and statement_period_end_date between :V_start_date and :V_end_date",
-                    ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                    {
-                        { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
-                        { ":V_summary_type", new AttributeValue { S = SummaryType.Statement.ToString() } },
-                        { ":V_start_date", new AttributeValue { S = startDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                        { ":V_end_date", new AttributeValue { S = endDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
-                    },
-                    
-                };
-                
-                data = await _amazonDynamoDb.QueryAsync(getStatementRequest).ConfigureAwait(false);
-
-                if (request.PageNumber == 0 || currentPage == request.PageNumber)
-                {
-                    break;
-                }
-
-                lastEvaluatedKey = data.LastEvaluatedKey;
-                ++currentPage;
-            } while (data.Count == request.PageSize && currentPage <= request.PageNumber);
-
-            return new StatementList
-            {
-                Total = total,
-                Statements = data.ToStatement()
+                    { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
+                    { ":V_summary_type", new AttributeValue { S = SummaryType.Statement.ToString() } },
+                    { ":V_start_date", new AttributeValue { S = startDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
+                    { ":V_end_date", new AttributeValue { S = endDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
+                },
+                Select = select
             };
+
+            return await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false);
         }
 
         public async Task AddAsync(Statement statement)

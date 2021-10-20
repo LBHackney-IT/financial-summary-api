@@ -1,3 +1,4 @@
+using FinancialSummaryApi.V1.Infrastructure;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,11 +22,13 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// <summary>
         /// The start date from when we want to filter statements
         /// </summary>
+        [RequiredDateTime]
         public DateTime StartDate { get; set; }
 
         /// <summary>
         /// The end date until when we want to filter statements
         /// </summary>
+        [RequiredDateTime]
         public DateTime EndDate { get; set; }
     }
 }

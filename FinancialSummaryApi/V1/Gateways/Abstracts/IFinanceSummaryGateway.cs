@@ -1,5 +1,3 @@
-using FinancialSummaryApi.V1.Boundary.Request;
-using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using System;
 using System.Collections.Generic;
@@ -17,7 +15,8 @@ namespace FinancialSummaryApi.V1.Gateways.Abstracts
 
         Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid id);
         Task<List<WeeklySummary>> GetAllWeeklySummaryAsync(Guid targetId, DateTime? startDate, DateTime? endDate);
-        Task<StatementList> GetStatementListAsync(Guid targetId, GetStatementListRequest request);
+        public Task<long> GetStatementsTotalAsync(Guid targetId, DateTime startDate, DateTime endDate);
+        public Task<List<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, int pageNumber);
 
         public Task AddAsync(RentGroupSummary groupSummary);
         public Task AddAsync(AssetSummary assetSummary);

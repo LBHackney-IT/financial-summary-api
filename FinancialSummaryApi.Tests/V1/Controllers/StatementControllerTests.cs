@@ -107,7 +107,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         }
 
         [Fact]
-        public async Task GetList_WithDateNotInRange_Returns200()
+        public async Task GetList_WithInvalidDateRange_Returns400()
         { 
             _getListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<GetStatementListRequest>()))
                 .ReturnsAsync(new StatementListResponse());
@@ -116,22 +116,29 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 PageSize = 2,
                 PageNumber = 1,
                 StartDate = new DateTime(2021, 8, 3),
-                EndDate = new DateTime(2021, 8, 5)
+                EndDate = new DateTime(2021, 8, 1)
             };
             var result = await _statementController.GetList(string.Empty, string.Empty, new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"), request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
-            var okResult = result as OkObjectResult;
+            var badRequestResult = result as BadRequestObjectResult;
 
-            okResult.Should().NotBeNull();
+            badRequestResult.Should().NotBeNull();
 
-            var statementList = okResult.Value as StatementListResponse;
+            var response = badRequestResult.Value as BaseErrorResponse;
 
-            statementList.Should().NotBeNull();
-            statementList.Total.Should().Be(0);
+            response.Should().NotBeNull();
 
-            statementList.Statements.Should().HaveCount(0);
+            response.Should().NotBeNull();
+
+            response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+
+            response.Details.Should().Be("");
+
+            response.Message.Should().Be("StartDate can't be greater than EndDate.");
+
+            _getListUseCase.Verify(x => x.ExecuteAsync(new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"), request), Times.Never);
         }
 
         [Fact]

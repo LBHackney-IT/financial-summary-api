@@ -55,6 +55,11 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
+            if (request.StartDate > request.EndDate)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "StartDate can't be greater than EndDate."));
+            }
+
             var statementList = await _getListUseCase.ExecuteAsync(assetId, request).ConfigureAwait(false);
 
             return Ok(statementList);
