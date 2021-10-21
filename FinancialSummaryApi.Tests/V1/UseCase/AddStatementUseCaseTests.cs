@@ -1,6 +1,8 @@
+using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
+using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
@@ -14,12 +16,18 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
     {
         private readonly Mock<IFinanceSummaryGateway> _mockFinanceGateway;
         private readonly AddStatementUseCase _useCase;
-
+        private readonly IMapper _mapper;
         public AddStatementUseCaseTests()
         {
             _mockFinanceGateway = new Mock<IFinanceSummaryGateway>();
 
-            _useCase = new AddStatementUseCase(_mockFinanceGateway.Object);
+            if (_mapper == null)
+            {
+                var mappingConfig = new MapperConfiguration(mc =>
+                    mc.AddProfile(new MappingProfile()));
+                _mapper = mappingConfig.CreateMapper();
+            }
+            _useCase = new AddStatementUseCase(_mockFinanceGateway.Object, _mapper);
         }
 
         [Fact]
@@ -41,7 +49,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 ex.Message.Should().Be("Value cannot be null. (Parameter 'statement')");
             }
         }
-
 
         [Fact]
         public async Task Add_ValidModel_CallsGateway()

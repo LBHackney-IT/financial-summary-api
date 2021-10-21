@@ -73,29 +73,5 @@ namespace FinancialSummaryApi.V1.Factories
         {
             return domainList?.Select(domain => domain.ToResponse())?.ToList();
         }
-
-        public static StatementResponse ToResponse(this Statement domain)
-        {
-            return domain == null ? null : new StatementResponse
-            {
-                Id = domain.Id,
-                TargetId = domain.TargetId,
-                TargetType = domain.TargetType,
-                StatementPeriodEndDate = domain.StatementPeriodEndDate,
-                RentAccountNumber = domain.RentAccountNumber,
-                Address = domain.Address,
-                StatementType = domain.StatementType,
-                ChargedAmount = domain.ChargedAmount,
-                PaidAmount = domain.PaidAmount,
-                HousingBenefitAmount = domain.HousingBenefitAmount,
-                StartBalance = domain.StartBalance,
-                FinishBalance = domain.FinishBalance
-            };
-        }
-
-        public static List<StatementResponse> ToResponse(this IEnumerable<Statement> domainList)
-        {
-            return domainList?.Select(domain => domain.ToResponse())?.ToList();
-        }
     }
 }

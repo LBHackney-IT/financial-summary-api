@@ -34,19 +34,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             return entity;
         }
 
-        /// <summary>
-        /// Method to add an entity instance to the database so that it can be used in a test.
-        /// Also adds the corresponding action to remove the upserted data from the database when the test is done.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        private async Task SetupTestData(Statement entity)
-        {
-            await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
-
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<StatementDbEntity>(entity.Id).ConfigureAwait(false));
-        }
-
         [Fact]
         public async Task GetStatementListWithInvalidAssetIdReturns400()
         {
@@ -70,8 +57,9 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         public async Task GetStatementListWithInvalidPageNumberReturns400()
         {
             Guid assetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354");
+            var startDate = DateTime.Now;
 
-            var uri = new Uri($"api/v1/statements/{assetId}?pageNumber=0", UriKind.Relative);
+            var uri = new Uri($"api/v1/statements/{assetId}?pageNumber=0&startDate={startDate}&endDate={startDate}", UriKind.Relative);
             var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

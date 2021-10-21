@@ -2,10 +2,12 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using AutoFixture;
+using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways;
+using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Moq;
@@ -23,12 +25,19 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         private readonly Mock<IDynamoDBContext> _dynamoDb;
         private readonly Mock<IAmazonDynamoDB> _amazonDynamoDB;
         private readonly DynamoDbGateway _gateway;
+        private static IMapper _mapper;
 
         public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
             _amazonDynamoDB = new Mock<IAmazonDynamoDB>();
-            _gateway = new DynamoDbGateway(_dynamoDb.Object, _amazonDynamoDB.Object);
+            if (_mapper == null)
+            {
+                var mappingConfig = new MapperConfiguration(mc =>
+                    mc.AddProfile(new MappingProfile()));
+                _mapper = mappingConfig.CreateMapper();
+            }
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _amazonDynamoDB.Object, _mapper);
         }
 
         #region Assets
@@ -326,6 +335,9 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 StartDate = new DateTime(2021, 8, 15),
                 EndDate = new DateTime(2021, 10, 15)
             };
+            var statementsDbResponse = _mapper.Map<List<Statement>>(StatementDbResponse);
+            var expectedStatementFirst = statementsDbResponse[0];
+            var expectedStatementSecond = statementsDbResponse[2];
 
             var statementList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PageNumber)
                 .ConfigureAwait(false);
@@ -333,8 +345,8 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             statementList.Should().NotBeNull();
             statementList.Should().HaveCount(2);
 
-            statementList[0].Should().BeEquivalentTo(StatementDbResponse.ToStatement()[0]);
-            statementList[1].Should().BeEquivalentTo(StatementDbResponse.ToStatement()[2]);
+            statementList[0].Should().BeEquivalentTo(expectedStatementFirst);
+            statementList[1].Should().BeEquivalentTo(expectedStatementSecond);
         }
 
         [Fact]
@@ -355,13 +367,16 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 StartDate = new DateTime(2021, 8, 15),
                 EndDate = new DateTime(2021, 10, 15)
             };
+            var statementsDbResponse = _mapper.Map<List<Statement>>(StatementDbResponse);
+            var expectedStatement = statementsDbResponse[5];
+
             var statementList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PageNumber)
                 .ConfigureAwait(false);
 
             statementList.Should().NotBeNull();
             statementList.Should().HaveCount(1);
 
-            statementList[0].Should().BeEquivalentTo(StatementDbResponse.ToStatement()[5]);
+            statementList[0].Should().BeEquivalentTo(expectedStatement);
         }
 
         [Fact]

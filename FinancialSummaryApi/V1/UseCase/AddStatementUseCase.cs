@@ -4,17 +4,20 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
-using FinancialSummaryApi.V1.Factories;
+using AutoMapper;
+using FinancialSummaryApi.V1.Domain;
 
 namespace FinancialSummaryApi.V1.UseCase
 {
     public class AddStatementUseCase : IAddStatementUseCase
     {
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
+        private readonly IMapper _mapper;
 
-        public AddStatementUseCase(IFinanceSummaryGateway financeSummaryGateway)
+        public AddStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IMapper mapper)
         {
             _financeSummaryGateway = financeSummaryGateway;
+            _mapper = mapper;
         }
 
         public async Task<StatementResponse> ExecuteAsync(AddStatementRequest statement)
@@ -24,13 +27,13 @@ namespace FinancialSummaryApi.V1.UseCase
                 throw new ArgumentNullException(nameof(statement));
             }
 
-            var domainModel = statement.ToDomain();
+            var domainModel = _mapper.Map<Statement>(statement);
 
             domainModel.Id = Guid.NewGuid();
 
             await _financeSummaryGateway.AddAsync(domainModel).ConfigureAwait(false);
 
-            return domainModel.ToResponse();
+            return _mapper.Map<StatementResponse>(domainModel);
         }
     }
 }

@@ -1,8 +1,10 @@
+using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
+using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
@@ -17,11 +19,19 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
     {
         private readonly Mock<IFinanceSummaryGateway> _mockFinanceGateway;
         private readonly GetStatementListUseCase _getStatementListUseCase;
+        private readonly IMapper _mapper;
 
         public GetStatementListUseCaseTests()
         {
             _mockFinanceGateway = new Mock<IFinanceSummaryGateway>();
-            _getStatementListUseCase = new GetStatementListUseCase(_mockFinanceGateway.Object);
+
+            if (_mapper == null)
+            {
+                var mappingConfig = new MapperConfiguration(mc =>
+                    mc.AddProfile(new MappingProfile()));
+                _mapper = mappingConfig.CreateMapper();
+            }
+            _getStatementListUseCase = new GetStatementListUseCase(_mockFinanceGateway.Object, _mapper);
         }
 
         [Fact]
@@ -74,11 +84,10 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 .ReturnsAsync(expectedTotal);
             _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(statements);
-
             var expectedResult = new StatementListResponse()
             {
                 Total = expectedTotal,
-                Statements = statements.ToResponse()
+                Statements = _mapper.Map<List<StatementResponse>>(statements)
             };
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
@@ -141,7 +150,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             var expectedResult = new StatementListResponse()
             {
                 Total = expectedTotal,
-                Statements = statements.ToResponse()
+                Statements = _mapper.Map<List<StatementResponse>>(statements)
             };
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
@@ -171,7 +180,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             var expectedResult = new StatementListResponse()
             {
                 Total = expectedTotal,
-                Statements = expectedStatements?.ToResponse()
+                Statements = _mapper.Map<List<StatementResponse>>(expectedStatements)
             };
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
@@ -201,7 +210,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             var expectedResult = new StatementListResponse()
             {
                 Total = expectedTotal,
-                Statements = expectedStatements?.ToResponse()
+                Statements = _mapper.Map<List<StatementResponse>>(expectedStatements)
             };
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);

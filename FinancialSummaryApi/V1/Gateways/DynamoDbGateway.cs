@@ -1,13 +1,16 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
+using AutoMapper;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
+using FinancialSummaryApi.V1.Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.Infrastructure;
 
 namespace FinancialSummaryApi.V1.Gateways
 {
@@ -15,11 +18,13 @@ namespace FinancialSummaryApi.V1.Gateways
     {
         private readonly IAmazonDynamoDB _amazonDynamoDb;
         private readonly IDynamoDBContext _dynamoDbContext;
+        private readonly IMapper _mapper;
 
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb, IMapper mapper)
         {
             _dynamoDbContext = dynamoDbContext;
             _amazonDynamoDb = amazonDynamoDb;
+            _mapper = mapper;
         }
 
         #region Asset Summary
@@ -31,7 +36,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(DateTime submitDate)
         {
-            var (submitDateStart, submitDateEnd) = GetDayRange(submitDate);
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
 
             QueryRequest getSummaryRequest = new QueryRequest
             {
@@ -54,7 +59,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
         {
-            var (submitDateStart, submitDateEnd) = GetDayRange(submitDate);
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
 
             QueryRequest getAllAssetSummaryRequest = new QueryRequest
             {
@@ -88,7 +93,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
         {
-            var (submitDateStart, submitDateEnd) = GetDayRange(submitDate);
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
 
             QueryRequest getSummaryRequest = new QueryRequest
             {
@@ -111,7 +116,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName, DateTime submitDate)
         {
-            var (submitDateStart, submitDateEnd) = GetDayRange(submitDate); 
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange(); 
 
             QueryRequest getSummaryRequest = new QueryRequest
             {
@@ -200,7 +205,8 @@ namespace FinancialSummaryApi.V1.Gateways
         public async Task<List<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, int pageNumber)
         {
             var data = await GetStatementsByDateRangeQueryResponse(targetId, startDate, endDate, Select.ALL_ATTRIBUTES).ConfigureAwait(false);
-            var pagedStatements = data.ToStatement().Skip((pageNumber - 1) * pageSize).Take(pageSize);
+            var statements = _mapper.Map<List<Statement>>(data); 
+            var pagedStatements = statements.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
             return new List<Statement>(pagedStatements);
         }
@@ -229,12 +235,10 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task AddAsync(Statement statement)
         {
-            await _dynamoDbContext.SaveAsync(statement.ToDatabase()).ConfigureAwait(false);
+            var statementDb = _mapper.Map<StatementDbEntity>(statement);
+            await _dynamoDbContext.SaveAsync(statementDb).ConfigureAwait(false);
         }
 
         #endregion
-
-        private static Tuple<DateTime, DateTime> GetDayRange(DateTime date)
-            => new Tuple<DateTime, DateTime>(date.Date, date.Date.AddHours(23).AddMinutes(59));
     }
 }
