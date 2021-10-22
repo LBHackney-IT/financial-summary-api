@@ -42,7 +42,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 await _useCase.ExecuteAsync(statementModel).ConfigureAwait(false);
                 Assert.True(false, "ArgumentNullException should be thrown!");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 ex.Should().NotBeNull();
                 ex.Should().BeOfType<ArgumentNullException>();

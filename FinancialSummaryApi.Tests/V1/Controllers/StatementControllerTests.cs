@@ -246,7 +246,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             objectResult.StatusCode.Should().NotBeNull();
 
-            objectResult.StatusCode.Should().Be((int)HttpStatusCode.Created);
+            objectResult.StatusCode.Should().Be((int) HttpStatusCode.Created);
 
             objectResult.Value.Should().NotBeNull();
 
