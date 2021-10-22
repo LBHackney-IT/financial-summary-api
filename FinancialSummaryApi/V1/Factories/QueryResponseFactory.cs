@@ -114,7 +114,7 @@ namespace FinancialSummaryApi.V1.Factories
                     Id = Guid.Parse(item["id"].S),
                     TargetId = Guid.Parse(item["target_id"].S),
                     TargetType = (TargetType) Enum.Parse(typeof(TargetType), item["target_type"].S),
-                    StatementPeriodEndDate = DateTime.Parse(item["statement_period_end_date"].S),
+                    StatementPeriodEndDate = DateTime.Parse(item["statement_period_end_date"].S).ToUniversalTime(),
                     RentAccountNumber = item["rent_account_number"].S,
                     Address = item["address"].S,
                     StatementType = (StatementType) Enum.Parse(typeof(StatementType), item["statement_type"].S),

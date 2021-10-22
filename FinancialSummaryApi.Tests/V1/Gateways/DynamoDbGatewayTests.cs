@@ -280,7 +280,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 {
                     Count = expectedTotal
                 });
-           
+
             var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
 
             DateTime StartDate = new DateTime(2021, 8, 15);
@@ -301,7 +301,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 {
                     Count = expectedTotal
                 });
-           
+
             var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
             var request = new GetStatementListRequest()
             {

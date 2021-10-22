@@ -78,7 +78,7 @@ namespace FinancialSummaryApi.V1.Gateways
             };
 
             var data = await _amazonDynamoDb.QueryAsync(getAllAssetSummaryRequest).ConfigureAwait(false);
-            
+
             return data.ToAssetSummary().OrderByDescending(r => r.SubmitDate).FirstOrDefault();
         }
 
@@ -116,7 +116,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName, DateTime submitDate)
         {
-            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange(); 
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
 
             QueryRequest getSummaryRequest = new QueryRequest
             {
@@ -195,7 +195,7 @@ namespace FinancialSummaryApi.V1.Gateways
         #endregion
 
         #region Statement
-        public async Task<long> GetStatementsTotalAsync(Guid targetId, DateTime startDate, DateTime endDate)
+        public async Task<int> GetStatementsTotalAsync(Guid targetId, DateTime startDate, DateTime endDate)
         {
             var data = await GetStatementsByDateRangeQueryResponse(targetId, startDate, endDate, Select.COUNT).ConfigureAwait(false);
 
@@ -205,7 +205,7 @@ namespace FinancialSummaryApi.V1.Gateways
         public async Task<List<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, int pageNumber)
         {
             var data = await GetStatementsByDateRangeQueryResponse(targetId, startDate, endDate, Select.ALL_ATTRIBUTES).ConfigureAwait(false);
-            var statements = _mapper.Map<List<Statement>>(data); 
+            var statements = _mapper.Map<List<Statement>>(data);
             var pagedStatements = statements.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
             return new List<Statement>(pagedStatements);

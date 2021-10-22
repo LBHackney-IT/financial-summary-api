@@ -43,7 +43,7 @@ namespace FinancialSummaryApi.V1.Controllers
         public async Task<IActionResult> GetList([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromRoute] Guid assetId,
-                                                [FromQuery] GetStatementListRequest request) 
+                                                [FromQuery] GetStatementListRequest request)
         {
             if (assetId == Guid.Empty)
             {

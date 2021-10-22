@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json.schemastore.org/launchsettings.json",
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -7,18 +8,16 @@
       "sslPort": 44394
     }
   },
-  "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
     "financial_summary_api": {
       "commandName": "Project",
-      "launchBrowser": true,
       "launchUrl": "swagger/index.html",
       "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
         "DynamoDb_LocalServiceUrl": "http://localhost:8000",
-        "DynamoDb_LocalAccessKey": "fco1i2",
-        "DynamoDb_LocalSecretKey": "8kmm3g",
         "DynamoDb_LocalMode": "true",
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "DynamoDb_LocalSecretKey": "8kmm3g",
+        "DynamoDb_LocalAccessKey": "fco1i2"
       },
       "applicationUrl": "http://localhost:5000"
     },

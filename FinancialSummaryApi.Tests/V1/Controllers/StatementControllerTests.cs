@@ -108,7 +108,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
         [Fact]
         public async Task GetList_WithInvalidDateRange_Returns400()
-        { 
+        {
             _getListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<GetStatementListRequest>()))
                 .ReturnsAsync(new StatementListResponse());
             var request = new GetStatementListRequest
@@ -246,7 +246,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             objectResult.StatusCode.Should().NotBeNull();
 
-            objectResult.StatusCode.Should().Be(((int)HttpStatusCode.Created));
+            objectResult.StatusCode.Should().Be((int)HttpStatusCode.Created);
 
             objectResult.Value.Should().NotBeNull();
 

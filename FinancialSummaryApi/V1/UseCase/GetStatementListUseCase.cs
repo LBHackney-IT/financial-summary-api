@@ -26,23 +26,30 @@ namespace FinancialSummaryApi.V1.UseCase
         {
             var startDate = request.StartDate.Date;
             var endDate = request.EndDate.Date;
-           
+
             if (startDate == endDate)
             {
                 (startDate, endDate) = startDate.GetDayRange();
             }
 
-            long total = await _financeSummaryGateway.GetStatementsTotalAsync(targetId, startDate, endDate).ConfigureAwait(false);
+            int totalStatementsCount = await _financeSummaryGateway.GetStatementsTotalAsync(targetId, startDate, endDate).ConfigureAwait(false);
 
-            var statementList = (total > (request.PageNumber - 1) * request.PageSize)?
-                await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false) : new List<Statement>();
+            var statementList = new List<Statement>();
+            if (PageCanBeLoaded(totalStatementsCount, request.PageNumber, request.PageSize))
+            {
+                await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
+            }
+
             var statementListResponse = _mapper.Map<List<StatementResponse>>(statementList);
 
             return new StatementListResponse
             {
-                Total = total,
+                Total = totalStatementsCount,
                 Statements = statementListResponse
             };
         }
+
+        private static bool PageCanBeLoaded(int totalRecordsCount, int pageNumber, int pageSize)
+            => totalRecordsCount > (pageNumber - 1) * pageSize;
     }
 }
