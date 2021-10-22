@@ -37,7 +37,7 @@ namespace FinancialSummaryApi.V1.UseCase
             var statementList = new List<Statement>();
             if (PageCanBeLoaded(totalStatementsCount, request.PageNumber, request.PageSize))
             {
-                await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
+                statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
             }
 
             var statementListResponse = _mapper.Map<List<StatementResponse>>(statementList);

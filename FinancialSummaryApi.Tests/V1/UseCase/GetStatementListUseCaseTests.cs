@@ -71,7 +71,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 },
 
             };
-            long expectedTotal = 3;
+            int expectedTotal = 3;
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
@@ -133,7 +133,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 },
 
             };
-            long expectedTotal = 3;
+            int expectedTotal = 3;
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
@@ -163,7 +163,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         public async Task GetStatementList_WithEmpty_ReturnsStatementListResponseWithEmptyStatements()
         {
             var expectedStatements = new List<Statement>();
-            long expectedTotal = 3;
+            int expectedTotal = 3;
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
@@ -193,7 +193,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         public async Task GetStatementList_GatewayReturnsZeroTotal_ReturnsEmptyObject()
         {
             var expectedStatements = new List<Statement>();
-            long expectedTotal = 0;
+            int expectedTotal = 0;
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
