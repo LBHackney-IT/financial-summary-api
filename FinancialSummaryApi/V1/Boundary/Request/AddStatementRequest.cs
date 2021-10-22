@@ -16,7 +16,6 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// <example>
         /// 94b02545-0233-4640-98dd-b2900423c0a5
         /// </example>
-        [NonEmptyGuid]
         public Guid TargetId { get; set; }
 
         /// <summary>
@@ -25,25 +24,21 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// <example>
         /// 0 
         /// </example>
-        [Required]
         public TargetType TargetType { get; set; }
 
         /// <example>
         /// 2021-04-27T23:00:00.0000000+00:00
         /// </example>
-        [RequiredDateTime]
         public DateTime StatementPeriodEndDate { get; set; }
 
         /// <example>
         /// 123456789
         /// </example>
-        [Required]
         public string RentAccountNumber { get; set; }
 
         /// <example>
         /// 12 Macron Court, E8 1ND
         /// </example>
-        [Required]
         public string Address { get; set; }
 
         /// <summary>
@@ -52,25 +47,21 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// <example>
         /// 0 
         /// </example>
-        [Required]
         public StatementType StatementType { get; set; }
 
         /// <example>
         /// 200
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
         public decimal ChargedAmount { get; set; }
 
         /// <example>
         /// 500
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
         public decimal PaidAmount { get; set; }
 
         /// <example>
         /// 300
         /// </example>
-        [Range(0, (double) decimal.MaxValue)]
         public decimal HousingBenefitAmount { get; set; }
 
         /// <example>

@@ -68,7 +68,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Message.Should().BeEquivalentTo($"The field PageNumber must be between 1 and {int.MaxValue}.");
+            apiEntity.Message.Should().BeEquivalentTo("'Page Number' must be greater than or equal to '1'.");
             apiEntity.StatusCode.Should().Be(400);
             apiEntity.Details.Should().BeEquivalentTo(string.Empty);
         }
@@ -126,9 +126,9 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.StatusCode.Should().Be(400);
             apiEntity.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain($"The field ChargedAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field PaidAmount must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field HousingBenefitAmount must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain("'Paid Amount' must be greater than or equal to '0'.");
+            apiEntity.Message.Should().Contain("'Charged Amount' must be greater than or equal to '0'.");
+            apiEntity.Message.Should().Contain("'Housing Benefit Amount' must be greater than or equal to '0'.");
         }
 
         [Fact]

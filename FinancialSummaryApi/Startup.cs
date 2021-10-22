@@ -7,6 +7,7 @@ using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,8 @@ namespace FinancialSummaryApi
             services.AddAutoMapper(typeof(Startup));
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddFluentValidation(o => o.RegisterValidatorsFromAssemblyContaining<Startup>());
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
