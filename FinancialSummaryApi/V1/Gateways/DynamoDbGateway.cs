@@ -231,10 +231,12 @@ namespace FinancialSummaryApi.V1.Gateways
             };
         }
 
-        public async Task AddAsync(Statement statement)
+        public async Task AddRangeAsync(List<Statement> statements)
         {
-            var statementDb = _mapper.Map<StatementDbEntity>(statement);
-            await _dynamoDbContext.SaveAsync(statementDb).ConfigureAwait(false);
+            var statementBatch = _dynamoDbContext.CreateBatchWrite<StatementDbEntity>();
+            var statementsDb = _mapper.Map<IEnumerable<StatementDbEntity>>(statements);
+            statementBatch.AddPutItems(statementsDb);
+            await statementBatch.ExecuteAsync().ConfigureAwait(false);
         }
 
         #endregion

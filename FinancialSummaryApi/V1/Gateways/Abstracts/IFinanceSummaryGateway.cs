@@ -20,6 +20,6 @@ namespace FinancialSummaryApi.V1.Gateways.Abstracts
         public Task AddAsync(RentGroupSummary groupSummary);
         public Task AddAsync(AssetSummary assetSummary);
         public Task AddAsync(WeeklySummary weeklySummary);
-        public Task AddAsync(Statement statement);
+        public Task AddRangeAsync(List<Statement> statements);
     }
 }

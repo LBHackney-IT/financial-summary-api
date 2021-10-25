@@ -4,6 +4,7 @@ using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -66,12 +67,12 @@ namespace FinancialSummaryApi.V1.Controllers
         }
 
         /// <summary>
-        /// Create new Statement model
+        /// Create new list of Statement models
         /// </summary>
         /// <param name="token">The jwt token value</param>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="statement">Statement model for create</param>
-        /// <response code="201">Created. Statement model was created successfully</response>
+        /// <param name="statements">List of Statement models for creation</param>
+        /// <response code="201">Created. Statement models were created successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(StatementResponse), StatusCodes.Status201Created)]
@@ -80,11 +81,11 @@ namespace FinancialSummaryApi.V1.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
-                                                [FromBody] AddStatementRequest statement)
+                                                [FromBody] List<AddStatementRequest> statements)
         {
-            if (statement == null)
+            if (statements == null || statements.Count == 0)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Statement model cannot be null"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Statement models cannot be null or empty"));
             }
 
             if (!ModelState.IsValid)
@@ -92,9 +93,9 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            var resultStatement = await _addUseCase.ExecuteAsync(statement).ConfigureAwait(false);
+            var resultStatements = await _addUseCase.ExecuteAsync(statements).ConfigureAwait(false);
 
-            return StatusCode((int) HttpStatusCode.Created, resultStatement);
+            return StatusCode((int) HttpStatusCode.Created, resultStatements);
         }
     }
 }

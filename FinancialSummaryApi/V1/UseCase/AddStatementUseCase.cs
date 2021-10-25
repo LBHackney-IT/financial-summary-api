@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using AutoMapper;
 using FinancialSummaryApi.V1.Domain;
+using System.Collections.Generic;
 
 namespace FinancialSummaryApi.V1.UseCase
 {
@@ -20,20 +21,22 @@ namespace FinancialSummaryApi.V1.UseCase
             _mapper = mapper;
         }
 
-        public async Task<StatementResponse> ExecuteAsync(AddStatementRequest statement)
+        public async Task<List<StatementResponse>> ExecuteAsync(List<AddStatementRequest> statements)
         {
-            if (statement == null)
+            if (statements == null)
             {
-                throw new ArgumentNullException(nameof(statement));
+                throw new ArgumentNullException(nameof(statements));
             }
 
-            var domainModel = _mapper.Map<Statement>(statement);
+            var domainModels = _mapper.Map<List<Statement>>(statements);
+            foreach(var domainModel in domainModels)
+            {
+                domainModel.Id = Guid.NewGuid();
+            }
 
-            domainModel.Id = Guid.NewGuid();
+            await _financeSummaryGateway.AddRangeAsync(domainModels).ConfigureAwait(false);
 
-            await _financeSummaryGateway.AddAsync(domainModel).ConfigureAwait(false);
-
-            return _mapper.Map<StatementResponse>(domainModel);
+            return _mapper.Map<List<StatementResponse>>(domainModels);
         }
     }
 }
