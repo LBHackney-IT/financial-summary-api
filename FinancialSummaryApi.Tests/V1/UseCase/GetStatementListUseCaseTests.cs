@@ -2,7 +2,6 @@ using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
-using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
@@ -79,19 +78,24 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
-
-            _mockFinanceGateway.Setup(x => x.GetStatementsTotalAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(expectedTotal);
-            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(statements);
+            var returnedResult = new StatementList()
+            {
+                Total = expectedTotal,
+                Statements = statements
+            };
             var expectedResult = new StatementListResponse()
             {
                 Total = expectedTotal,
                 Statements = _mapper.Map<List<StatementResponse>>(statements)
             };
 
+            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(returnedResult);
+           
+
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
 
+            result.Should().NotBeNull();
             result.Statements.Should().HaveCount(2);
             result.Should().BeEquivalentTo(expectedResult);
         }
@@ -141,21 +145,22 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 3)
             };
-
-            _mockFinanceGateway.Setup(x => x.GetStatementsTotalAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(expectedTotal);
-            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(statements);
-
+            var returnedResult = new StatementList
+            {
+                Total = expectedTotal,
+                Statements = statements
+            };
             var expectedResult = new StatementListResponse()
             {
                 Total = expectedTotal,
                 Statements = _mapper.Map<List<StatementResponse>>(statements)
             };
+            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(returnedResult);
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
 
-            result.Statements.Should().HaveCount(2);
+            result.Should().NotBeNull();
             result.Should().BeEquivalentTo(expectedResult);
         }
 
@@ -172,20 +177,23 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 EndDate = new DateTime(2021, 8, 5)
             };
 
-            _mockFinanceGateway.Setup(x => x.GetStatementsTotalAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(expectedTotal);
-            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(expectedStatements);
-
             var expectedResult = new StatementListResponse()
             {
                 Total = expectedTotal,
                 Statements = _mapper.Map<List<StatementResponse>>(expectedStatements)
             };
+            var returnedResult = new StatementList()
+            {
+                Total = expectedTotal,
+                Statements = expectedStatements
+            };
+
+            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(returnedResult);
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
 
-            result.Statements.Should().HaveCount(0);
+            result.Should().NotBeNull();
             result.Should().BeEquivalentTo(expectedResult);
         }
 
@@ -201,21 +209,22 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
-
-            _mockFinanceGateway.Setup(x => x.GetStatementsTotalAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(expectedTotal);
-            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
-                .ReturnsAsync(expectedStatements);
-
             var expectedResult = new StatementListResponse()
             {
                 Total = expectedTotal,
                 Statements = _mapper.Map<List<StatementResponse>>(expectedStatements)
             };
+            var returnedResult = new StatementList()
+            {
+                Total = expectedTotal,
+                Statements = expectedStatements
+            };
+            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
+                .ReturnsAsync(returnedResult);
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
 
-            result.Statements.Should().HaveCount(0);
+            result.Should().NotBeNull();
             result.Should().BeEquivalentTo(expectedResult);
         }
     }

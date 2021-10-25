@@ -1,7 +1,6 @@
 using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
-using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
@@ -32,24 +31,17 @@ namespace FinancialSummaryApi.V1.UseCase
                 (startDate, endDate) = startDate.GetDayRange();
             }
 
-            int totalStatementsCount = await _financeSummaryGateway.GetStatementsTotalAsync(targetId, startDate, endDate).ConfigureAwait(false);
+            var statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
 
-            var statementList = new List<Statement>();
-            if (PageCanBeLoaded(totalStatementsCount, request.PageNumber, request.PageSize))
-            {
-                statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
-            }
-
-            var statementListResponse = _mapper.Map<List<StatementResponse>>(statementList);
+            var statementResponseList = _mapper.Map<List<StatementResponse>>(statementList.Statements);
 
             return new StatementListResponse
             {
-                Total = totalStatementsCount,
-                Statements = statementListResponse
+                Total = statementList.Total,
+                Statements = statementResponseList
             };
         }
 
-        private static bool PageCanBeLoaded(int totalRecordsCount, int pageNumber, int pageSize)
-            => totalRecordsCount > (pageNumber - 1) * pageSize;
+        
     }
 }

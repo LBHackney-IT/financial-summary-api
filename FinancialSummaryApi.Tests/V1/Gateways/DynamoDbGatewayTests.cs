@@ -272,34 +272,14 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         #region Statements
 
         [Fact]
-        public async Task GetStatementsTotalAsyncFirstPageReturnsTotal()
-        {
-            var expectedTotal = 3;
-            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.Is<QueryRequest>(q => q.Select == Select.COUNT), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new QueryResponse()
-                {
-                    Count = expectedTotal
-                });
-
-            var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
-
-            DateTime StartDate = new DateTime(2021, 8, 15);
-            DateTime EndDate = new DateTime(2021, 10, 15);
-
-            var resultTotal = await _gateway.GetStatementsTotalAsync(targetId, StartDate, EndDate)
-                .ConfigureAwait(false);
-
-            resultTotal.Should().Be(expectedTotal);
-        }
-
-        [Fact]
-        public async Task GetStatementsTotalAsyncFirstPageReturnsZeroTotal()
+        public async Task GetPagedStatementsAsyncFirstPageReturnsZeroTotal()
         {
             var expectedTotal = 0;
-            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.Is<QueryRequest>(q => q.Select == Select.COUNT), It.IsAny<CancellationToken>()))
+            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new QueryResponse()
                 {
-                    Count = expectedTotal
+                    Count = expectedTotal,
+                    Items = null
                 });
 
             var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
@@ -310,20 +290,24 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 StartDate = new DateTime(2021, 8, 15),
                 EndDate = new DateTime(2021, 10, 15)
             };
-            var resultTotal = await _gateway.GetStatementsTotalAsync(targetId, request.StartDate, request.EndDate)
+            var resultStatementsList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PageNumber)
                 .ConfigureAwait(false);
 
-            resultTotal.Should().Be(expectedTotal);
+            resultStatementsList.Should().NotBeNull();
+            resultStatementsList.Total.Should().Be(expectedTotal);
+            resultStatementsList.Statements.Should().NotBeNull();
+            resultStatementsList.Statements.Should().BeEmpty();
         }
-
 
         [Fact]
         public async Task GetPagedStatementsFirstPageReturnsList()
         {
             var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
-            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.Is<QueryRequest>(q => q.Select == Select.ALL_ATTRIBUTES), It.IsAny<CancellationToken>()))
+            int expectedTotal = 3;
+            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<CancellationToken>()))
                    .ReturnsAsync(new QueryResponse()
                    {
+                       Count = expectedTotal,
                        Items = new List<Dictionary<string, AttributeValue>>()
                      { StatementDbResponse.Items[0], StatementDbResponse.Items[2], StatementDbResponse.Items[5] }
                    });
@@ -343,18 +327,22 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 .ConfigureAwait(false);
 
             statementList.Should().NotBeNull();
-            statementList.Should().HaveCount(2);
+            statementList.Total.Should().Be(expectedTotal);
+            statementList.Statements.Should().NotBeNull();
+            statementList.Statements.Should().HaveCount(2);
 
-            statementList[0].Should().BeEquivalentTo(expectedStatementFirst);
-            statementList[1].Should().BeEquivalentTo(expectedStatementSecond);
+            statementList.Statements[0].Should().BeEquivalentTo(expectedStatementFirst);
+            statementList.Statements[1].Should().BeEquivalentTo(expectedStatementSecond);
         }
 
         [Fact]
         public async Task GetPagedStatementsSecondPageReturnsList()
         {
-            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.Is<QueryRequest>(q => q.Select == Select.ALL_ATTRIBUTES), It.IsAny<CancellationToken>()))
+            int expectedTotal = 3;
+            _amazonDynamoDB.Setup(_ => _.QueryAsync(It.IsAny<QueryRequest>(), It.IsAny<CancellationToken>()))
                   .ReturnsAsync(new QueryResponse()
                   {
+                      Count = expectedTotal,
                       Items = new List<Dictionary<string, AttributeValue>>()
                     { StatementDbResponse.Items[0], StatementDbResponse.Items[2], StatementDbResponse.Items[5] }
                   });
@@ -374,9 +362,11 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 .ConfigureAwait(false);
 
             statementList.Should().NotBeNull();
-            statementList.Should().HaveCount(1);
+            statementList.Total.Should().Be(expectedTotal);
+            statementList.Statements.Should().NotBeNull();
+            statementList.Statements.Should().HaveCount(1);
 
-            statementList[0].Should().BeEquivalentTo(expectedStatement);
+            statementList.Statements[0].Should().BeEquivalentTo(expectedStatement);
         }
 
         [Fact]

@@ -195,23 +195,8 @@ namespace FinancialSummaryApi.V1.Gateways
         #endregion
 
         #region Statement
-        public async Task<int> GetStatementsTotalAsync(Guid targetId, DateTime startDate, DateTime endDate)
-        {
-            var data = await GetStatementsByDateRangeQueryResponse(targetId, startDate, endDate, Select.COUNT).ConfigureAwait(false);
 
-            return data.Count;
-        }
-
-        public async Task<List<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, int pageNumber)
-        {
-            var data = await GetStatementsByDateRangeQueryResponse(targetId, startDate, endDate, Select.ALL_ATTRIBUTES).ConfigureAwait(false);
-            var statements = _mapper.Map<List<Statement>>(data);
-            var pagedStatements = statements.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-
-            return new List<Statement>(pagedStatements);
-        }
-
-        private async Task<QueryResponse> GetStatementsByDateRangeQueryResponse(Guid targetId, DateTime startDate, DateTime endDate, Select select)
+        public async Task<StatementList> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, int pageNumber)
         {
             var request = new QueryRequest
             {
@@ -219,7 +204,7 @@ namespace FinancialSummaryApi.V1.Gateways
                 IndexName = "target_id_dx",
                 KeyConditionExpression = "target_id = :V_target_id ",
                 FilterExpression = "summary_type = :V_summary_type " +
-                                   "and statement_period_end_date between :V_start_date and :V_end_date",
+                                  "and statement_period_end_date between :V_start_date and :V_end_date",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
@@ -227,10 +212,23 @@ namespace FinancialSummaryApi.V1.Gateways
                     { ":V_start_date", new AttributeValue { S = startDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_end_date", new AttributeValue { S = endDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
                 },
-                Select = select
+                Select = Select.ALL_ATTRIBUTES
             };
+            var data = await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false); 
+            int totalStatementsCount = data.Count;
+            var pagedStatements = new List<Statement>();
 
-            return await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false);
+            if (PageCanBeLoaded(totalStatementsCount, pageNumber, pageSize))
+            {
+                var statements = _mapper.Map<List<Statement>>(data);
+                pagedStatements.AddRange(statements.Skip((pageNumber - 1) * pageSize).Take(pageSize));
+            }
+
+            return new StatementList
+            {
+                Total = totalStatementsCount,
+                Statements = pagedStatements
+            };
         }
 
         public async Task AddAsync(Statement statement)
@@ -240,5 +238,7 @@ namespace FinancialSummaryApi.V1.Gateways
         }
 
         #endregion
+        private static bool PageCanBeLoaded(int totalRecordsCount, int pageNumber, int pageSize)
+            => totalRecordsCount > (pageNumber - 1) * pageSize;
     }
 }
