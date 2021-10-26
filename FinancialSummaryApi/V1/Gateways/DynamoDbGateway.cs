@@ -217,9 +217,11 @@ namespace FinancialSummaryApi.V1.Gateways
 
             var data = await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false);
             var totalStatementsCount = data.Count;
-            var pagedStatements = new List<Statement>(pageSize);
 
-            if (PageCanBeLoaded(totalStatementsCount, pageNumber, pageSize))
+            var recordsOnPage = CountRecordsOnPage(totalStatementsCount, pageNumber, pageSize);
+            var pagedStatements = new List<Statement>(recordsOnPage);
+
+            if (recordsOnPage != 0)
             {
                 var statements = _mapper.Map<List<Statement>>(data);
                 pagedStatements.AddRange(statements.Skip((pageNumber - 1) * pageSize).Take(pageSize));
@@ -244,5 +246,9 @@ namespace FinancialSummaryApi.V1.Gateways
         #endregion
         private static bool PageCanBeLoaded(int totalRecordsCount, int pageNumber, int pageSize)
             => totalRecordsCount > (pageNumber - 1) * pageSize;
+
+        private static int CountRecordsOnPage(int totalRecordsCount, int pageNumber, int pageSize)
+            => PageCanBeLoaded(totalRecordsCount, pageNumber, pageSize) ?
+                        Math.Min(pageSize, totalRecordsCount - (pageNumber - 1) * pageSize) : 0;
     }
 }

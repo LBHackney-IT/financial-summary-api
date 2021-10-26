@@ -17,14 +17,14 @@ namespace FinancialSummaryApi.V1.Controllers
     public class StatementController : BaseController
     {
         private readonly IGetStatementListUseCase _getListUseCase;
-        private readonly IAddStatementUseCase _addUseCase;
+        private readonly IAddStatementListUseCase _addListUseCase;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
-            IAddStatementUseCase addStatementUseCase)
+            IAddStatementListUseCase addListUseCase)
         {
             _getListUseCase = getListUseCase;
-            _addUseCase = addStatementUseCase;
+            _addListUseCase = addListUseCase;
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            var resultStatements = await _addUseCase.ExecuteAsync(statements).ConfigureAwait(false);
+            var resultStatements = await _addListUseCase.ExecuteAsync(statements).ConfigureAwait(false);
 
             return StatusCode((int) HttpStatusCode.Created, resultStatements);
         }

@@ -1,7 +1,9 @@
+using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
+using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -25,20 +27,29 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly HttpContext _httpContext;
 
         private readonly Mock<IGetStatementListUseCase> _getListUseCase;
-        private readonly Mock<IAddStatementUseCase> _addUseCase;
+        private readonly Mock<IAddStatementListUseCase> _addListUseCase;
+
+        private readonly IMapper _mapper;
 
         public StatementControllerTests()
         {
             _getListUseCase = new Mock<IGetStatementListUseCase>();
 
-            _addUseCase = new Mock<IAddStatementUseCase>();
+            _addListUseCase = new Mock<IAddStatementListUseCase>();
 
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
-            _statementController = new StatementController(_getListUseCase.Object, _addUseCase.Object)
+            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object)
             {
                 ControllerContext = _controllerContext
             };
+
+            if (_mapper == null)
+            {
+                var mappingConfig = new MapperConfiguration(mc =>
+                    mc.AddProfile(new MappingProfile()));
+                _mapper = mappingConfig.CreateMapper();
+            }
         }
 
         [Fact]
@@ -201,44 +212,25 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task Create_WithValidData_Returns201()
         {
-            _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddStatementRequest>()))
-                 .ReturnsAsync(new StatementResponse()
-                 {
-                     Id = new Guid("bae9c9d9-836f-44bc-946f-33cf78584704"),
-                     TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
-                     TargetType = TargetType.Estate,
-                     StatementPeriodEndDate = new DateTime(2021, 7, 1),
-                     RentAccountNumber = "123456789",
-                     Address = "16 Macron Court, E8 1ND",
-                     StatementType = StatementType.Leasehold,
-                     ChargedAmount = 200,
-                     PaidAmount = 500,
-                     HousingBenefitAmount = 300,
-                     StartBalance = 1000,
-                     FinishBalance = 400
-                 });
-
-            var request = new AddStatementRequest
+            var requestList = new List<AddStatementRequest>
             {
-                TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
-                TargetType = TargetType.Estate,
-                StatementPeriodEndDate = new DateTime(2021, 7, 1),
-                RentAccountNumber = "123456789",
-                Address = "16 Macron Court, E8 1ND",
-                StatementType = StatementType.Leasehold,
-                ChargedAmount = 200,
-                PaidAmount = 500,
-                HousingBenefitAmount = 300,
-                StartBalance = 1000,
-                FinishBalance = 400
+                CreateAddStatementRequest(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"), new DateTime(2021, 7, 1)),
+                CreateAddStatementRequest(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0355"), new DateTime(2021, 7, 2))
             };
+            var statementsList = _mapper.Map<List<Statement>>(requestList);
+            statementsList[0].Id = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
+            statementsList[1].Id = new Guid("4fc2872e-5131-4399-8959-c4a17b611f9c");
+            var returnedList = _mapper.Map<List<StatementResponse>>(statementsList);
+            
+            _addListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<List<AddStatementRequest>>()))
+                 .ReturnsAsync(returnedList);
 
-            var result = await _statementController.Create(string.Empty, string.Empty, request)
+            var result = await _statementController.Create(string.Empty, string.Empty, requestList)
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
-            _addUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
+            _addListUseCase.Verify(x => x.ExecuteAsync(requestList), Times.Once);
 
             var objectResult = result as ObjectResult;
 
@@ -250,51 +242,41 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             objectResult.Value.Should().NotBeNull();
 
-            var statementResponse = objectResult.Value as StatementResponse;
+            var statementResponseList = objectResult.Value as List<StatementResponse>;
 
-            statementResponse.Should().NotBeNull();
+            statementResponseList.Should().NotBeNull();
 
-            statementResponse.Should().BeEquivalentTo(request);
+            statementResponseList.Should().BeEquivalentTo(returnedList);
         }
 
         [Fact]
         public async Task Create_WithSomeEmptyFieldsValidModel_Returns201()
         {
-            _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddStatementRequest>()))
-                .ReturnsAsync(new StatementResponse()
+            var requestList = new List<AddStatementRequest>
+            {
+                 new AddStatementRequest
                 {
-                    Id = new Guid("bae9c9d9-836f-44bc-946f-33cf78584704"),
                     TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
                     TargetType = TargetType.Estate,
                     StatementPeriodEndDate = new DateTime(2021, 7, 1),
                     RentAccountNumber = "123456789",
                     Address = "16 Macron Court, E8 1ND",
-                    StatementType = StatementType.Leasehold,
-                    ChargedAmount = 0,
-                    PaidAmount = 0,
-                    HousingBenefitAmount = 0,
-                    StartBalance = 0,
-                    FinishBalance = 0
-                });
-
-            var request = new AddStatementRequest
-            {
-                TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
-                TargetType = TargetType.Estate,
-                StatementPeriodEndDate = new DateTime(2021, 7, 1),
-                RentAccountNumber = "123456789",
-                Address = "16 Macron Court, E8 1ND",
-                StatementType = StatementType.Leasehold
+                    StatementType = StatementType.Leasehold
+                }
             };
+            var statementsList = _mapper.Map<List<Statement>>(requestList);
+            statementsList[0].Id = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
+            var returnedList = _mapper.Map<List<StatementResponse>>(statementsList);
 
+            _addListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<List<AddStatementRequest>>()))
+                .ReturnsAsync(returnedList);
 
-            var result = await _statementController.Create(string.Empty, string.Empty, request)
+            var result = await _statementController.Create(string.Empty, string.Empty, requestList)
                 .ConfigureAwait(false);
-
 
             result.Should().NotBeNull();
 
-            _addUseCase.Verify(x => x.ExecuteAsync(request), Times.Once);
+            _addListUseCase.Verify(x => x.ExecuteAsync(requestList), Times.Once);
 
             var objectResult = result as ObjectResult;
 
@@ -306,26 +288,15 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             objectResult.Value.Should().NotBeNull();
 
-            var statementResponse = objectResult.Value as StatementResponse;
+            var statementResponseList = objectResult.Value as List<StatementResponse>;
 
-            statementResponse.Should().NotBeNull();
+            statementResponseList.Should().NotBeNull();
 
-            statementResponse.Id.Should().Be(new Guid("bae9c9d9-836f-44bc-946f-33cf78584704"));
-            statementResponse.TargetId.Should().Be(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"));
-            statementResponse.TargetType.Should().Be(TargetType.Estate);
-            statementResponse.StatementPeriodEndDate.Should().Be(new DateTime(2021, 7, 1));
-            statementResponse.RentAccountNumber.Should().Be("123456789");
-            statementResponse.Address.Should().Be("16 Macron Court, E8 1ND");
-            statementResponse.StatementType.Should().Be(StatementType.Leasehold);
-            statementResponse.ChargedAmount.Should().Be(0);
-            statementResponse.PaidAmount.Should().Be(0);
-            statementResponse.HousingBenefitAmount.Should().Be(0);
-            statementResponse.StartBalance.Should().Be(0);
-            statementResponse.FinishBalance.Should().Be(0);
+            statementResponseList.Should().BeEquivalentTo(returnedList);
         }
 
         [Fact]
-        public async Task Create_WithInvalidData_Returns400()
+        public async Task Create_WithNulldData_Returns400()
         {
             var result = await _statementController.Create(string.Empty, string.Empty, null).ConfigureAwait(false);
 
@@ -343,18 +314,52 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             response.Details.Should().Be("");
 
-            response.Message.Should().Be("Statement model cannot be null");
+            response.Message.Should().Be("Statement models cannot be null or empty");
+        }
+
+        [Fact]
+        public async Task Create_WithInvalidData_Returns400()
+        {
+            var requestList = new List<AddStatementRequest>
+            {
+                CreateAddStatementRequest(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"), new DateTime(2021, 7, 1)),
+                CreateAddStatementRequest(new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0355"), new DateTime(2021, 7, 2))
+            };
+            requestList[0].PaidAmount = -1;
+
+            _statementController.ModelState.AddModelError("PaidAmount", "'Paid Amount' must be greater than or equal to '0'.");
+
+            var result = await _statementController.Create(string.Empty, string.Empty, requestList)
+                .ConfigureAwait(false);
+
+            _addListUseCase.Verify(x => x.ExecuteAsync(requestList), Times.Never);
+
+            result.Should().NotBeNull();
+
+            var badRequestResult = result as BadRequestObjectResult;
+
+            badRequestResult.Should().NotBeNull();
+
+            var response = badRequestResult.Value as BaseErrorResponse;
+
+            response.Should().NotBeNull();
+
+            response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+
+            response.Details.Should().Be("");
+
+            response.Message.Should().Be("'Paid Amount' must be greater than or equal to '0'.");
         }
 
         [Fact]
         public async Task Create_Returns500()
         {
-            _addUseCase.Setup(x => x.ExecuteAsync(It.IsAny<AddStatementRequest>()))
+            _addListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<List<AddStatementRequest>>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
             {
-                var result = await _statementController.Create(string.Empty, string.Empty, new AddStatementRequest { })
+                var result = await _statementController.Create(string.Empty, string.Empty, new List<AddStatementRequest> { new AddStatementRequest { } })
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
@@ -370,5 +375,27 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _statementController.Dispose();
         }
 
+        private static AddStatementRequest CreateAddStatementRequest(Guid targetId, DateTime statementPeriodEndDate)
+        {
+            Random rand = new Random();
+
+            var targetTypes = Enum.GetValues(typeof(TargetType));
+            var statementTypes = Enum.GetValues(typeof(StatementType));
+
+            return new AddStatementRequest()
+            {
+                TargetId = targetId,
+                TargetType = (TargetType)targetTypes.GetValue(rand.Next(0, targetTypes.Length - 1)),
+                StatementPeriodEndDate = statementPeriodEndDate,
+                RentAccountNumber = "Some account number",
+                Address = "Some address",
+                StatementType = (StatementType)statementTypes.GetValue(rand.Next(0, statementTypes.Length - 1)),
+                ChargedAmount = (decimal) rand.NextDouble() * 50,
+                PaidAmount = (decimal) rand.NextDouble() * 50,
+                HousingBenefitAmount = (decimal) rand.NextDouble() * 50,
+                StartBalance = (decimal) rand.NextDouble() * 50,
+                FinishBalance = (decimal) rand.NextDouble() * 50
+            };
+        }
     }
 }

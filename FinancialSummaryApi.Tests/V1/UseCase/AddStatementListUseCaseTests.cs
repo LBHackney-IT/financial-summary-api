@@ -7,17 +7,18 @@ using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
 using Moq;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
 {
-    public class AddStatementUseCaseTests
+    public class AddStatementListUseCaseTests
     {
         private readonly Mock<IFinanceSummaryGateway> _mockFinanceGateway;
-        private readonly AddStatementUseCase _useCase;
+        private readonly AddStatementListUseCase _useCase;
         private readonly IMapper _mapper;
-        public AddStatementUseCaseTests()
+        public AddStatementListUseCaseTests()
         {
             _mockFinanceGateway = new Mock<IFinanceSummaryGateway>();
 
@@ -27,14 +28,14 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                     mc.AddProfile(new MappingProfile()));
                 _mapper = mappingConfig.CreateMapper();
             }
-            _useCase = new AddStatementUseCase(_mockFinanceGateway.Object, _mapper);
+            _useCase = new AddStatementListUseCase(_mockFinanceGateway.Object, _mapper);
         }
 
         [Fact]
         public async Task Add_NullModel_ThrowsArgumentNullException()
         {
-            AddStatementRequest statementModel = null;
-            _mockFinanceGateway.Setup(_ => _.AddAsync(It.IsAny<Statement>()))
+            List<AddStatementRequest> statementModel = null;
+            _mockFinanceGateway.Setup(_ => _.AddRangeAsync(It.IsAny<List<Statement>>()))
                 .Returns(Task.CompletedTask);
 
             try
@@ -46,21 +47,21 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             {
                 ex.Should().NotBeNull();
                 ex.Should().BeOfType<ArgumentNullException>();
-                ex.Message.Should().Be("Value cannot be null. (Parameter 'statement')");
+                ex.Message.Should().Be("Value cannot be null. (Parameter 'statements')");
             }
         }
 
         [Fact]
         public async Task Add_ValidModel_CallsGateway()
         {
-            AddStatementRequest statementModel = new AddStatementRequest();
+            List<AddStatementRequest> statementModel = new List<AddStatementRequest>();
 
-            _mockFinanceGateway.Setup(_ => _.AddAsync(It.IsAny<Statement>()))
+            _mockFinanceGateway.Setup(_ => _.AddRangeAsync(It.IsAny<List<Statement>>()))
                .Returns(Task.CompletedTask);
 
             await _useCase.ExecuteAsync(statementModel).ConfigureAwait(false);
 
-            _mockFinanceGateway.Verify(_ => _.AddAsync(It.IsAny<Statement>()), Times.Once);
+            _mockFinanceGateway.Verify(_ => _.AddRangeAsync(It.IsAny<List<Statement>>()), Times.Once);
         }
     }
 }

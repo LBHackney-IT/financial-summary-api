@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.UseCase.Interfaces
 {
-    public interface IAddStatementUseCase
+    public interface IAddStatementListUseCase
     {
         Task<List<StatementResponse>> ExecuteAsync(List<AddStatementRequest> statements);
     }

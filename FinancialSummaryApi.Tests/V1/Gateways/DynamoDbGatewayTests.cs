@@ -369,29 +369,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             statementList.Statements[0].Should().BeEquivalentTo(expectedStatement);
         }
 
-        [Fact]
-        public async Task AddStatementWithValidObject()
-        {
-            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<StatementDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            var domain = _fixture.Create<Statement>();
-
-            await _gateway.AddAsync(domain).ConfigureAwait(false);
-
-            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<StatementDbEntity>(), default), Times.Once);
-        }
-
-        [Fact]
-        public async Task AddStatementWithInvalidObject()
-        {
-            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<StatementDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            await _gateway.AddAsync((Statement) null).ConfigureAwait(false);
-
-            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<StatementDbEntity>(), default), Times.Once);
-        }
+    
         #endregion
 
         private QueryResponse _rentGroupDbResponse;

@@ -10,12 +10,12 @@ using System.Collections.Generic;
 
 namespace FinancialSummaryApi.V1.UseCase
 {
-    public class AddStatementUseCase : IAddStatementUseCase
+    public class AddStatementListUseCase : IAddStatementListUseCase
     {
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
         private readonly IMapper _mapper;
 
-        public AddStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IMapper mapper)
+        public AddStatementListUseCase(IFinanceSummaryGateway financeSummaryGateway, IMapper mapper)
         {
             _financeSummaryGateway = financeSummaryGateway;
             _mapper = mapper;

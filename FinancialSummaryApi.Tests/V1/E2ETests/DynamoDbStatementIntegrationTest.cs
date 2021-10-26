@@ -5,6 +5,7 @@ using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -73,37 +74,48 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Fact]
-        public async Task CreateStatementCreatedReturns201()
+        public async Task CreateStatementListCreatedReturns201()
         {
-            var statementDomain = ConstructStatement();
+            var statementDomain = new List<Statement> { ConstructStatement() };
 
-            await CreateStatementAndValidateResponse(statementDomain).ConfigureAwait(false);
+            await CreateStatementListAndValidateResponse(statementDomain).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task CreateStatementList_WithTwoStatements_CreatedReturns201()
+        {
+            var statementDomains = new List<Statement> { ConstructStatement(), ConstructStatement() };
+
+            await CreateStatementListAndValidateResponse(statementDomains).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task CreateStatementWithSomeEmptyFieldsCreatedReturns201()
         {
-            var request = new Statement
+            var request = new List<Statement>
             {
-                TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
-                TargetType = TargetType.Estate,
-                StatementPeriodEndDate = new DateTime(2021, 7, 1),
-                RentAccountNumber = "123456789",
-                Address = "16 Macron Court, E8 1ND",
-                StatementType = StatementType.Leasehold
+                new Statement
+                {
+                    TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
+                    TargetType = TargetType.Estate,
+                    StatementPeriodEndDate = new DateTime(2021, 7, 1),
+                    RentAccountNumber = "123456789",
+                    Address = "16 Macron Court, E8 1ND",
+                    StatementType = StatementType.Leasehold
+                }
             };
 
-            await CreateStatementAndValidateResponse(request).ConfigureAwait(false);
+            await CreateStatementListAndValidateResponse(request).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task CreateStatementBadRequestReturns400()
         {
-            var statementDomain = ConstructStatement();
+            var statementDomain = new List<Statement> { ConstructStatement() };
 
-            statementDomain.ChargedAmount = -100;
-            statementDomain.PaidAmount = -99;
-            statementDomain.HousingBenefitAmount = -500;
+            statementDomain[0].ChargedAmount = -100;
+            statementDomain[0].PaidAmount = -99;
+            statementDomain[0].HousingBenefitAmount = -500;
 
             var uri = new Uri("api/v1/statements", UriKind.Relative);
             string body = JsonConvert.SerializeObject(statementDomain);
@@ -133,7 +145,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         [Fact]
         public async Task CreateTwoStatementsGetListReturns200()
         {
-            var statementDomains = new[] { ConstructStatement(), ConstructStatement() };
+            var statementDomains = new List<Statement> { ConstructStatement(), ConstructStatement() };
             var assetId = statementDomains[0].TargetId;
             if (assetId != statementDomains[1].TargetId)
             {
@@ -142,10 +154,11 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var startDate = statementDomains[0].StatementPeriodEndDate.Date.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ");
             var endDate = statementDomains[1].StatementPeriodEndDate.Date.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ");
 
-            foreach (var statementDomain in statementDomains)
+            await CreateStatementListAndValidateResponse(statementDomains).ConfigureAwait(false);
+
+            for(int i = 0; i < statementDomains.Count; i++)
             {
-                statementDomain.Id = await CreateStatementAndValidateResponse(statementDomain).ConfigureAwait(false);
-                await GetStatementByIdAndValidateResponse(statementDomain).ConfigureAwait(false);
+                await GetStatementByIdAndValidateResponse(statementDomains[i]).ConfigureAwait(false);
             }
 
             var uri = new Uri($"api/v1/statements/{assetId}?pageNumber=1&pageSize={int.MaxValue}&startDate={startDate}&endDate={endDate}", UriKind.Relative);
@@ -158,18 +171,13 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntity.Should().NotBeNull();
             apiEntity.Statements.Count.Should().BeGreaterOrEqualTo(2);
-
-            var firstStatement = apiEntity.Statements.Find(r => r.Id == statementDomains[0].Id);
-            var secondStatement = apiEntity.Statements.Find(r => r.Id == statementDomains[1].Id);
-
-            firstStatement.ShouldBeEqualTo(statementDomains[0]);
-            secondStatement.ShouldBeEqualTo(statementDomains[1]);
-        }
+            apiEntity.Statements.Should().BeEquivalentTo(statementDomains);
+        }  
 
         [Fact]
         public async Task CreateThreeStatementsSecondPageGetListReturns200()
         {
-            var statementDomains = new[] { ConstructStatement(), ConstructStatement(), ConstructStatement() };
+            var statementDomains = new List<Statement> { ConstructStatement(), ConstructStatement(), ConstructStatement() };
             var assetId = statementDomains[0].TargetId;
             if (assetId != statementDomains[1].TargetId)
             {
@@ -180,12 +188,13 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 statementDomains[2].TargetId = assetId;
             }
             var startDate = statementDomains[0].StatementPeriodEndDate.Date.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ");
-            var endDate = statementDomains[1].StatementPeriodEndDate.Date.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ");
+            var endDate = statementDomains[2].StatementPeriodEndDate.Date.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ");
 
-            foreach (var statementDomain in statementDomains)
+            await CreateStatementListAndValidateResponse(statementDomains).ConfigureAwait(false);
+
+            for (int i = 0; i < statementDomains.Count; i++)
             {
-                statementDomain.Id = await CreateStatementAndValidateResponse(statementDomain).ConfigureAwait(false);
-                await GetStatementByIdAndValidateResponse(statementDomain).ConfigureAwait(false);
+                await GetStatementByIdAndValidateResponse(statementDomains[i]).ConfigureAwait(false);
             }
 
             var uri = new Uri($"api/v1/statements/{assetId}?pageNumber=2&pageSize=2&startDate={startDate}&endDate={endDate}", UriKind.Relative);
@@ -197,9 +206,8 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var apiEntity = JsonConvert.DeserializeObject<StatementListResponse>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Total.Should().BeGreaterOrEqualTo(3);
-            apiEntity.Statements.Count.Should().BeGreaterOrEqualTo(1);
-
+            apiEntity.Total.Should().BeGreaterOrEqualTo(statementDomains.Count);
+            apiEntity.Statements.Count.Should().Be(1);
             var apiStatement = apiEntity.Statements.Find(r => r.Id == statementDomains[0].Id ||
                                                               r.Id == statementDomains[1].Id ||
                                                               r.Id == statementDomains[2].Id);
@@ -208,11 +216,12 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiStatement.Should().BeEquivalentTo(domainStatement);
         }
 
-        private async Task<Guid> CreateStatementAndValidateResponse(Statement statement)
+        private async Task CreateStatementListAndValidateResponse(List<Statement> statements)
         {
+            var expectedStatements = new List<Statement>(statements);
             var uri = new Uri("api/v1/statements", UriKind.Relative);
 
-            string body = JsonConvert.SerializeObject(statement);
+            string body = JsonConvert.SerializeObject(expectedStatements);
 
             using StringContent stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -222,21 +231,27 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             response.StatusCode.Should().Be(HttpStatusCode.Created);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<StatementResponse>(responseContent);
+            var apiEntityList = JsonConvert.DeserializeObject<List<StatementResponse>>(responseContent);
+            foreach(var apiEntity in apiEntityList)
+            {
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<StatementDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            }
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<StatementDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            apiEntityList.Should().NotBeNull();
 
-            apiEntity.Should().NotBeNull();
+            apiEntityList.Should().BeEquivalentTo(expectedStatements, options => options.Excluding(a => a.Id));
 
-            apiEntity.Should().BeEquivalentTo(statement, options => options.Excluding(a => a.Id));
-            return apiEntity.Id;
+            for(int i = 0; i < apiEntityList.Count; i++)
+            {
+                statements[i].Id = apiEntityList[i].Id;
+            }
         }
 
         private async Task GetStatementByIdAndValidateResponse(Statement statement)
         {
-            var startDate = statement.StatementPeriodEndDate.Date.ToString(("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ"));
+            var startDate = statement.StatementPeriodEndDate.Date.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ");
             var endDate = startDate;
-            var uri = new Uri($"api/v1/statements/{statement.TargetId}?startDate={startDate}&endDate={endDate}&pageSize={int.MaxValue}", UriKind.Relative);
+            var uri = new Uri($"api/v1/statements/{statement.TargetId}?startDate={startDate}&endDate={endDate}&pageSize={100}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

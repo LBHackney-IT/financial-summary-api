@@ -169,7 +169,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IAddWeeklySummaryUseCase, AddWeeklySummaryUseCase>();
             services.AddScoped<IGetWeeklySummaryByIdUseCase, GetWeeklySummaryByIdUseCase>();
             services.AddScoped<IDbHealthCheckUseCase, DbHealthCheckUseCase>();
-            services.AddScoped<IAddStatementUseCase, AddStatementUseCase>();
+            services.AddScoped<IAddStatementListUseCase, AddStatementListUseCase>();
             services.AddScoped<IGetStatementListUseCase, GetStatementListUseCase>();
         }
 
