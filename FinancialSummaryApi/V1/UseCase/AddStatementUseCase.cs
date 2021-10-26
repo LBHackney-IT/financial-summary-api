@@ -29,7 +29,7 @@ namespace FinancialSummaryApi.V1.UseCase
             }
 
             var domainModels = _mapper.Map<List<Statement>>(statements);
-            foreach(var domainModel in domainModels)
+            foreach (var domainModel in domainModels)
             {
                 domainModel.Id = Guid.NewGuid();
             }

@@ -1,7 +1,6 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Controllers;
-using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;

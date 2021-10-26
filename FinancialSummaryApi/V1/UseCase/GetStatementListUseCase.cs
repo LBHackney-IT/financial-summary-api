@@ -2,7 +2,7 @@ using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
-using FinancialSummaryApi.V1.Infrastructure;
+using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -23,8 +23,8 @@ namespace FinancialSummaryApi.V1.UseCase
 
         public async Task<StatementListResponse> ExecuteAsync(Guid targetId, GetStatementListRequest request)
         {
-            var startDate = request.StartDate.Date.GetDayRange().Item1;
-            var endDate = request.EndDate.Date.GetDayRange().Item2;
+            var startDate = request.StartDate.Date.GetDayRange().dayStart;
+            var endDate = request.EndDate.Date.GetDayRange().dayEnd;
 
             var statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
 

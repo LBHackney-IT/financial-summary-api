@@ -20,5 +20,8 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
                 return result;
             }
         }
+
+        public static (DateTime dayStart, DateTime dayEnd) GetDayRange(this DateTime day)
+           => (day.Date, day.Date.AddHours(23).AddMinutes(59));
     }
 }

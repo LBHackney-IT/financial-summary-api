@@ -1,5 +1,4 @@
 using Amazon.DynamoDBv2.Model;
-using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using System;
 using System.Collections.Generic;

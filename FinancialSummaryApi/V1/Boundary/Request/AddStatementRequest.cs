@@ -1,7 +1,5 @@
 using FinancialSummaryApi.V1.Domain;
-using FinancialSummaryApi.V1.Infrastructure;
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace FinancialSummaryApi.V1.Boundary.Request
 {

@@ -5,9 +5,7 @@ using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 
 namespace FinancialSummaryApi.V1.Infrastructure
 {

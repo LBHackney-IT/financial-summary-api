@@ -6,11 +6,11 @@ using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
+using FinancialSummaryApi.V1.UseCase.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FinancialSummaryApi.V1.Infrastructure;
 
 namespace FinancialSummaryApi.V1.Gateways
 {
@@ -215,7 +215,7 @@ namespace FinancialSummaryApi.V1.Gateways
                 Select = Select.ALL_ATTRIBUTES
             };
 
-            var data = await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false); 
+            var data = await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false);
             var totalStatementsCount = data.Count;
             var pagedStatements = new List<Statement>(pageSize);
 
