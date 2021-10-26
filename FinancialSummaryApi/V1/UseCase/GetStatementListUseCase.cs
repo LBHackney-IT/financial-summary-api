@@ -23,13 +23,8 @@ namespace FinancialSummaryApi.V1.UseCase
 
         public async Task<StatementListResponse> ExecuteAsync(Guid targetId, GetStatementListRequest request)
         {
-            var startDate = request.StartDate.Date;
-            var endDate = request.EndDate.Date;
-
-            if (startDate == endDate)
-            {
-                (startDate, endDate) = startDate.GetDayRange();
-            }
+            var startDate = request.StartDate.Date.GetDayRange().Item1;
+            var endDate = request.EndDate.Date.GetDayRange().Item2;
 
             var statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
 
@@ -41,7 +36,5 @@ namespace FinancialSummaryApi.V1.UseCase
                 Statements = statementResponseList
             };
         }
-
-        
     }
 }

@@ -214,9 +214,10 @@ namespace FinancialSummaryApi.V1.Gateways
                 },
                 Select = Select.ALL_ATTRIBUTES
             };
+
             var data = await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false); 
-            int totalStatementsCount = data.Count;
-            var pagedStatements = new List<Statement>();
+            var totalStatementsCount = data.Count;
+            var pagedStatements = new List<Statement>(pageSize);
 
             if (PageCanBeLoaded(totalStatementsCount, pageNumber, pageSize))
             {
@@ -235,6 +236,7 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             var statementBatch = _dynamoDbContext.CreateBatchWrite<StatementDbEntity>();
             var statementsDb = _mapper.Map<IEnumerable<StatementDbEntity>>(statements);
+
             statementBatch.AddPutItems(statementsDb);
             await statementBatch.ExecuteAsync().ConfigureAwait(false);
         }
