@@ -156,7 +156,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             await CreateStatementListAndValidateResponse(statementDomains).ConfigureAwait(false);
 
-            for(int i = 0; i < statementDomains.Count; i++)
+            for (int i = 0; i < statementDomains.Count; i++)
             {
                 await GetStatementByIdAndValidateResponse(statementDomains[i]).ConfigureAwait(false);
             }
@@ -172,7 +172,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Should().NotBeNull();
             apiEntity.Statements.Count.Should().BeGreaterOrEqualTo(2);
             apiEntity.Statements.Should().BeEquivalentTo(statementDomains);
-        }  
+        }
 
         [Fact]
         public async Task CreateThreeStatementsSecondPageGetListReturns200()
@@ -232,7 +232,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntityList = JsonConvert.DeserializeObject<List<StatementResponse>>(responseContent);
-            foreach(var apiEntity in apiEntityList)
+            foreach (var apiEntity in apiEntityList)
             {
                 CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<StatementDbEntity>(apiEntity.Id).ConfigureAwait(false));
             }
@@ -241,7 +241,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntityList.Should().BeEquivalentTo(expectedStatements, options => options.Excluding(a => a.Id));
 
-            for(int i = 0; i < apiEntityList.Count; i++)
+            for (int i = 0; i < apiEntityList.Count; i++)
             {
                 statements[i].Id = apiEntityList[i].Id;
             }

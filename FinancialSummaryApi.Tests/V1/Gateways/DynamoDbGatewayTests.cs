@@ -369,7 +369,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             statementList.Statements[0].Should().BeEquivalentTo(expectedStatement);
         }
 
-    
         #endregion
 
         private QueryResponse _rentGroupDbResponse;

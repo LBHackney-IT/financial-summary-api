@@ -221,7 +221,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             statementsList[0].Id = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
             statementsList[1].Id = new Guid("4fc2872e-5131-4399-8959-c4a17b611f9c");
             var returnedList = _mapper.Map<List<StatementResponse>>(statementsList);
-            
+
             _addListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<List<AddStatementRequest>>()))
                  .ReturnsAsync(returnedList);
 
@@ -385,11 +385,11 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             return new AddStatementRequest()
             {
                 TargetId = targetId,
-                TargetType = (TargetType)targetTypes.GetValue(rand.Next(0, targetTypes.Length - 1)),
+                TargetType = (TargetType) targetTypes.GetValue(rand.Next(0, targetTypes.Length - 1)),
                 StatementPeriodEndDate = statementPeriodEndDate,
                 RentAccountNumber = "Some account number",
                 Address = "Some address",
-                StatementType = (StatementType)statementTypes.GetValue(rand.Next(0, statementTypes.Length - 1)),
+                StatementType = (StatementType) statementTypes.GetValue(rand.Next(0, statementTypes.Length - 1)),
                 ChargedAmount = (decimal) rand.NextDouble() * 50,
                 PaidAmount = (decimal) rand.NextDouble() * 50,
                 HousingBenefitAmount = (decimal) rand.NextDouble() * 50,

@@ -91,7 +91,6 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
 
             _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
                 .ReturnsAsync(returnedResult);
-           
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
 
