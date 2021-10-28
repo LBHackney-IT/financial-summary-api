@@ -1,6 +1,6 @@
-using System;
 using FinancialSummaryApi.V1.Domain;
 using FluentAssertions;
+using System;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Domain

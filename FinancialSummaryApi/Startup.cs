@@ -7,6 +7,7 @@ using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -42,9 +43,11 @@ namespace FinancialSummaryApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(Startup));
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddFluentValidation(o => o.RegisterValidatorsFromAssemblyContaining<Startup>());
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
@@ -166,6 +169,8 @@ namespace FinancialSummaryApi
             services.AddScoped<IAddWeeklySummaryUseCase, AddWeeklySummaryUseCase>();
             services.AddScoped<IGetWeeklySummaryByIdUseCase, GetWeeklySummaryByIdUseCase>();
             services.AddScoped<IDbHealthCheckUseCase, DbHealthCheckUseCase>();
+            services.AddScoped<IAddStatementListUseCase, AddStatementListUseCase>();
+            services.AddScoped<IGetStatementListUseCase, GetStatementListUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

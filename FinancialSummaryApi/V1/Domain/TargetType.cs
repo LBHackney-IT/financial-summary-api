@@ -5,5 +5,6 @@ namespace FinancialSummaryApi.V1.Domain
         Estate,
         Block,
         Core,
+        Property
     }
 }

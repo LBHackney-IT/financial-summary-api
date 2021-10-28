@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using FinancialSummaryApi.V1.UseCase;
-using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinancialSummaryApi.V1.Controllers
