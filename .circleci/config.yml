@@ -168,21 +168,21 @@ workflows:
           requires:
             - check-code-formatting
             - build-and-test
-          filters:
-            branches:
-              only: development
+          #filters:
+          #  branches:
+          #    only: development
       - terraform-init-and-apply-to-development:
           requires:
             - assume-role-development
-          filters:
-            branches:
-              only: development
+          #filters:
+          #  branches:
+          #    only: development
       - deploy-to-development:
           requires:
             - terraform-init-and-apply-to-development
-          filters:
-            branches:
-              only: development
+          #filters:
+          #  branches:
+          #    only: development
   check-and-deploy-staging-and-production:
       jobs:
       - build-and-test:
