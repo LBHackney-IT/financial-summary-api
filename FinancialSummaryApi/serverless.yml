@@ -102,6 +102,7 @@ resources:
                   Action:
                     - "dynamodb:BatchGet*"
                     - "dynamodb:BatchWrite"
+                    - "dynamodb:BatchWriteItem"
                     - "dynamodb:DeleteItem"
                     - "dynamodb:DescribeStream"
                     - "dynamodb:DescribeTable"
