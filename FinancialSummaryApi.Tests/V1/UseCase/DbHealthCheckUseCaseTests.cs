@@ -1,9 +1,9 @@
-using System.Threading;
 using FinancialSummaryApi.V1.UseCase;
 using Bogus;
 using FluentAssertions;
 using Microsoft.Extensions.HealthChecks;
 using Moq;
+using System.Threading;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase

@@ -1,4 +1,3 @@
-using FinancialSummaryApi.V1.Domain;
 using System;
 
 namespace FinancialSummaryApi.V1.Boundary.Response

@@ -4,6 +4,7 @@ namespace FinancialSummaryApi.V1.Domain
     {
         AssetSummary,
         RentGroupSummary,
-        WeeklySummary
+        WeeklySummary,
+        Statement
     }
 }
