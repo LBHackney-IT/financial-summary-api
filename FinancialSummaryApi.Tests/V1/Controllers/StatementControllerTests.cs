@@ -44,12 +44,9 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 ControllerContext = _controllerContext
             };
 
-            if (_mapper == null)
-            {
-                var mappingConfig = new MapperConfiguration(mc =>
-                    mc.AddProfile(new MappingProfile()));
-                _mapper = mappingConfig.CreateMapper();
-            }
+            var mappingConfig = new MapperConfiguration(mc =>
+                mc.AddProfile(new MappingProfile()));
+            _mapper = mappingConfig.CreateMapper();
         }
 
         [Fact]
@@ -148,6 +145,40 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             response.Details.Should().Be("");
 
             response.Message.Should().Be("StartDate can't be greater than EndDate.");
+
+            _getListUseCase.Verify(x => x.ExecuteAsync(new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"), request), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetList_WithPartialDatesProvided_Returns400()
+        {
+            _getListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<GetStatementListRequest>()))
+                .ReturnsAsync(new StatementListResponse());
+            var request = new GetStatementListRequest
+            {
+                PageSize = 2,
+                PageNumber = 1,
+                StartDate = new DateTime(2021, 8, 3),
+            };
+            var result = await _statementController.GetList(string.Empty, string.Empty, new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"), request).ConfigureAwait(false);
+
+            result.Should().NotBeNull();
+
+            var badRequestResult = result as BadRequestObjectResult;
+
+            badRequestResult.Should().NotBeNull();
+
+            var response = badRequestResult.Value as BaseErrorResponse;
+
+            response.Should().NotBeNull();
+
+            response.Should().NotBeNull();
+
+            response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+
+            response.Details.Should().Be("");
+
+            response.Message.Should().Be("StartDate and EndDate cannot be partial provided. Dates can be both empty or both provided");
 
             _getListUseCase.Verify(x => x.ExecuteAsync(new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"), request), Times.Never);
         }
