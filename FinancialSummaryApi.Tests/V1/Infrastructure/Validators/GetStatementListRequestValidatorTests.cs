@@ -4,6 +4,7 @@ using FluentValidation.TestHelper;
 using System;
 using Xunit;
 using System.Text.RegularExpressions;
+using FluentAssertions;
 
 namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
 {
@@ -50,7 +51,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
         }
 
         [Fact]
-        public void GivenMinValueForStartDate_ShouldHaveValidationError()
+        public void GivenMinValueForStartDate_ShouldBeOk()
         {
             var request = new GetStatementListRequest()
             {
@@ -62,12 +63,12 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
 
             var result = _validator.TestValidate(request);
 
-            result.ShouldHaveValidationErrorFor(x => x.StartDate)
-                  .WithErrorMessage($"'{InsertSpaceBetweenWords(nameof(request.StartDate))}' must not be empty.");
+            result.IsValid.Should().BeTrue();
+            result.ShouldNotHaveValidationErrorFor(x => x.StartDate);
         }
 
         [Fact]
-        public void GivenMinValueForEndDate_ShouldHaveValidationError()
+        public void GivenMinValueForEndDate_ShouldbeOk()
         {
             var request = new GetStatementListRequest()
             {
@@ -79,8 +80,8 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
 
             var result = _validator.TestValidate(request);
 
-            result.ShouldHaveValidationErrorFor(x => x.EndDate)
-                  .WithErrorMessage($"'{InsertSpaceBetweenWords(nameof(request.EndDate))}' must not be empty.");
+            result.IsValid.Should().BeTrue();
+            result.ShouldNotHaveValidationErrorFor(x => x.EndDate);
         }
 
         public static string InsertSpaceBetweenWords(string input)

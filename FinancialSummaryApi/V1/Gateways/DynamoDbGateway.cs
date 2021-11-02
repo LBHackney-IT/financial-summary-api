@@ -203,17 +203,22 @@ namespace FinancialSummaryApi.V1.Gateways
                 TableName = "FinancialSummaries",
                 IndexName = "target_id_dx",
                 KeyConditionExpression = "target_id = :V_target_id ",
-                FilterExpression = "summary_type = :V_summary_type " +
-                                  "and statement_period_end_date between :V_start_date and :V_end_date",
+                FilterExpression = "summary_type = :V_summary_type ",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.Statement.ToString() } },
-                    { ":V_start_date", new AttributeValue { S = startDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_end_date", new AttributeValue { S = endDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } }
                 },
                 Select = Select.ALL_ATTRIBUTES
             };
+
+            if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+            {
+                request.FilterExpression += " and statement_period_end_date between :V_start_date and :V_end_date";
+
+                request.ExpressionAttributeValues.Add(":V_start_date", new AttributeValue { S = startDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") });
+                request.ExpressionAttributeValues.Add(":V_end_date", new AttributeValue { S = endDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") });
+            }
 
             var data = await _amazonDynamoDb.QueryAsync(request).ConfigureAwait(false);
             var totalStatementsCount = data.Count;

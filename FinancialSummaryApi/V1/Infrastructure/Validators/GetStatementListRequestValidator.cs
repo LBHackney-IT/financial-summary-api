@@ -9,8 +9,6 @@ namespace FinancialSummaryApi.V1.Infrastructure.Validators
         {
             RuleFor(x => x.PageSize).GreaterThanOrEqualTo(1);
             RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(1);
-            RuleFor(x => x.StartDate).NotEmpty();
-            RuleFor(x => x.EndDate).NotEmpty();
         }
     }
 }
