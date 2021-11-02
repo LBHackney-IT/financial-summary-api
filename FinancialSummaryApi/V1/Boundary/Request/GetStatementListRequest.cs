@@ -16,12 +16,12 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         public int PageNumber { get; set; } = 1;
 
         /// <summary>
-        /// The start date from when we want to filter statements
+        /// The start date from when we want to filter statements. Required only if EndDate is provided
         /// </summary>
         public DateTime StartDate { get; set; }
 
         /// <summary>
-        /// The end date until when we want to filter statements
+        /// The end date until when we want to filter statements. Required only if StartDate is provided
         /// </summary>
         public DateTime EndDate { get; set; }
     }

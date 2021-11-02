@@ -56,9 +56,18 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            if (request.StartDate > request.EndDate)
+            if (DatesArePartialProvided(request.StartDate, request.EndDate))
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "StartDate can't be greater than EndDate."));
+                return BadRequest(new BaseErrorResponse(
+                    (int) HttpStatusCode.BadRequest,
+                    "StartDate and EndDate cannot be partial provided. Dates can be both empty or both provided"));
+            }
+
+            if (DatesProvidedAndInvalid(request.StartDate, request.EndDate))
+            {
+                return BadRequest(new BaseErrorResponse(
+                    (int) HttpStatusCode.BadRequest,
+                    "StartDate can't be greater than EndDate."));
             }
 
             var statementList = await _getListUseCase.ExecuteAsync(assetId, request).ConfigureAwait(false);
@@ -97,5 +106,12 @@ namespace FinancialSummaryApi.V1.Controllers
 
             return StatusCode((int) HttpStatusCode.Created, resultStatements);
         }
+
+        private static bool DatesArePartialProvided(DateTime startDate, DateTime endDate)
+            => startDate != DateTime.MinValue ^ endDate != DateTime.MinValue;
+
+        private static bool DatesProvidedAndInvalid(DateTime startDate, DateTime endDate)
+            => !DatesArePartialProvided(startDate, endDate) &&
+               startDate > endDate;
     }
 }

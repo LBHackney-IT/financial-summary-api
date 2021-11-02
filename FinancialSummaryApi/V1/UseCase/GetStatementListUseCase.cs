@@ -23,10 +23,13 @@ namespace FinancialSummaryApi.V1.UseCase
 
         public async Task<StatementListResponse> ExecuteAsync(Guid targetId, GetStatementListRequest request)
         {
-            var startDate = request.StartDate.Date.GetDayRange().dayStart;
-            var endDate = request.EndDate.Date.GetDayRange().dayEnd;
+            if (request.StartDate != DateTime.MinValue && request.EndDate != DateTime.MinValue)
+            {
+                request.StartDate = request.StartDate.Date.GetDayRange().dayStart;
+                request.EndDate = request.EndDate.Date.GetDayRange().dayEnd;
+            }
 
-            var statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, startDate, endDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
+            var statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
 
             var statementResponseList = _mapper.Map<List<StatementResponse>>(statementList.Statements);
 
