@@ -27,7 +27,7 @@ namespace FinancialSummaryApi.V1.Factories
         {
             return entity == null ? null : new RentGroupSummaryDbEntity
             {
-                Pk= pk,
+                Pk = pk,
                 Id = entity.Id,
                 SubmitDate = entity.SubmitDate,
                 ArrearsYTD = entity.ArrearsYTD,
