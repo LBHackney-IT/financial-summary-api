@@ -45,7 +45,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         /// <returns></returns>
         private async Task SetupTestData(WeeklySummary entity)
         {
-            await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
+            await DynamoDbContext.SaveAsync(entity.ToDatabase(Constants.PartitionKey)).ConfigureAwait(false);
 
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(entity.Id).ConfigureAwait(false));
         }

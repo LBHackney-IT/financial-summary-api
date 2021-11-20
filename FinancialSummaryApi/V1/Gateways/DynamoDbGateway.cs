@@ -19,7 +19,7 @@ namespace FinancialSummaryApi.V1.Gateways
         private readonly IAmazonDynamoDB _amazonDynamoDb;
         private readonly IDynamoDBContext _dynamoDbContext;
         private readonly IMapper _mapper;
-
+        private const string FinancialSummariesPk = "#financialSummaries";
         public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb, IMapper mapper)
         {
             _dynamoDbContext = dynamoDbContext;
@@ -31,7 +31,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task AddAsync(AssetSummary assetSummary)
         {
-            await _dynamoDbContext.SaveAsync(assetSummary.ToDatabase()).ConfigureAwait(false);
+            await _dynamoDbContext.SaveAsync(assetSummary.ToDatabase(FinancialSummariesPk)).ConfigureAwait(false);
         }
 
         public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(DateTime submitDate)
@@ -41,11 +41,10 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "summary_type_dx",
-                KeyConditionExpression = "summary_type = :V_summary_type ",
-                FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
+                KeyConditionExpression = "pk = :V_pk",
+                FilterExpression = "summary_type = :V_summary_type and submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
+                {   { ":V_pk", new AttributeValue { S = FinancialSummariesPk } },
                     { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.AssetSummary.ToString() } },
@@ -64,12 +63,11 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getAllAssetSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "target_id_dx",
-                KeyConditionExpression = "target_id = :V_target_id",
-                FilterExpression = "summary_type = :V_summary_type " +
+                KeyConditionExpression = "pk = :V_pk",
+                FilterExpression = "target_id = :V_target_id and summary_type = :V_summary_type " +
                                    "and submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
+                {   { ":V_pk", new AttributeValue { S = FinancialSummariesPk } },
                     { ":V_target_id", new AttributeValue{ S = assetId.ToString() } },
                     { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
@@ -88,7 +86,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task AddAsync(RentGroupSummary rentGroupSummary)
         {
-            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase()).ConfigureAwait(false);
+            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase(FinancialSummariesPk)).ConfigureAwait(false);
         }
 
         public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
@@ -98,11 +96,10 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "summary_type_dx",
-                KeyConditionExpression = "summary_type = :V_summary_type",
-                FilterExpression = "submit_date between :V_submit_date_start and :V_submit_date_end",
+                KeyConditionExpression = "pk = :V_pk",
+                FilterExpression = "summary_type = :V_summary_type and submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
+                {   { ":V_pk", new AttributeValue { S = FinancialSummariesPk } },
                     { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.RentGroupSummary.ToString() } },
@@ -121,12 +118,11 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "target_name_dx",
-                KeyConditionExpression = "target_name = :V_target_name",
-                FilterExpression = "summary_type = :V_summary_type " +
+                KeyConditionExpression = "pk = :V_pk",
+                FilterExpression = "target_name = :V_target_name and summary_type = :V_summary_type " +
                                    "and submit_date between :V_submit_date_start and :V_submit_date_end",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
+                {   { ":V_pk", new AttributeValue { S = FinancialSummariesPk } },
                     { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
                     { ":V_target_name", new AttributeValue { S = rentGroupName } },
@@ -147,11 +143,11 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getSummaryRequest = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "target_id_dx",
-                KeyConditionExpression = "target_id = :V_target_id ",
-                FilterExpression = "summary_type = :V_summary_type ",
+                KeyConditionExpression = "pk = :V_pk",
+                FilterExpression = "target_id = :V_target_id AND summary_type = :V_summary_type ",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
+                    { ":V_pk", new AttributeValue { S = FinancialSummariesPk } },
                     { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.WeeklySummary.ToString() } },
                 }
@@ -171,7 +167,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task AddAsync(WeeklySummary weeklySummary)
         {
-            await _dynamoDbContext.SaveAsync(weeklySummary.ToDatabase()).ConfigureAwait(false);
+            await _dynamoDbContext.SaveAsync(weeklySummary.ToDatabase(FinancialSummariesPk)).ConfigureAwait(false);
         }
 
         public async Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid id)
@@ -179,10 +175,11 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getWeeklySummaryById = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                KeyConditionExpression = "id = :V_id",
-                FilterExpression = "summary_type = :V_summary_type ",
+                KeyConditionExpression = "pk = :V_pk",
+                FilterExpression = "id = :V_id AND summary_type = :V_summary_type ",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
+                    { ":V_pk", new AttributeValue { S = FinancialSummariesPk } },
                     { ":V_id", new AttributeValue{ S = id.ToString() } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.WeeklySummary.ToString() } },
                 }
@@ -201,11 +198,10 @@ namespace FinancialSummaryApi.V1.Gateways
             var request = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                IndexName = "target_id_dx",
-                KeyConditionExpression = "target_id = :V_target_id ",
-                FilterExpression = "summary_type = :V_summary_type ",
+                KeyConditionExpression = "pk = :V_pk",
+                FilterExpression = "target_id = :V_target_id and summary_type = :V_summary_type ",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {
+                {   { ":V_pk", new AttributeValue { S = FinancialSummariesPk } },
                     { ":V_target_id", new AttributeValue { S = targetId.ToString() } },
                     { ":V_summary_type", new AttributeValue { S = SummaryType.Statement.ToString() } },
                 },
@@ -243,7 +239,7 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             var statementBatch = _dynamoDbContext.CreateBatchWrite<StatementDbEntity>();
             var statementsDb = _mapper.Map<IEnumerable<StatementDbEntity>>(statements);
-
+            statementsDb.Select(x => x.Pk = FinancialSummariesPk);
             statementBatch.AddPutItems(statementsDb);
             await statementBatch.ExecuteAsync().ConfigureAwait(false);
         }

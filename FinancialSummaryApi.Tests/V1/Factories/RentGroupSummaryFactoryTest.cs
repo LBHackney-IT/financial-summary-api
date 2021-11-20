@@ -58,8 +58,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 TotalCharged = 270,
                 TotalPaid = 270
             };
-
-            var databaseEntity = entity.ToDatabase();
+        var databaseEntity = entity.ToDatabase(Constants.PartitionKey);
 
             entity.Id.Should().Be(databaseEntity.Id);
             entity.SubmitDate.Should().Be(databaseEntity.SubmitDate);

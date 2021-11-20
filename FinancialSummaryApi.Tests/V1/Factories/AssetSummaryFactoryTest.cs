@@ -61,7 +61,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 TotalExpenditure = 99
             };
 
-            var databaseEntity = entity.ToDatabase();
+            var databaseEntity = entity.ToDatabase(Constants.PartitionKey);
 
             entity.Id.Should().Be(databaseEntity.Id);
             entity.TargetId.Should().Be(databaseEntity.TargetId);
