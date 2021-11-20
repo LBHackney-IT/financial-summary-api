@@ -175,8 +175,8 @@ namespace FinancialSummaryApi.V1.Gateways
             QueryRequest getWeeklySummaryById = new QueryRequest
             {
                 TableName = "FinancialSummaries",
-                KeyConditionExpression = "pk = :V_pk",
-                FilterExpression = "id = :V_id AND summary_type = :V_summary_type ",
+                KeyConditionExpression = "pk = :V_pk and id = :V_id",
+                FilterExpression = "summary_type = :V_summary_type ",
                 ExpressionAttributeValues = new Dictionary<string, AttributeValue>
                 {
                     { ":V_pk", new AttributeValue { S = FinancialSummariesPk } },
@@ -239,7 +239,10 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             var statementBatch = _dynamoDbContext.CreateBatchWrite<StatementDbEntity>();
             var statementsDb = _mapper.Map<IEnumerable<StatementDbEntity>>(statements);
-            statementsDb.Select(x => x.Pk = FinancialSummariesPk);
+            foreach (var item in statementsDb)
+            {
+                item.Pk = FinancialSummariesPk;
+            }
             statementBatch.AddPutItems(statementsDb);
             await statementBatch.ExecuteAsync().ConfigureAwait(false);
         }

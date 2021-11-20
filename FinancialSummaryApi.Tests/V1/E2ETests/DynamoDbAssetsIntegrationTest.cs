@@ -1,6 +1,7 @@
 using AutoFixture;
 using FinancialSummaryApi.V1.Boundary;
 using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
@@ -50,7 +51,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             await DynamoDbContext.SaveAsync(entity.ToDatabase(Constants.PartitionKey)).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(Constants.PartitionKey,entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(Constants.PartitionKey, entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
@@ -230,7 +231,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(Constants.PartitionKey,apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(Constants.PartitionKey, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 

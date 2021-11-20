@@ -1,3 +1,4 @@
+using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
@@ -58,7 +59,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 TotalCharged = 270,
                 TotalPaid = 270
             };
-        var databaseEntity = entity.ToDatabase(Constants.PartitionKey);
+            var databaseEntity = entity.ToDatabase(Constants.PartitionKey);
 
             entity.Id.Should().Be(databaseEntity.Id);
             entity.SubmitDate.Should().Be(databaseEntity.SubmitDate);

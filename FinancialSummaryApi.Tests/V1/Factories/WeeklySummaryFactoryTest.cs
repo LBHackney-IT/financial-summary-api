@@ -1,3 +1,4 @@
+using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
@@ -43,7 +44,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
         [Fact]
         public void CanMapADomainEntityToADatabaseObject()
         {
-        var entity = new WeeklySummary
+            var entity = new WeeklySummary
             {
                 Id = new Guid("4a5b61f6-dd03-4803-9dc2-80fa3b18a7ab"),
                 TargetId = new Guid("3ffe26ad-be50-4789-b509-9379972f07bb"),
