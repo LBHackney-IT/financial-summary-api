@@ -128,7 +128,7 @@ resources:
                         - - 'arn:aws:dynamodb'
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
-                          - 'table/FinancialSummaries'
+                          - 'table/FinancialSummaries/index/*'
 custom:
   vpc:
     development:
