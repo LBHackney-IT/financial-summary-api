@@ -238,7 +238,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<List<Statement>> GetStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate)
         {
-          
+
             var config = new DynamoDBOperationConfig()
             {
                 QueryFilter = new List<ScanCondition>() {

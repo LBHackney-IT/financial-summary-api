@@ -42,7 +42,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
-            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object,_exportStatementUseCase.Object)
+            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object, _exportStatementUseCase.Object)
             {
                 ControllerContext = _controllerContext
             };
