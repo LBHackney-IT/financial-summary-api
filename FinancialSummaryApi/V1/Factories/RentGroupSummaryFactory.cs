@@ -23,10 +23,11 @@ namespace FinancialSummaryApi.V1.Factories
             };
         }
 
-        public static RentGroupSummaryDbEntity ToDatabase(this RentGroupSummary entity)
+        public static RentGroupSummaryDbEntity ToDatabase(this RentGroupSummary entity, string pk)
         {
             return entity == null ? null : new RentGroupSummaryDbEntity
             {
+                Pk = pk,
                 Id = entity.Id,
                 SubmitDate = entity.SubmitDate,
                 ArrearsYTD = entity.ArrearsYTD,

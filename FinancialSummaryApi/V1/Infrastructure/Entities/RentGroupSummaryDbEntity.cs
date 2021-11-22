@@ -10,11 +10,12 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
     [DynamoDBTable("FinancialSummaries", LowerCamelCaseProperties = true)]
     public class RentGroupSummaryDbEntity
     {
-        [DynamoDBHashKey(AttributeName = "id")]
+        [DynamoDBHashKey(AttributeName = "pk")]
+        public string Pk { get; set; }
+        [DynamoDBRangeKey(AttributeName = "id")]
         public Guid Id { get; set; }
 
         [DynamoDBProperty(AttributeName = "summary_type", Converter = typeof(DynamoDbEnumConverter<SummaryType>))]
-        [DynamoDBGlobalSecondaryIndexHashKey("summary_type_dx")]
         public SummaryType SummaryType { get; set; }
 
         [DynamoDBProperty(AttributeName = "submit_date", Converter = typeof(DynamoDbDateTimeConverter))]
@@ -24,7 +25,6 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
         public string TargetDescription { get; set; }
 
         [DynamoDBProperty(AttributeName = "target_name")]
-        [DynamoDBGlobalSecondaryIndexHashKey("target_name_dx")]
         public string TargetName { get; set; }
 
         [DynamoDBProperty(AttributeName = "total_charged")]
