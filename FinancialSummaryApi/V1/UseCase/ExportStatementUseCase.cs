@@ -43,7 +43,7 @@ namespace FinancialSummaryApi.V1.UseCase
                 period = $"{startDate:D} to {endDate:D}";
             }
 
-            var response = await _financeSummaryGateway.GetStatementsAsync(request.TargetId,startDate, endDate).ConfigureAwait(false);
+            var response = await _financeSummaryGateway.GetStatementsAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
 
 
             var result = request?.FileType switch
