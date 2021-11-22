@@ -22,9 +22,9 @@ namespace FinancialSummaryApi.V1.UseCase
         {
 
             List<Statement> response = new List<Statement>();
-            if (request.SelectedItems.Count > 0)
+            if (request.StatementIdsToExport.Count > 0)
             {
-                foreach (var item in request.SelectedItems)
+                foreach (var item in request.StatementIdsToExport)
                 {
                     var rId = await _financeSummaryGateway.GetStatementByIdAsync(item).ConfigureAwait(false);
                     response.Add(rId);
