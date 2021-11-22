@@ -4,11 +4,11 @@ namespace FinancialSummaryApi.V1.Boundary.Request
 {
     public class GetStatementListRequest
     {
-        private const int _defaultPageSize = 12;
+        private const int DefaultPageSize = 12;
         /// <summary>
         /// The size of a page
         /// </summary>
-        public int PageSize { get; set; } = _defaultPageSize;
+        public int PageSize { get; set; } = DefaultPageSize;
 
         /// <summary>
         /// The number of a page

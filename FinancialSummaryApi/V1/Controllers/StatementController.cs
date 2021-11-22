@@ -18,13 +18,19 @@ namespace FinancialSummaryApi.V1.Controllers
     {
         private readonly IGetStatementListUseCase _getListUseCase;
         private readonly IAddStatementListUseCase _addListUseCase;
+        private readonly IExportStatementUseCase _exportStatementUseCase;
+        private readonly IExportSelectedStatementUseCase _exportSelectedItemUseCase;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
-            IAddStatementListUseCase addListUseCase)
+            IAddStatementListUseCase addListUseCase,
+            IExportStatementUseCase exportStatementUseCase,
+            IExportSelectedStatementUseCase exportSelectedItemUseCase)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
+            _exportStatementUseCase = exportStatementUseCase;
+            _exportSelectedItemUseCase = exportSelectedItemUseCase;
         }
 
         /// <summary>
@@ -107,6 +113,38 @@ namespace FinancialSummaryApi.V1.Controllers
             return StatusCode((int) HttpStatusCode.Created, resultStatements);
         }
 
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("export-statement")]
+        public async Task<IActionResult> ExportStatementReportAsync([FromBody] ExportStatementRequest request)
+        {
+            var result = await _exportStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
+            if (result == null)
+                return NotFound("No record found");
+            if (request?.FileType == "pdf")
+            {
+                return File(result, "application/pdf", $"{request.TypeOfStatement}_{DateTime.UtcNow.Ticks}.{request.FileType}");
+            }
+            return File(result, "text/csv", $"{request.TypeOfStatement}_{DateTime.UtcNow.Ticks}.{request.FileType}");
+        }
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("export-selections")]
+        public async Task<IActionResult> ExportSelectedItemAsync([FromBody] ExportSelectedStatementRequest request)
+        {
+            var result = await _exportSelectedItemUseCase.ExecuteAsync(request).ConfigureAwait(false);
+            if (result == null)
+                return NotFound("No record found");
+            return File(result, "text/csv", $"export_{DateTime.UtcNow.Ticks}.csv");
+        }
         private static bool DatesArePartialProvided(DateTime startDate, DateTime endDate)
             => startDate != DateTime.MinValue ^ endDate != DateTime.MinValue;
 

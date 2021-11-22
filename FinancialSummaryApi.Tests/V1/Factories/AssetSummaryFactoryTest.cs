@@ -1,3 +1,4 @@
+using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
@@ -61,7 +62,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 TotalExpenditure = 99
             };
 
-            var databaseEntity = entity.ToDatabase();
+            var databaseEntity = entity.ToDatabase(Constants.PartitionKey);
 
             entity.Id.Should().Be(databaseEntity.Id);
             entity.TargetId.Should().Be(databaseEntity.TargetId);
