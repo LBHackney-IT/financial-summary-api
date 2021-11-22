@@ -178,6 +178,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IAddStatementListUseCase, AddStatementListUseCase>();
             services.AddScoped<IGetStatementListUseCase, GetStatementListUseCase>();
             services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
+            services.AddScoped<IExportSelectedStatementUseCase, ExportSelectedStatementUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

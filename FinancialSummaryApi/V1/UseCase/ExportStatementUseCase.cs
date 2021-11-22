@@ -16,9 +16,9 @@ namespace FinancialSummaryApi.V1.UseCase
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
         private readonly IConverter _converter;
 
-        public ExportStatementUseCase(IFinanceSummaryGateway gateway, IConverter converter)
+        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IConverter converter)
         {
-            _financeSummaryGateway = gateway;
+            _financeSummaryGateway = financeSummaryGateway;
             _converter = converter;
         }
 
@@ -43,7 +43,7 @@ namespace FinancialSummaryApi.V1.UseCase
                 period = $"{startDate:D} to {endDate:D}";
             }
 
-            var response = await _financeSummaryGateway.GetStatementsAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
+            var response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
 
 
             var result = request?.FileType switch
