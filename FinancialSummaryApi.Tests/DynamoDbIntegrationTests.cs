@@ -12,45 +12,49 @@ namespace FinancialSummaryApi.Tests
         private readonly DynamoDbMockWebApplicationFactory<TStartup> _factory;
         protected IDynamoDBContext DynamoDbContext => _factory?.DynamoDbContext;
         protected List<Action> CleanupActions { get; set; }
-
         private readonly List<TableDef> _tables = new List<TableDef>
         {
-            new TableDef {
-                TableName = "FinancialSummaries",
-                PartitionKey = new AttributeDef()
-                {
-                    KeyName = "id",
-                    KeyType = KeyType.HASH,
-                    KeyScalarType = ScalarAttributeType.S
-                },
-                Indices = new List<GlobalIndexDef>{
-                    new GlobalIndexDef()
-                    {
-                        KeyName = "summary_type",
-                        KeyType = KeyType.HASH,
-                        KeyScalarType = ScalarAttributeType.S,
-                        IndexName = "summary_type_dx",
-                        ProjectionType = "ALL"
-                    },
-                    new GlobalIndexDef()
-                    {
-                        KeyName = "target_id",
-                        KeyType = KeyType.HASH,
-                        KeyScalarType = ScalarAttributeType.S,
-                        IndexName = "target_id_dx",
-                        ProjectionType = "ALL"
-                    },
-                    new GlobalIndexDef()
-                    {
-                        KeyName = "target_name",
-                        KeyType = KeyType.HASH,
-                        KeyScalarType = ScalarAttributeType.S,
-                        IndexName = "target_name_dx",
-                        ProjectionType = "ALL"
-                    }
-                }
-            },
+
+            new TableDef { Name = "FinancialSummaries", KeyName = "pk", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
         };
+        //private readonly List<TableDef> _tables = new List<TableDef>
+        //{
+        //    new TableDef {
+        //        TableName = "FinancialSummaries",
+        //        PartitionKey = new AttributeDef()
+        //        {
+        //            KeyName = "id",
+        //            KeyType = KeyType.HASH,
+        //            KeyScalarType = ScalarAttributeType.S
+        //        },
+        //        Indices = new List<GlobalIndexDef>{
+        //            new GlobalIndexDef()
+        //            {
+        //                KeyName = "summary_type",
+        //                KeyType = KeyType.HASH,
+        //                KeyScalarType = ScalarAttributeType.S,
+        //                IndexName = "summary_type_dx",
+        //                ProjectionType = "ALL"
+        //            },
+        //            new GlobalIndexDef()
+        //            {
+        //                KeyName = "target_id",
+        //                KeyType = KeyType.HASH,
+        //                KeyScalarType = ScalarAttributeType.S,
+        //                IndexName = "target_id_dx",
+        //                ProjectionType = "ALL"
+        //            },
+        //            new GlobalIndexDef()
+        //            {
+        //                KeyName = "target_name",
+        //                KeyType = KeyType.HASH,
+        //                KeyScalarType = ScalarAttributeType.S,
+        //                IndexName = "target_name_dx",
+        //                ProjectionType = "ALL"
+        //            }
+        //        }
+        //    },
+        //};
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
         {
@@ -98,10 +102,19 @@ namespace FinancialSummaryApi.Tests
 
     public class TableDef
     {
-        public string TableName { get; set; }
-        public AttributeDef PartitionKey { get; set; }
-        public List<GlobalIndexDef> Indices { get; set; }
+        public string Name { get; set; }
+        public string KeyName { get; set; }
+        public string RangeName { get; set; }
+        public KeyType KeyType { get; set; }
+        public KeyType RangeType { get; set; }
+        public ScalarAttributeType KeyScalarType { get; set; }
     }
+    //public class TableDef
+    //{
+    //    public string TableName { get; set; }
+    //    public AttributeDef PartitionKey { get; set; }
+    //    public List<GlobalIndexDef> Indices { get; set; }
+    //}
 
     public class AttributeDef
     {
