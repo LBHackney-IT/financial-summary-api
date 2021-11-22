@@ -19,6 +19,6 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         public TargetType? TargetType { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public List<Guid> SelectedItems { get; set; }
+        public List<Guid> StatementIdsToExport { get; set; }
     }
 }
