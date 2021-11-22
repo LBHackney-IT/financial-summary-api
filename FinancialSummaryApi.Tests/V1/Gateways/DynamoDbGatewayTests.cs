@@ -164,29 +164,33 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummaries[1].Should().BeEquivalentTo(RentGroupDbResponse.ToRentGroupSummary()[2]);
         }
 
+        //todoh: implement with batch write?
         [Fact]
         public async Task AddRentGroupSummaryWithValidObject()
         {
-            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+            _dynamoDb.Setup(_ => _.CreateBatchWrite<RentGroupSummaryDbEntity>(null))
+                .Returns(_dynamoDb.Object.CreateBatchWrite<RentGroupSummaryDbEntity>());
 
-            var domain = _fixture.Create<RentGroupSummary>();
+            var domain = _fixture.Create<List<RentGroupSummary>>();
 
-            await _gateway.AddAsync(domain).ConfigureAwait(false);
+            await _gateway.AddRangeAsync(domain).ConfigureAwait(false);
 
-            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), default), Times.Once);
+            _dynamoDb.Verify(_ => _.CreateBatchWrite<RentGroupSummaryDbEntity>(null), Times.Once);
         }
 
         [Fact]
         public async Task AddRentGroupSummaryWithInvalidObject()
         {
-            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
+            _dynamoDb.Setup(_ => _.CreateBatchWrite<RentGroupSummaryDbEntity>(null))
+                .Returns(_dynamoDb.Object.CreateBatchWrite<RentGroupSummaryDbEntity>());
 
-            await _gateway.AddAsync((RentGroupSummary) null).ConfigureAwait(false);
+            await _gateway.AddRangeAsync((List<RentGroupSummary>) null).ConfigureAwait(false);
 
-            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), default), Times.Once);
+            _dynamoDb.Verify(_ => _.CreateBatchWrite<RentGroupSummaryDbEntity>(null), Times.Once);
         }
+
+
+
         #endregion
 
         #region WeeklySummaries

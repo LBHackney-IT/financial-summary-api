@@ -8,7 +8,6 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -90,31 +89,31 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         [Fact]
         public async Task CreateRentGroupCreatedReturns201()
         {
-            var rentGroupDomain = ConstructRentGroupSummary();
+            var rentGroupDomains = new List<RentGroupSummary> { ConstructRentGroupSummary() };
 
-            await CreateRentGroupAndValidateResponse(rentGroupDomain).ConfigureAwait(false);
+            await CreateRentGroupListAndValidateResponse(rentGroupDomains).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task CreateRentGroupAndThenGetByRentGroupName()
         {
-            var rentGroupDomain = ConstructRentGroupSummary();
+            var rentGroupDomains = new List<RentGroupSummary> { ConstructRentGroupSummary() };
 
-            await CreateRentGroupAndValidateResponse(rentGroupDomain).ConfigureAwait(false);
+            await CreateRentGroupListAndValidateResponse(rentGroupDomains).ConfigureAwait(false);
 
-            await GetRentGroupByRentGroupNameAndValidateResponse(rentGroupDomain).ConfigureAwait(false);
+            await GetRentGroupByRentGroupNameAndValidateResponse(rentGroupDomains[0]).ConfigureAwait(false);
         }
 
         [Fact]
         public async Task CreateRentGroupBadRequestReturns400()
         {
-            var rentGroupDomain = ConstructRentGroupSummary();
+            var rentGroupDomain = new List<RentGroupSummary> { ConstructRentGroupSummary() };
 
-            rentGroupDomain.ArrearsYTD = -100;
-            rentGroupDomain.ChargedYTD = -99;
-            rentGroupDomain.PaidYTD = -500;
-            rentGroupDomain.TotalCharged = -100;
-            rentGroupDomain.TotalPaid = -200;
+            rentGroupDomain[0].ArrearsYTD = -100;
+            rentGroupDomain[0].ChargedYTD = -99;
+            rentGroupDomain[0].PaidYTD = -500;
+            rentGroupDomain[0].TotalCharged = -100;
+            rentGroupDomain[0].TotalPaid = -200;
 
             var uri = new Uri("api/v1/rent-group-summary", UriKind.Relative);
             string body = JsonConvert.SerializeObject(rentGroupDomain);
@@ -146,12 +145,11 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         [Fact]
         public async Task CreateTwoRentGroupsGetAllReturns200()
         {
-            var rentGroupDomains = new[] { ConstructRentGroupSummary(), ConstructRentGroupSummary() };
+            var rentGroupDomains = new List<RentGroupSummary> { ConstructRentGroupSummary(), ConstructRentGroupSummary() };
+            await CreateRentGroupListAndValidateResponse(rentGroupDomains).ConfigureAwait(false);
 
             foreach (var rentGroupDomain in rentGroupDomains)
             {
-                await CreateRentGroupAndValidateResponse(rentGroupDomain).ConfigureAwait(false);
-
                 await GetRentGroupByRentGroupNameAndValidateResponse(rentGroupDomain).ConfigureAwait(false);
             }
 
@@ -179,27 +177,24 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var rentGroupDomain = ConstructRentGroupSummary();
             await SetupTestData(rentGroupDomain).ConfigureAwait(false);
 
-            var uri = new Uri($"api/v1/asset-summary?submitDate={rentGroupDomain.SubmitDate.AddDays(-2):yyyy-MM-dd}", UriKind.Relative);
+            var uri = new Uri($"api/v1/rent-group-summary/{rentGroupDomain.RentGroupName}?submitDate={rentGroupDomain.SubmitDate:yyyy-MM-dd}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<List<RentGroupSummaryResponse>>(responseContent);
+            var apiEntity = JsonConvert.DeserializeObject<RentGroupSummaryResponse>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Should().HaveCountGreaterOrEqualTo(0);
-
-            var foundRentGroup = apiEntity.FirstOrDefault(r => r.RentGroupName.Equals(rentGroupDomain.RentGroupName));
-
-            foundRentGroup.Should().BeNull();
+           
+            apiEntity.ShouldBeEqualTo(rentGroupDomain);
         }
 
-        private async Task CreateRentGroupAndValidateResponse(RentGroupSummary rentGroupSummary)
+        private async Task CreateRentGroupListAndValidateResponse(List<RentGroupSummary> rentGroupSummaries)
         {
             var uri = new Uri("api/v1/rent-group-summary", UriKind.Relative);
 
-            string body = JsonConvert.SerializeObject(rentGroupSummary);
+            string body = JsonConvert.SerializeObject(rentGroupSummaries);
 
             using StringContent stringContent = new StringContent(body);
             stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
@@ -209,13 +204,21 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             response.StatusCode.Should().Be(HttpStatusCode.Created);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<RentGroupSummaryResponse>(responseContent);
+            var apiEntityList = JsonConvert.DeserializeObject<List<RentGroupSummaryResponse>>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            foreach (var apiEntity in apiEntityList)
+            {
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            }
 
-            apiEntity.Should().NotBeNull();
+            apiEntityList.Should().NotBeNull();
 
-            apiEntity.Should().BeEquivalentTo(rentGroupSummary, options => options.Excluding(a => a.Id));
+            apiEntityList.Should().BeEquivalentTo(rentGroupSummaries, options => options.Excluding(a => a.Id));
+
+            for (int i = 0; i < apiEntityList.Count; i++)
+            {
+                rentGroupSummaries[i].Id = apiEntityList[i].Id;
+            }
         }
 
         private async Task GetRentGroupByRentGroupNameAndValidateResponse(RentGroupSummary rentGroupSummary)
