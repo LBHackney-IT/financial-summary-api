@@ -119,7 +119,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        [Route("export-statement")]
+        [Route("export")]
         public async Task<IActionResult> ExportStatementReportAsync([FromBody] ExportStatementRequest request)
         {
             var result = await _exportStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
@@ -137,7 +137,7 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        [Route("export-selections")]
+        [Route("selection/export")]
         public async Task<IActionResult> ExportSelectedItemAsync([FromBody] ExportSelectedStatementRequest request)
         {
             var result = await _exportSelectedItemUseCase.ExecuteAsync(request).ConfigureAwait(false);

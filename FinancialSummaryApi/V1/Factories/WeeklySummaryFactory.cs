@@ -24,11 +24,11 @@ namespace FinancialSummaryApi.V1.Factories
             };
         }
 
-        public static WeeklySummaryDbEntity ToDatabase(this WeeklySummary entity, string pk)
+        public static WeeklySummaryDbEntity ToDatabase(this WeeklySummary entity, string partitionKey)
         {
             return entity == null ? null : new WeeklySummaryDbEntity
             {
-                Pk = pk,
+                Pk = partitionKey,
                 Id = entity.Id,
                 TargetId = entity.TargetId,
                 BalanceAmount = entity.BalanceAmount,

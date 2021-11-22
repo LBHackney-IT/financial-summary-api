@@ -5,6 +5,10 @@ namespace FinancialSummaryApi.V1.Boundary.Response
     public class ExportResponse
     {
         public string FullName { get; set; }
+        /// <summary>
+        /// The period for which the report is generated
+        /// <example>20 November 2020 to 20 November 2021</example>
+        /// </summary>
         public string StatementPeriod { get; set; }
         public string BalanceBroughtForward { get; set; }
         public string BankAccountNumber { get; set; }
