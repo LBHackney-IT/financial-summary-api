@@ -16,9 +16,10 @@ namespace FinancialSummaryApi.V1.Gateways.Abstracts
         Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid id);
         Task<List<WeeklySummary>> GetAllWeeklySummaryAsync(Guid targetId, DateTime? startDate, DateTime? endDate);
         public Task<StatementList> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, int pageNumber);
-        Task<List<Statement>> GetStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate);
+        Task<List<Statement>> GetStatementListAsync(Guid targetId, DateTime startDate, DateTime endDate);
 
         public Task AddAsync(RentGroupSummary groupSummary);
+        Task<Statement> GetStatementByIdAsync(Guid item);
         public Task AddAsync(AssetSummary assetSummary);
         public Task AddAsync(WeeklySummary weeklySummary);
         public Task AddRangeAsync(List<Statement> statements);

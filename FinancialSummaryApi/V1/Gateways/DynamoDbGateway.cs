@@ -236,7 +236,7 @@ namespace FinancialSummaryApi.V1.Gateways
             };
         }
 
-        public async Task<List<Statement>> GetStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate)
+        public async Task<List<Statement>> GetStatementListAsync(Guid targetId, DateTime startDate, DateTime endDate)
         {
 
             var config = new DynamoDBOperationConfig()
@@ -269,5 +269,11 @@ namespace FinancialSummaryApi.V1.Gateways
         private static int CountRecordsOnPage(int totalRecordsCount, int pageNumber, int pageSize)
             => PageCanBeLoaded(totalRecordsCount, pageNumber, pageSize) ?
                         Math.Min(pageSize, totalRecordsCount - (pageNumber - 1) * pageSize) : 0;
+
+        public async Task<Statement> GetStatementByIdAsync(Guid id)
+        {
+            var data = await _dynamoDbContext.LoadAsync<StatementDbEntity>(PartitionKey, id).ConfigureAwait(false);
+            return _mapper.Map<Statement>(data);
+        }
     }
 }
