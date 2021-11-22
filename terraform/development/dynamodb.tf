@@ -17,21 +17,6 @@ resource "aws_dynamodb_table" "FinancialSummaries_dynamodb_table" {
         type              = "S"
     }
 	
-    attribute {
-        name              = "summary_type"
-        type              = "S"
-    }
-	
-    attribute {
-        name              = "target_id"
-        type              = "S"
-    }
-
-    attribute {
-        name              = "target_name"
-        type              = "S"
-    }
-
     tags = {
         Name              = "accounts-api-${var.environment_name}"
         Environment       = var.environment_name
