@@ -187,7 +187,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var apiEntity = JsonConvert.DeserializeObject<RentGroupSummaryResponse>(responseContent);
 
             apiEntity.Should().NotBeNull();
-           
+
             apiEntity.ShouldBeEqualTo(rentGroupDomain);
         }
 
