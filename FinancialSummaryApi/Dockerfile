@@ -2,42 +2,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
 WORKDIR /app
 
-
-# Install dependencies
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        zlib1g \
-		libgdiplus \
-        libc6-dev \
-		ca-certificates \
-		fontconfig \
-		fontconfig-config \
-		fonts-dejavu-core \
-		libbsd0 \
-		libexpat1 \
-		libfontconfig1 \
-		libfontenc1 \
-		libfreetype6 \
-		libjpeg62-turbo \
-		libpng16-16 \
-		libssl1.1 \
-		libx11-6 \
-		libx11-data \
-		libxau6 \
-		libxcb1 \
-		libxdmcp6 \
-		libxext6 \
-		libxrender1 \
-		ucf \
-		x11-common \
-		xfonts-75dpi \
-		xfonts-base \
-		xfonts-encodings \
-		xfonts-utils \
-     && rm -rf /var/lib/apt/lists/*
-RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.buster_amd64.deb
-RUN dpkg -i wkhtmltox_0.12.6-1.buster_amd64.deb
-RUN apt --fix-broken install
+RUN apt-get update -qq && apt-get -y install libgdiplus libc6-dev
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
