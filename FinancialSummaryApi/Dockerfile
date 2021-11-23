@@ -1,10 +1,40 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
-# Install dependencies
-RUN apt-get update -qq && apt-get -y install libgdiplus libc6-dev
-
 WORKDIR /app
 
+
+# Install dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        zlib1g \
+		libgdiplus \
+        libc6-dev \
+		ca-certificates \
+		fontconfig \
+		fontconfig-config \
+		fonts-dejavu-core \
+		libbsd0 \
+		libexpat1 \
+		libfontconfig1 \
+		libfontenc1 \
+		libfreetype6 \
+		libjpeg62-turbo \
+		libpng16-16 \
+		libssl1.1 \
+		libx11-6 \
+		libx11-data \
+		libxau6 \
+		libxcb1 \
+		libxdmcp6 \
+		libxext6 \
+		libxrender1 \
+		ucf \
+		x11-common \
+		xfonts-75dpi \
+		xfonts-base \
+		xfonts-encodings \
+		xfonts-utils \
+     && rm -rf /var/lib/apt/lists/*
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
