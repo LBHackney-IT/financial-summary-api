@@ -164,29 +164,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummaries[1].Should().BeEquivalentTo(RentGroupDbResponse.ToRentGroupSummary()[2]);
         }
 
-        [Fact]
-        public async Task AddRentGroupSummaryWithValidObject()
-        {
-            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            var domain = _fixture.Create<RentGroupSummary>();
-
-            await _gateway.AddAsync(domain).ConfigureAwait(false);
-
-            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), default), Times.Once);
-        }
-
-        [Fact]
-        public async Task AddRentGroupSummaryWithInvalidObject()
-        {
-            _dynamoDb.Setup(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            await _gateway.AddAsync((RentGroupSummary) null).ConfigureAwait(false);
-
-            _dynamoDb.Verify(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), default), Times.Once);
-        }
         #endregion
 
         #region WeeklySummaries
