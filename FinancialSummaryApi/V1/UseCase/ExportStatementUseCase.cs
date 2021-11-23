@@ -28,11 +28,11 @@ namespace FinancialSummaryApi.V1.UseCase
             DateTime endDate;
             string name;
             string period;
-            if (request.TypeOfStatement == TypeOfStatement.Quaterly)
+            if (request.TypeOfStatement == TypeOfStatement.Quarterly)
             {
                 startDate = DateTime.UtcNow.AddMonths(-3);
                 endDate = DateTime.UtcNow;
-                name = TypeOfStatement.Quaterly.ToString();
+                name = TypeOfStatement.Quarterly.ToString();
                 period = $"{startDate:D} to {endDate:D}";
             }
             else
