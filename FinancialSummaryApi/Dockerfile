@@ -8,6 +8,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         zlib1g \
 		libgdiplus \
+        wkhtmltopdf \ 
         libc6-dev \
 		ca-certificates \
 		fontconfig \
@@ -35,6 +36,12 @@ RUN apt-get update \
 		xfonts-encodings \
 		xfonts-utils \
      && rm -rf /var/lib/apt/lists/*
+#RUN dpkg -i libjpeg-turbo8_2.0.6-0ubuntu2_amd64.deb
+#RUN wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.amazonlinux2.x86_64.rpm
+#RUN dpkg -i wkhtmltox-0.12.6-1.amazonlinux2.x86_64.rpm
+#RUN apt --fix-broken install
+     #RUN apt-get install ./wkhtmltox-0.12.6-1.amazonlinux2.x86_64.rpm
+
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
