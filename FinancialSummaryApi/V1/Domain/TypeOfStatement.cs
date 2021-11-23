@@ -6,7 +6,7 @@ namespace FinancialSummaryApi.V1.Domain
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum TypeOfStatement
     {
-        Quaterly,
+        Quarterly,
         Yearly
     }
 }
