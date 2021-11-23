@@ -85,9 +85,16 @@ namespace FinancialSummaryApi.V1.Gateways
 
         #region Rent Group Summary
 
-        public async Task AddAsync(RentGroupSummary rentGroupSummary)
+        public async Task AddRangeAsync(List<RentGroupSummary> groupSummaries)
         {
-            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase(PartitionKey)).ConfigureAwait(false);
+            var groupSummariesBatch = _dynamoDbContext.CreateBatchWrite<RentGroupSummaryDbEntity>();
+            var groupSummariesDb = groupSummaries.Select(s => s.ToDatabase(PartitionKey));
+            foreach (var item in groupSummariesDb)
+            {
+                item.Pk = PartitionKey;
+            }
+            groupSummariesBatch.AddPutItems(groupSummariesDb);
+            await groupSummariesBatch.ExecuteAsync().ConfigureAwait(false);
         }
 
         public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
