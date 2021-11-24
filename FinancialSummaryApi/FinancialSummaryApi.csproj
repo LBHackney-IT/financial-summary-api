@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -25,7 +25,8 @@
 
       <PackageReference Include="NodaMoney" Version="1.0.5" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
-    <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.59" />
+      <!-- native assets excluded as we are using lambda layers instead -->
+    <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.59"  ExcludeAssets="native"/>
     <PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
