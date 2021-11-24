@@ -2,6 +2,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
+using IronPdf;
 using iTextSharp.text;
 using iTextSharp.text.html.simpleparser;
 using iTextSharp.text.pdf;
@@ -11,7 +12,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using WkHtmlToPdfDotNet;
 using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialSummaryApi.V1.UseCase.Helpers
@@ -42,56 +42,32 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
                    });
             }
             report.Data = data;
-            var globalSettings = new GlobalSettings
-            {
-                ColorMode = ColorMode.Color,
-                Orientation = Orientation.Portrait,
-                PaperSize = PaperKind.A4,
-                Margins = new MarginSettings { Top = 10 },
-                DocumentTitle = $"{name} Statement Report"
-            };
-            var objectSettings = new ObjectSettings
-            {
-                PagesCount = true,
-                HtmlContent = TemplateGenerator.GetHTMLReportString(report),
-                WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css"), LoadImages = true },
-                HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
-                FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = $"{name} Statement Report" }
-            };
-            var pdf = new HtmlToPdfDocument()
-            {
-                GlobalSettings = globalSettings,
-                Objects = { objectSettings }
-            };
-            byte[] result1;
-            using (var ms = new MemoryStream())
-            {
-                var pdfDoc = new Document(PageSize.A4);
-                PdfWriter wri = PdfWriter.GetInstance(pdfDoc, ms);
-                pdfDoc.Open();//Open Document to write
-                var styles = new StyleSheet();
+            //var globalSettings = new GlobalSettings
+            //{
+            //    ColorMode = ColorMode.Color,
+            //    Orientation = Orientation.Portrait,
+            //    PaperSize = PaperKind.A4,
+            //    Margins = new MarginSettings { Top = 10 },
+            //    DocumentTitle = $"{name} Statement Report"
+            //};
+            //var objectSettings = new ObjectSettings
+            //{
+            //    PagesCount = true,
+            //    HtmlContent = TemplateGenerator.GetHTMLReportString(report),
+            //    WebSettings = { DefaultEncoding = "utf-8", UserStyleSheet = Path.Combine(Directory.GetCurrentDirectory(), "assets", "styles.css"), LoadImages = true },
+            //    HeaderSettings = { FontName = "Arial", FontSize = 9, Right = "Page [page] of [toPage]", Line = true },
+            //    FooterSettings = { FontName = "Arial", FontSize = 9, Line = true, Center = $"{name} Statement Report" }
+            //};
+            //var pdf = new HtmlToPdfDocument()
+            //{
+            //    GlobalSettings = globalSettings,
+            //    Objects = { objectSettings }
+            //};
+            var Renderer = new IronPdf.ChromePdfRenderer();
+            var sty = Path.Combine(Directory.GetCurrentDirectory(), "assets\\");
+            var PDF = Renderer.RenderHtmlAsPdf(TemplateGenerator.GetHTMLReportString(report), BaseUrl: new Uri(sty)).BinaryData;
+            return PDF;
 
-
-                // step 4
-                var objects = HtmlWorker.ParseToList(
-                    new StringReader(TemplateGenerator.GetHTMLReportString(report)),
-                    styles
-                );
-                pdfDoc.Open();
-                foreach (IElement element in objects)
-                {
-                    pdfDoc.Add(element);
-                }
-                wri.CloseStream = false;
-                pdfDoc.Close();
-                result1 = ms.ToArray();
-            }
-
-
-
-
-            //var result = converter.Convert(pdf);
-            return result1;
         }
         public static byte[] WriteCSVFile(List<Statement> transactions, string name, string period)
         {
