@@ -2,6 +2,9 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
+using iTextSharp.text;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
 using NodaMoney;
 using System;
 using System.Collections.Generic;
@@ -60,35 +63,35 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
                 GlobalSettings = globalSettings,
                 Objects = { objectSettings }
             };
-            //byte[] result1;
-            //using (var ms = new MemoryStream())
-            //{
-            //    var pdfDoc = new Document(PageSize.A4);
-            //    PdfWriter wri = PdfWriter.GetInstance(pdfDoc, ms);
-            //    pdfDoc.Open();//Open Document to write
-            //    var styles = new StyleSheet();
+            byte[] result1;
+            using (var ms = new MemoryStream())
+            {
+                var pdfDoc = new Document(PageSize.A4);
+                PdfWriter wri = PdfWriter.GetInstance(pdfDoc, ms);
+                pdfDoc.Open();//Open Document to write
+                var styles = new StyleSheet();
 
 
-            //    // step 4
-            //    var objects = HtmlWorker.ParseToList(
-            //        new StringReader(TemplateGenerator.GetHTMLReportString(report)),
-            //        styles
-            //    );
-            //    pdfDoc.Open();
-            //    foreach (IElement element in objects)
-            //    {
-            //        pdfDoc.Add(element);
-            //    }
-            //    wri.CloseStream = false;
-            //    pdfDoc.Close();
-            //    result1 = ms.ToArray();
-            //}  
+                // step 4
+                var objects = HtmlWorker.ParseToList(
+                    new StringReader(TemplateGenerator.GetHTMLReportString(report)),
+                    styles
+                );
+                pdfDoc.Open();
+                foreach (IElement element in objects)
+                {
+                    pdfDoc.Add(element);
+                }
+                wri.CloseStream = false;
+                pdfDoc.Close();
+                result1 = ms.ToArray();
+            }
 
 
 
 
-            var result = converter.Convert(pdf);
-            return result;
+            //var result = converter.Convert(pdf);
+            return result1;
         }
         public static byte[] WriteCSVFile(List<Statement> transactions, string name, string period)
         {
