@@ -176,13 +176,13 @@ workflows:
             - assume-role-development
           filters:
             branches:
-              only: development
+              only: export-develop
       - deploy-to-development:
           requires:
             - terraform-init-and-apply-to-development
           filters:
             branches:
-              only: development
+              only: export-develop
   check-and-deploy-staging-and-production:
       jobs:
       - build-and-test:
