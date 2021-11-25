@@ -2,8 +2,13 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
+using iTextSharp.text;
+using iTextSharp.text.html;
+using iTextSharp.text.html.simpleparser;
+using iTextSharp.text.pdf;
 using NodaMoney;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -58,10 +63,64 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             //    GlobalSettings = globalSettings,
             //    Objects = { objectSettings }
             //};
-            var Renderer = new IronPdf.ChromePdfRenderer();
-            // var sty = Path.Combine(Directory.GetCurrentDirectory(), "assets\\");
-            var PDF = Renderer.RenderHtmlAsPdf(TemplateGenerator.GetHTMLReportString(report)).BinaryData;
-            return PDF;
+            byte[] result;
+
+            using (var ms = new MemoryStream())
+            {
+                var pdfDoc = new Document(PageSize.A3);
+                PdfWriter wri = PdfWriter.GetInstance(pdfDoc, ms);
+                pdfDoc.Open();//Open Document to write
+                //var styles = new StyleSheet();
+                //// set the default font's properties
+                //styles.LoadTagStyle(HtmlTags.BODY, "encoding", "Identity-H");
+                //styles.LoadTagStyle(HtmlTags.BODY, HtmlTags.FONT, "Tahoma");
+                //styles.LoadTagStyle(HtmlTags.BODY, "size", "16pt");
+
+
+                //// step 4
+                //var objects = HtmlWorker.ParseToList(
+                //    new StringReader(TemplateGenerator.GetHTMLReportString1()),
+                //    styles
+                //);
+                pdfDoc.Open();
+                PdfPTable table = new PdfPTable(5);
+
+                PdfPCell cell = new PdfPCell(new Phrase("Header spanning 3 columns"))
+                {
+                    Colspan = 5,
+
+                    HorizontalAlignment = 1 //0=Left, 1=Centre, 2=Right
+                };
+
+                table.AddCell(cell);
+                foreach (var item in report.Data)
+                {
+                    table.AddCell(item.Date);
+
+                    table.AddCell(item.TransactionDetail);
+
+                    table.AddCell(item.Debit);
+
+                    table.AddCell(item.Credit);
+
+                    table.AddCell(item.Balance);
+
+                }
+
+
+                pdfDoc.Add(table);
+                //foreach (IElement element in objects)
+                //{
+                //    pdfDoc.Add(element);
+                //}
+                wri.CloseStream = false;
+                pdfDoc.Close();
+                result = ms.ToArray();
+            }
+
+
+
+            return result;
 
         }
         public static byte[] WriteCSVFile(List<Statement> transactions, string name, string period)
