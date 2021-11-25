@@ -2,7 +2,8 @@ service: financial-summary-api
 provider:
   name: aws
   runtime: dotnetcore3.1
-  memorySize: 3048
+  memorySize: 512
+  timeout: 33
   tracing:
     lambda: true
     apiGateway: true
