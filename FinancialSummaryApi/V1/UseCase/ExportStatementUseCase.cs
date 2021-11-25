@@ -11,10 +11,12 @@ namespace FinancialSummaryApi.V1.UseCase
     public class ExportStatementUseCase : IExportStatementUseCase
     {
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
+        private readonly PdfGenerator _pdfGenerator;
 
-        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway)
+        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, PdfGenerator pdfGenerator)
         {
             _financeSummaryGateway = financeSummaryGateway;
+            _pdfGenerator = pdfGenerator;
         }
 
         public async Task<byte[]> ExecuteAsync(ExportStatementRequest request)
@@ -44,7 +46,7 @@ namespace FinancialSummaryApi.V1.UseCase
             var result = request?.FileType switch
             {
                 "csv" => FileGenerator.WriteCSVFile(response, name, period),
-                "pdf" => FileGenerator.WritePdfFile(response, name, period),
+                "pdf" => _pdfGenerator.BuildPdf(response, name, period),//FileGenerator.WritePdfFile(response, name, period),
                 _ => null
             };
             return result;
