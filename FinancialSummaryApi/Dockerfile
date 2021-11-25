@@ -2,31 +2,24 @@ FROM public.ecr.aws/lambda/dotnet:3.1
 
 WORKDIR /var/task
 
-RUN yum update -y
-RUN yum install -y pango.x86_64 
-RUN yum install -y libXcomposite.x86_64 
-RUN yum install -y libXcursor.x86_64
-RUN yum install -y libXdamage.x86_64
-RUN yum install -y libXext.x86_64 
-RUN yum install -y libXi.x86_64 
-RUN yum install -y libXtst.x86_64 
-RUN yum install -y cups-libs.x86_64 
-RUN yum install -y libXScrnSaver.x86_64 
-RUN yum install -y libXrandr.x86_64
-RUN yum install -y GConf2.x86_64 
-RUN yum install -y alsa-lib.x86_64
-RUN yum install -y atk.x86_64 
-RUN yum install -y gtk3.x86_64 
-RUN yum install -y ipa-gothic-fonts 
-RUN yum install -y xorg-x11-fonts-100dpi
-RUN yum install -y xorg-x11-fonts-75dpi
-RUN yum install -y xorg-x11-utils
-RUN yum install -y xorg-x11-fonts-cyrillic
-RUN yum install -y xorg-x11-fonts-Type1 
-RUN yum install -y xorg-x11-fonts-misc
-RUN yum install -y glibc-devel.x86_64
-RUN yum install -y at-spi2-atk.x86_64
-RUN yum install -y mesa-libgbm.x86_64
+WORKDIR /tmp
+
+# Download wkhtmltopdf and its dependencies. Then extract all rpm files.
+ENV WKHTMLTOPDF_BIN="wkhtmltopdf.rpm"
+RUN wget -O $WKHTMLTOPDF_BIN https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox-0.12.6-1.amazonlinux2.x86_64.rpm\
+    && yum install --downloadonly --downloaddir=/tmp $WKHTMLTOPDF_BIN \
+    && yumdownloader --archlist=$(arch) \
+    bzip2-libs \
+    expat \
+    libuuid \
+    && rpmdev-extract *rpm
+
+WORKDIR /layer
+
+# Copy wkhtmltopdf binary and dependency libraries for packaging
+RUN mkdir -p {bin,lib} \
+    && cp /tmp/wkhtml*/usr/local/bin/* bin \
+    && cp /tmp/*/usr/lib64/* lib || :
 
 # This COPY command copies the .NET Lambda project's build artifacts from the host machine into the image. 
 # The source of the COPY should match where the .NET Lambda project publishes its build artifacts. If the Lambda function is being built 
