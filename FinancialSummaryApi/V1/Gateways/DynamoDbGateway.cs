@@ -248,7 +248,7 @@ namespace FinancialSummaryApi.V1.Gateways
             };
             var data = await _dynamoDbContext.QueryAsync<StatementDbEntity>(PartitionKey, config).GetRemainingAsync().ConfigureAwait(false);
             var result = _mapper.Map<List<Statement>>(data);
-            return result;
+            return result.OrderBy(x => x.StatementPeriodEndDate).ToList();
         }
         public async Task AddRangeAsync(List<Statement> statements)
         {

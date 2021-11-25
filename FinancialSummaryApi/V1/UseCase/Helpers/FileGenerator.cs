@@ -64,8 +64,8 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             //    Objects = { objectSettings }
             //};
             var Renderer = new IronPdf.ChromePdfRenderer();
-            var sty = Path.Combine(Directory.GetCurrentDirectory(), "assets\\");
-            var PDF = Renderer.RenderHtmlAsPdf(TemplateGenerator.GetHTMLReportString(report), BaseUrl: new Uri(sty)).BinaryData;
+            // var sty = Path.Combine(Directory.GetCurrentDirectory(), "assets\\");
+            var PDF = Renderer.RenderHtmlAsPdf(TemplateGenerator.GetHTMLReportString(report)).BinaryData;
             return PDF;
 
         }
