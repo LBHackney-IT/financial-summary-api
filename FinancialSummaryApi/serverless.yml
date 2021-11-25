@@ -129,6 +129,12 @@ resources:
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
                           - 'table/FinancialSummaries/index/*'
+        Layers:
+        - arn:aws:lambda:eu-west-2:347599033421:layer:wkhtmltopdf-0_12_6:1 # https://github.com/brandonlim-hs/wkhtmltopdf-aws-lambda-layer
+        - arn:aws:lambda:eu-west-2:347599033421:layer:amazon_linux_fonts:1 # https://github.com/brandonlim-hs/fonts-aws-lambda-layer
+        Environment:
+        Variables:
+          FONTCONFIG_PATH: /opt/etc/fonts
 custom:
   vpc:
     development:
