@@ -2,23 +2,18 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
-using IronPdf;
-using iTextSharp.text;
-using iTextSharp.text.html.simpleparser;
-using iTextSharp.text.pdf;
 using NodaMoney;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialSummaryApi.V1.UseCase.Helpers
 {
     public static class FileGenerator
     {
-        public static byte[] WritePdfFile(List<Statement> transactions, string name, string period, IConverter converter)
+        public static byte[] WritePdfFile(List<Statement> transactions, string name, string period)
         {
 
             var report = new ExportResponse();
