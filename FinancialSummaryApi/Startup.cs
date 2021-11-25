@@ -24,8 +24,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using WkHtmlToPdfDotNet;
-using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialSummaryApi
 {
@@ -132,10 +130,6 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-            // Add converter to DI
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
