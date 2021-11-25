@@ -4,22 +4,17 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialSummaryApi.V1.UseCase
 {
     public class ExportStatementUseCase : IExportStatementUseCase
     {
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
-        private readonly IConverter _converter;
 
-        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IConverter converter)
+        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway)
         {
             _financeSummaryGateway = financeSummaryGateway;
-            _converter = converter;
         }
 
         public async Task<byte[]> ExecuteAsync(ExportStatementRequest request)
@@ -49,7 +44,7 @@ namespace FinancialSummaryApi.V1.UseCase
             var result = request?.FileType switch
             {
                 "csv" => FileGenerator.WriteCSVFile(response, name, period),
-                "pdf" => FileGenerator.WritePdfFile(response, name, period, _converter),
+                "pdf" => FileGenerator.WritePdfFile(response, name, period),
                 _ => null
             };
             return result;
