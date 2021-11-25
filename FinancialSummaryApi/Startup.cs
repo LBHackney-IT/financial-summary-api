@@ -5,6 +5,7 @@ using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
+using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
@@ -117,7 +118,7 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-
+            services.AddSingleton<PdfGenerator, PdfGenerator>();
             RegisterGateways(services);
             RegisterUseCases(services);
 
