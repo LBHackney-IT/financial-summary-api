@@ -1,6 +1,9 @@
-FROM public.ecr.aws/lambda/dotnet:3.1
+FROM amazonlinux:2
 
-WORKDIR /var/task
+RUN yum install -y \
+    rpmdevtools \
+    wget \
+    yum-utils
 
 WORKDIR /tmp
 
@@ -21,15 +24,10 @@ RUN mkdir -p {bin,lib} \
     && cp /tmp/wkhtml*/usr/local/bin/* bin \
     && cp /tmp/*/usr/lib64/* lib || :
 
-# This COPY command copies the .NET Lambda project's build artifacts from the host machine into the image. 
-# The source of the COPY should match where the .NET Lambda project publishes its build artifacts. If the Lambda function is being built 
-# with the AWS .NET Lambda Tooling, the `--docker-host-build-output-dir` switch controls where the .NET Lambda project
-# will be built. The .NET Lambda project templates default to having `--docker-host-build-output-dir`
-# set in the aws-lambda-tools-defaults.json file to "bin/Release/lambda-publish".
-#
-# Alternatively Docker multi-stage build could be used to build the .NET Lambda project inside the image.
-# For more information on this approach checkout the project's README.md file.
-COPY "bin/Release/lambda-publish"  .
+# Zip files
+ENV LAYER_ZIP="layer.zip"
+RUN zip -r $LAYER_ZIP bin lib \
+    && mv $LAYER_ZIP /
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
