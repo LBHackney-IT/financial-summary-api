@@ -34,6 +34,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 WORKDIR /app
 # Install dependencies
 #RUN apt-get update -qq && apt-get -y install libgdiplus
+RUN apt-get serverless plugin install -n serverless-python-requirements
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
