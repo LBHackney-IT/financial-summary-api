@@ -4,6 +4,7 @@ using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Wkhtmltopdf.NetCore;
@@ -14,11 +15,13 @@ namespace FinancialSummaryApi.V1.UseCase
     {
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
         //private readonly PdfGenerator _pdfGenerator;
-        readonly IGeneratePdf _generatePdf;
-        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IGeneratePdf generatePdf)
+        private readonly IGeneratePdf _generatePdf;
+        private readonly ILogger<ExportStatementUseCase> _logger;
+        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IGeneratePdf generatePdf, ILogger<ExportStatementUseCase> logger)
         {
             _financeSummaryGateway = financeSummaryGateway;
             _generatePdf = generatePdf;
+            _logger = logger;
         }
 
         public async Task<byte[]> ExecuteAsync(ExportStatementRequest request)
@@ -51,16 +54,8 @@ namespace FinancialSummaryApi.V1.UseCase
                 "pdf" => _generatePdf.GetPDF(html),//FileGenerator.WritePdfFile(response, name, period),
                 _ => null
             };
+            _logger.LogInformation("File successfully geneated");
             return result;
-
-            //var a2pClient = new Api2Pdf.Api2Pdf("32560233-0606-489d-a44a-b512e82ef922");
-            //var request1 = new Api2Pdf.ChromeHtmlToPdfRequest
-            //{
-            //    Html = "<p>Hello World</p>"
-            //};
-            //var apiResponse = a2pClient.Chrome.HtmlToPdf(request1);
-            //var resultAsBytes = apiResponse.GetFileBytes();
-            //return resultAsBytes;
         }
     }
 }
