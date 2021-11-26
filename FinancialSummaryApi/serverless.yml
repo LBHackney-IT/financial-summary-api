@@ -20,7 +20,8 @@ provider:
           burstLimit: 200
           rateLimit: 100
 plugins:
-  - serverless-python-requirements
+  - serverless-apigw-binary
+ 
 package:
   artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
 
@@ -132,8 +133,9 @@ resources:
                           - Ref: 'AWS::AccountId'
                           - 'table/FinancialSummaries/index/*'
 custom:
-  pythonRequirements:
-      dockerizePip: true
+  apigwBinary:
+    types:
+      — ‘application/pdf’
   vpc:
     development:
       subnetIds:
