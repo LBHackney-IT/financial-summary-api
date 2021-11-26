@@ -1,3 +1,4 @@
+
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
@@ -43,13 +44,22 @@ namespace FinancialSummaryApi.V1.UseCase
             var response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
 
 
-            var result = request?.FileType switch
+            //var result = request?.FileType switch
+            //{
+            //    "csv" => FileGenerator.WriteCSVFile(response, name, period),
+            //    "pdf" => _pdfGenerator.BuildPdf(response, name, period),//FileGenerator.WritePdfFile(response, name, period),
+            //    _ => null
+            //};
+            //return result;
+
+            var a2pClient = new Api2Pdf.Api2Pdf("32560233-0606-489d-a44a-b512e82ef922");
+            var request1 = new Api2Pdf.ChromeHtmlToPdfRequest
             {
-                "csv" => FileGenerator.WriteCSVFile(response, name, period),
-                "pdf" => _pdfGenerator.BuildPdf(response, name, period),//FileGenerator.WritePdfFile(response, name, period),
-                _ => null
+                Html = "<p>Hello World</p>"
             };
-            return result;
+            var apiResponse = a2pClient.Chrome.HtmlToPdf(request1);
+            var resultAsBytes = apiResponse.GetFileBytes();
+            return resultAsBytes;
         }
     }
 }
