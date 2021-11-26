@@ -134,7 +134,7 @@ resources:
                           - 'table/FinancialSummaries/index/*'
 custom:
   pythonRequirements:
-    dockerizePip: true
+     dockerFile: ./plugin/Dockerfile
   vpc:
     development:
       subnetIds:
