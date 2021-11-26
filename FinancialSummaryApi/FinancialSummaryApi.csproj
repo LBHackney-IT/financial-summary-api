@@ -10,6 +10,9 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     </PropertyGroup>
+    <ItemGroup>
+      <Compile Remove="V1\UseCase\Helpers\PdfGenerator.cs" />
+    </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="5.1.1" />
@@ -22,8 +25,9 @@
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.8.2" />
     <PackageReference Include="AWSXRayRecorder.Handlers.EntityFramework" Version="1.1.0" />
     <PackageReference Include="CsvHelper" Version="27.2.0" />
-      <!-- native assets excluded as we are using lambda layers instead -->
+      <!-- native assets excluded as we are using lambda layers instead
       <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.3.0" ExcludeAssets="native" />
+       -->
 
 
       <PackageReference Include="NodaMoney" Version="1.0.5" />
@@ -39,10 +43,23 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.4.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.3" />
+    <PackageReference Include="Wkhtmltopdf.NetCore" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="terraform\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Rotativa\Linux\wkhtmltopdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Rotativa\Mac\wkhtmltopdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Rotativa\Windows\wkhtmltopdf.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
