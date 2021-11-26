@@ -26,7 +26,7 @@ layers:
   # chrome_aws_lambda as I want to run this locally too for developer testing offline
   chromePreBuilt:
     package:
-      artifact: layers/chrome_aws_lambda.zip
+      artifact: ./layers/chrome_aws_lambda.zip
 
 functions:
   FinancialSummaryApi:
