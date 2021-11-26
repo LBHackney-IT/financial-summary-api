@@ -2,8 +2,7 @@ service: financial-summary-api
 provider:
   name: aws
   runtime: dotnetcore3.1
-  memorySize: 512
-  timeout: 33
+  memorySize: 2048
   tracing:
     lambda: true
     apiGateway: true
@@ -21,23 +20,11 @@ provider:
           rateLimit: 100
 package:
   artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
-layers:
-  # this is where we add our lambda layers - this is a pre-compiled version of
-  # chrome_aws_lambda as I want to run this locally too for developer testing offline
-  chromePreBuilt:
-    package:
-      artifact: ./layers/chrome_aws_lambda.zip
-
 functions:
   FinancialSummaryApi:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialSummaryApi::FinancialSummaryApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
-    memorySize: 2048
-    # this is where we configure which lambda layers we want to attach to the function
-    layers:
-      - { Ref: ChromePreBuiltLambdaLayer }
-    timeout: 30
     events:
       - http:
           path: /{proxy+}
