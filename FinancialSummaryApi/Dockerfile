@@ -3,8 +3,6 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 WORKDIR /app
 # Install dependencies
 RUN apt-get update -qq && apt-get -y install libgdiplus libc6-dev
-RUN apt-get serverless plugin install -n serverless-python-requirements
-RUN apt-get serverless plugin install -n serverless-apigw-binary
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore

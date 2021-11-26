@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Wkhtmltopdf.NetCore;
 
 namespace FinancialSummaryApi
 {
@@ -118,7 +119,8 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-            services.AddSingleton<PdfGenerator, PdfGenerator>();
+            services.AddWkhtmltopdf();
+            //services.AddSingleton<PdfGenerator, PdfGenerator>();
             RegisterGateways(services);
             RegisterUseCases(services);
 

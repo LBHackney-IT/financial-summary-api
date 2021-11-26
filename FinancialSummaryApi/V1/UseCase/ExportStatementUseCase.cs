@@ -6,18 +6,19 @@ using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
+using Wkhtmltopdf.NetCore;
 
 namespace FinancialSummaryApi.V1.UseCase
 {
     public class ExportStatementUseCase : IExportStatementUseCase
     {
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
-        private readonly PdfGenerator _pdfGenerator;
-
-        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, PdfGenerator pdfGenerator)
+        //private readonly PdfGenerator _pdfGenerator;
+        readonly IGeneratePdf _generatePdf;
+        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IGeneratePdf generatePdf)
         {
             _financeSummaryGateway = financeSummaryGateway;
-            _pdfGenerator = pdfGenerator;
+            _generatePdf = generatePdf;
         }
 
         public async Task<byte[]> ExecuteAsync(ExportStatementRequest request)
@@ -43,11 +44,11 @@ namespace FinancialSummaryApi.V1.UseCase
 
             var response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
 
-
+            var html = TemplateGenerator.GetHTMLReportString1();
             var result = request?.FileType switch
             {
                 "csv" => FileGenerator.WriteCSVFile(response, name, period),
-                "pdf" => _pdfGenerator.BuildPdf(response, name, period),//FileGenerator.WritePdfFile(response, name, period),
+                "pdf" => _generatePdf.GetPDF(html),//FileGenerator.WritePdfFile(response, name, period),
                 _ => null
             };
             return result;

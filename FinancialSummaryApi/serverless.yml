@@ -141,8 +141,6 @@ resources:
                           - Ref: 'AWS::AccountId'
                           - 'table/FinancialSummaries/index/*'
 custom:
-  pythonRequirements:
-     dockerFile: plugin/Dockerfile
   vpc:
     development:
       subnetIds:
