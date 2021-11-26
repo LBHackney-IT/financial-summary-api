@@ -42,7 +42,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             }
             report.Data = data;
             const double margin = 25;
-
+            var test = TemplateGenerator.GetHTMLReportString(report);
             return _pdfConverter.Convert(new HtmlToPdfDocument()
             {
                 GlobalSettings = {
