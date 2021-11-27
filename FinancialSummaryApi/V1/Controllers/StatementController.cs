@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Wkhtmltopdf.NetCore;
@@ -39,7 +40,8 @@ namespace FinancialSummaryApi.V1.Controllers
         [Route("test")]
         public async Task<IActionResult> Index()
         {
-            var htmlView = await System.IO.File.ReadAllTextAsync("V1/Views/Index.cshtml").ConfigureAwait(false);
+            var path = $"{Path.GetFullPath(Directory.GetCurrentDirectory())}/V1/Views/Index.cshtml";
+            var htmlView = await System.IO.File.ReadAllTextAsync(path).ConfigureAwait(false);
             var pdf = await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello  World").ConfigureAwait(false);
             //var pdfStream = new System.IO.MemoryStream();
             //pdfStream.Write(pdf, 0, pdf.Length);
