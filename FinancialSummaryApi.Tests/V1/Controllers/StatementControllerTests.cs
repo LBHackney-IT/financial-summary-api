@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Wkhtmltopdf.NetCore;
 using Xunit;
 
 
@@ -30,6 +31,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly Mock<IAddStatementListUseCase> _addListUseCase;
         private readonly Mock<IExportStatementUseCase> _exportStatementUseCase;
         private readonly Mock<IExportSelectedStatementUseCase> _exportSelectedItemUseCase;
+        private readonly Mock<IGeneratePdf> _gentestt;
 
         private readonly IMapper _mapper;
 
@@ -41,10 +43,10 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             _exportStatementUseCase = new Mock<IExportStatementUseCase>();
             _exportSelectedItemUseCase = new Mock<IExportSelectedStatementUseCase>();
-
+            _gentestt = new Mock<IGeneratePdf>();
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
-            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object, _exportStatementUseCase.Object, _exportSelectedItemUseCase.Object)
+            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object, _exportStatementUseCase.Object, _exportSelectedItemUseCase.Object, _gentestt.Object)
             {
                 ControllerContext = _controllerContext
             };
