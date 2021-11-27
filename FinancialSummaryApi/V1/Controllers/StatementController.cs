@@ -40,8 +40,16 @@ namespace FinancialSummaryApi.V1.Controllers
         [Route("test")]
         public async Task<IActionResult> Index()
         {
-            var path = $"{Path.GetFullPath(Directory.GetCurrentDirectory())}/V1/Views/Index.cshtml";
-            var htmlView = await System.IO.File.ReadAllTextAsync(path).ConfigureAwait(false);
+            // var path = $"{Path.GetFullPath(Directory.GetCurrentDirectory())}/V1/Views/Index.cshtml";
+            //var htmlView = await System.IO.File.ReadAllTextAsync(path).ConfigureAwait(false);
+            var htmlView = @"@model string
+
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>@Model</h1>
+</body>
+</html>";
             var pdf = await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello  World").ConfigureAwait(false);
             //var pdfStream = new System.IO.MemoryStream();
             //pdfStream.Write(pdf, 0, pdf.Length);
