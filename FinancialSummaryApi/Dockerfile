@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
 WORKDIR /app
 # Install dependencies
-RUN apt-get update -qq && apt-get -y install libpng16-16
+RUN apt-get update -qq && apt-get -y install libjpeg62
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
