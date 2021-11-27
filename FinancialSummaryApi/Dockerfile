@@ -1,16 +1,16 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS base
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1
+
 WORKDIR /app
+# Install dependencies
 RUN apt-get update -qq && apt-get -y install libgdiplus libc6-dev
-EXPOSE ${PORT:-3000}
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
+RUN dotnet restore
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
-WORKDIR /src
-COPY ["FinancialSummaryApi", "/src/FinancialSummaryApi/"]
-WORKDIR "/src/FinancialSummaryApi"
-RUN dotnet publish "RotFinancialSummaryApiativa.csproj" -c Release -o /app
-
-FROM base AS final
-WORKDIR /app
-COPY --from=publish /app .
+# Copy everything else and build
+COPY . ./
+RUN dotnet build -c Release -o out
+RUN dotnet publish -c Release -o out
 RUN chmod 755 /app/Rotativa/Linux/wkhtmltopdf
+EXPOSE ${PORT:-3000}
 CMD ASPNETCORE_URLS=http://+:${PORT:-3000} dotnet ./out/FinancialSummaryApi.dll

@@ -18,6 +18,9 @@ provider:
         throttle:
           burstLimit: 200
           rateLimit: 100
+  apiGateway:
+    binaryMediaTypes:
+      -'*/*'
 package:
   artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
 functions:
