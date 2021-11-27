@@ -18,9 +18,9 @@ provider:
         throttle:
           burstLimit: 200
           rateLimit: 100
-  apiGateway:
-    binaryMediaTypes:
-      -'*/*'
+plugins:
+  - serverless-aws-static-file-handler/plugins/BinaryMediaTypes
+
 package:
   artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
 functions:
@@ -131,6 +131,13 @@ resources:
                           - Ref: 'AWS::AccountId'
                           - 'table/FinancialSummaries/index/*'
 custom:
+  apiGateway:
+    binaryMediaTypes: # Put the accept headers you want to trigger APIG to do binary conversions here
+      - "image/png"  # This will only trigger binary conversion when the request includes Accept: image/png header
+      - "image/jpeg" # add any other media types you want to be treated as binary
+      - "image/jpeg" # add any other media types you want to be treated as binary
+      - "application/octet-stream"
+      - "application/pdf"
   vpc:
     development:
       subnetIds:
