@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
 WORKDIR /app
 # Install dependencies
-RUN apt-get update -qq && apt-get -y install libjpeg62
+RUN apt-get update -qq && apt-get -y install libjpeg62:i386 libjpeg-turbo
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
