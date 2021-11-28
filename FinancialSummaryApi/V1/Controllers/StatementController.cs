@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
+using Wkhtmltopdf.NetCore;
 
 namespace FinancialSummaryApi.V1.Controllers
 {
@@ -20,19 +22,40 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IAddStatementListUseCase _addListUseCase;
         private readonly IExportStatementUseCase _exportStatementUseCase;
         private readonly IExportSelectedStatementUseCase _exportSelectedItemUseCase;
+        readonly IGeneratePdf _generatePdf;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
             IAddStatementListUseCase addListUseCase,
             IExportStatementUseCase exportStatementUseCase,
-            IExportSelectedStatementUseCase exportSelectedItemUseCase)
+            IExportSelectedStatementUseCase exportSelectedItemUseCase, IGeneratePdf generatePdf)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
             _exportStatementUseCase = exportStatementUseCase;
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
+            _generatePdf = generatePdf;
         }
+        [HttpGet]
+        [Route("test")]
+        public async Task<IActionResult> Index()
+        {
+            // var path = $"{Path.GetFullPath(Directory.GetCurrentDirectory())}/V1/Views/Index.cshtml";
+            //var htmlView = await System.IO.File.ReadAllTextAsync(path).ConfigureAwait(false);
+            var htmlView = @"@model string
 
+<!DOCTYPE html>
+<html>
+<body>
+    <h1>@Model</h1>
+</body>
+</html>";
+            var pdf = await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello  World").ConfigureAwait(false);
+            //var pdfStream = new System.IO.MemoryStream();
+            //pdfStream.Write(pdf, 0, pdf.Length);
+            //pdfStream.Position = 0;
+            return File(pdf, "application/pdf", "testtttt");
+        }
         /// <summary>
         /// Get a list of statements for specified asset
         /// </summary>

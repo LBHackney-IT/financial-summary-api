@@ -1,8 +1,10 @@
+
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Wkhtmltopdf.NetCore;
@@ -16,6 +18,10 @@ namespace FinancialSummaryApi.V1.UseCase
 
 
         public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IGeneratePdf generatePdf)
+        //private readonly PdfGenerator _pdfGenerator;
+        private readonly IGeneratePdf _generatePdf;
+        private readonly ILogger<ExportStatementUseCase> _logger;
+        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IGeneratePdf generatePdf, ILogger<ExportStatementUseCase> logger)
         {
             _financeSummaryGateway = financeSummaryGateway;
             _generatePdf = generatePdf;
@@ -71,6 +77,15 @@ namespace FinancialSummaryApi.V1.UseCase
             //    _ => null
             //};
             //return result;
+            var html = TemplateGenerator.GetHTMLReportString1();
+            var result = request?.FileType switch
+            {
+                "csv" => FileGenerator.WriteCSVFile(response, name, period),
+                "pdf" => _generatePdf.GetPDF(html),//FileGenerator.WritePdfFile(response, name, period),
+                _ => null
+            };
+            _logger.LogInformation("File successfully geneated");
+            return result;
         }
     }
 }
