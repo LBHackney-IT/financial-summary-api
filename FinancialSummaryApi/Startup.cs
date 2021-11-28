@@ -5,6 +5,7 @@ using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
+using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
@@ -24,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Wkhtmltopdf.NetCore;
 
 namespace FinancialSummaryApi
 {
@@ -117,7 +119,8 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-
+            services.AddWkhtmltopdf();
+            //services.AddSingleton<PdfGenerator, PdfGenerator>();
             RegisterGateways(services);
             RegisterUseCases(services);
 

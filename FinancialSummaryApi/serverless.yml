@@ -2,7 +2,7 @@ service: financial-summary-api
 provider:
   name: aws
   runtime: dotnetcore3.1
-  memorySize: 3048
+  memorySize: 2048
   tracing:
     lambda: true
     apiGateway: true
@@ -18,10 +18,8 @@ provider:
         throttle:
           burstLimit: 200
           rateLimit: 100
-
 package:
   artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
-
 functions:
   FinancialSummaryApi:
     name: ${self:service}-${self:provider.stage}
