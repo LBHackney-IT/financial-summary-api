@@ -5,16 +5,20 @@ using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
+using Wkhtmltopdf.NetCore;
 
 namespace FinancialSummaryApi.V1.UseCase
 {
     public class ExportStatementUseCase : IExportStatementUseCase
     {
         private readonly IFinanceSummaryGateway _financeSummaryGateway;
+        readonly IGeneratePdf _generatePdf;
 
-        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway)
+
+        public ExportStatementUseCase(IFinanceSummaryGateway financeSummaryGateway, IGeneratePdf generatePdf)
         {
             _financeSummaryGateway = financeSummaryGateway;
+            _generatePdf = generatePdf;
         }
 
         public async Task<byte[]> ExecuteAsync(ExportStatementRequest request)
@@ -37,17 +41,36 @@ namespace FinancialSummaryApi.V1.UseCase
                 name = TypeOfStatement.Yearly.ToString();
                 period = $"{startDate:D} to {endDate:D}";
             }
-
-            var response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
-
-
-            var result = request?.FileType switch
+            var data = new
             {
-                "csv" => FileGenerator.WriteCSVFile(response, name, period),
-                "pdf" => FileGenerator.WritePdfFile(response, name, period),
-                _ => null
+                Text = "This is not a test",
+                Number = 12345678
             };
-            return result;
+            var htmlView = @"@model string
+                        <!DOCTYPE html>
+                        <html>
+                        <head>
+                        </head>
+                        <body>
+                            <header>
+                                <h1>@Model</h1>
+                            </header>
+                            <div>
+                                <h2>Test</h2>
+                            </div>
+                        </body>
+                        </html>";
+            return await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello").ConfigureAwait(false);
+            //var response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
+
+
+            //var result = request?.FileType switch
+            //{
+            //    "csv" => FileGenerator.WriteCSVFile(response, name, period),
+            //    "pdf" => FileGenerator.WritePdfFile(response, name, period),
+            //    _ => null
+            //};
+            //return result;
         }
     }
 }

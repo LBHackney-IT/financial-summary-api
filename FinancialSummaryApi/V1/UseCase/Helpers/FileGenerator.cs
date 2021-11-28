@@ -58,10 +58,9 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             //    GlobalSettings = globalSettings,
             //    Objects = { objectSettings }
             //};
-            var Renderer = new IronPdf.ChromePdfRenderer();
             // var sty = Path.Combine(Directory.GetCurrentDirectory(), "assets\\");
-            var PDF = Renderer.RenderHtmlAsPdf(TemplateGenerator.GetHTMLReportString(report)).BinaryData;
-            return PDF;
+            //var PDF = Renderer.RenderHtmlAsPdf(TemplateGenerator.GetHTMLReportString(report)).BinaryData;
+            return null;
 
         }
         public static byte[] WriteCSVFile(List<Statement> transactions, string name, string period)
