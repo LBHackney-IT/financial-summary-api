@@ -53,12 +53,12 @@ namespace FinancialSummaryApi.V1.Controllers
             //pdfStream.Write(pdf, 0, pdf.Length);
             //pdfStream.Position = 0;
             //var  path = Path.Combine(Directory.GetCurrentDirectory(), @"Views\Index.cshtml");
-          // var abs = Path.GetFullPath("~/Views/Index.cshtm").Replace("~\\", "");
-           //var test1 = new ViewAsPdf("~/Views/Index.cshtml", "Hello w");
+            // var abs = Path.GetFullPath("~/Views/Index.cshtm").Replace("~\\", "");
+            //var test1 = new ViewAsPdf("~/Views/Index.cshtml", "Hello w");
             //var test1 = new ViewAsPdf(abs, "Hello w");
-           // byte[] applicationPDFData = await test1.BuildFile(ControllerContext).ConfigureAwait(false);
+            // byte[] applicationPDFData = await test1.BuildFile(ControllerContext).ConfigureAwait(false);
             return new ViewAsPdf("~/V1/Views/Index.cshtml", "Hello World");
-           // return File(applicationPDFData, "application/pdf", "testtttt");
+            // return File(applicationPDFData, "application/pdf", "testtttt");
         }
         /// <summary>
         /// Get a list of statements for specified asset
