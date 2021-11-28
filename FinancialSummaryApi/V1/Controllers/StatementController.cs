@@ -3,6 +3,7 @@ using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Rotativa.AspNetCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -38,19 +39,22 @@ namespace FinancialSummaryApi.V1.Controllers
         {
             // var path = $"{Path.GetFullPath(Directory.GetCurrentDirectory())}/V1/Views/Index.cshtml";
             //var htmlView = await System.IO.File.ReadAllTextAsync(path).ConfigureAwait(false);
-            var htmlView = @"@model string
+            //            var htmlView = @"@model string
 
-<!DOCTYPE html>
-<html>
-<body>
-    <h1>@Model</h1>
-</body>
-</html>";
-            var pdf = await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello  World").ConfigureAwait(false);
+            //<!DOCTYPE html>
+            //<html>
+            //<body>
+            //    <h1>@Model</h1>
+            //</body>
+            //</html>";
+            //var pdf = await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello  World").ConfigureAwait(false);
             //var pdfStream = new System.IO.MemoryStream();
             //pdfStream.Write(pdf, 0, pdf.Length);
             //pdfStream.Position = 0;
-            return File(pdf, "application/pdf", "testtttt");
+            var test1 = new ViewAsPdf("~/V1/Views/Index.cshtml", "Hello w");
+            byte[] applicationPDFData = await test1.BuildFile(ControllerContext).ConfigureAwait(false);
+            //return new ViewAsPdf("~/V1/Views/Index.cshtml", "Hello World");
+            return File(applicationPDFData, "application/pdf", "testtttt");
         }
         /// <summary>
         /// Get a list of statements for specified asset

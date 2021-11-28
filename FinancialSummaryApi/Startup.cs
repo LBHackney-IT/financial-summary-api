@@ -131,7 +131,7 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-            
+
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -164,7 +164,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IGetAllAssetSummariesUseCase, GetAllAssetSummariesUseCase>();
             services.AddScoped<IGetAssetSummaryByIdUseCase, GetAssetSummaryByIdUseCase>();
             services.AddScoped<IAddAssetSummaryUseCase, AddAssetSummaryUseCase>();
-           // services.AddScoped<IAddRentGroupSummaryListUseCase, AddRentGroupSummaryListUseCase>();
+            // services.AddScoped<IAddRentGroupSummaryListUseCase, AddRentGroupSummaryListUseCase>();
             services.AddScoped<IGetRentGroupSummaryByNameUseCase, GetRentGroupSummaryByNameUseCase>();
             services.AddScoped<IGetAllRentGroupSummariesUseCase, GetAllRentGroupSummariesUseCase>();
             services.AddScoped<IGetAllWeeklySummariesUseCase, GetAllWeeklySummariesUseCase>();
