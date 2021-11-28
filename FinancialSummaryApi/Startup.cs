@@ -209,7 +209,9 @@ namespace FinancialSummaryApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
+            app.UseDefaultFiles();
             app.UseStaticFiles();
+
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();
