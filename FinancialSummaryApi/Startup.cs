@@ -192,7 +192,7 @@ namespace FinancialSummaryApi
             {
                 app.UseHsts();
             }
-            RotativaConfiguration.Setup(env.WebRootPath, "/usr/bin/");
+            RotativaConfiguration.Setup(env.WebRootPath, "Rotativa");
             app.UseXRay("financial_summary_api");
 
             //Get All ApiVersions,
