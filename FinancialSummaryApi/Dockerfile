@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 WORKDIR /app
 # Install dependencies
 # Install wkhtmltopdf
-RUN  apt install wkhtmlpdf
+RUN apk add --no-cache wkhtmltopdf
 
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
