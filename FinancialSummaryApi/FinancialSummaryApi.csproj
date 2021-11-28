@@ -49,4 +49,19 @@
     <Folder Include="terraform\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\Rotativa\help-wkhtmltoimage.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Rotativa\help-wkhtmltopdf.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Rotativa\wkhtmltoimage.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\Rotativa\wkhtmltopdf.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
