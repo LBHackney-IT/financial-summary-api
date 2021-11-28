@@ -5,7 +5,6 @@ using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
-using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
@@ -19,13 +18,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Rotativa.AspNetCore;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Wkhtmltopdf.NetCore;
 
 namespace FinancialSummaryApi
 {
@@ -119,8 +118,7 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-            services.AddWkhtmltopdf();
-            //services.AddSingleton<PdfGenerator, PdfGenerator>();
+
             RegisterGateways(services);
             RegisterUseCases(services);
 
@@ -133,6 +131,7 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+            
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -165,7 +164,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IGetAllAssetSummariesUseCase, GetAllAssetSummariesUseCase>();
             services.AddScoped<IGetAssetSummaryByIdUseCase, GetAssetSummaryByIdUseCase>();
             services.AddScoped<IAddAssetSummaryUseCase, AddAssetSummaryUseCase>();
-            services.AddScoped<IAddRentGroupSummaryUseCase, AddRentGroupSummaryUseCase>();
+           // services.AddScoped<IAddRentGroupSummaryListUseCase, AddRentGroupSummaryListUseCase>();
             services.AddScoped<IGetRentGroupSummaryByNameUseCase, GetRentGroupSummaryByNameUseCase>();
             services.AddScoped<IGetAllRentGroupSummariesUseCase, GetAllRentGroupSummariesUseCase>();
             services.AddScoped<IGetAllWeeklySummariesUseCase, GetAllWeeklySummariesUseCase>();
@@ -193,7 +192,7 @@ namespace FinancialSummaryApi
             {
                 app.UseHsts();
             }
-
+            RotativaConfiguration.Setup(env.WebRootPath, "Rotativa");
             app.UseXRay("financial_summary_api");
 
             //Get All ApiVersions,

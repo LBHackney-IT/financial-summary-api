@@ -8,8 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Wkhtmltopdf.NetCore;
-
 namespace FinancialSummaryApi.V1.Controllers
 {
     [ApiController]
@@ -22,19 +20,17 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IAddStatementListUseCase _addListUseCase;
         private readonly IExportStatementUseCase _exportStatementUseCase;
         private readonly IExportSelectedStatementUseCase _exportSelectedItemUseCase;
-        readonly IGeneratePdf _generatePdf;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
             IAddStatementListUseCase addListUseCase,
             IExportStatementUseCase exportStatementUseCase,
-            IExportSelectedStatementUseCase exportSelectedItemUseCase, IGeneratePdf generatePdf)
+            IExportSelectedStatementUseCase exportSelectedItemUseCase)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
             _exportStatementUseCase = exportStatementUseCase;
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
-            _generatePdf = generatePdf;
         }
         [HttpGet]
         [Route("test")]
