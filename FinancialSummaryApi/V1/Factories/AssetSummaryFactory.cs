@@ -24,11 +24,11 @@ namespace FinancialSummaryApi.V1.Factories
             };
         }
 
-        public static AssetSummaryDbEntity ToDatabase(this AssetSummary entity, string partitionKey)
+        public static AssetSummaryDbEntity ToDatabase(this AssetSummary entity)
         {
             return entity == null ? null : new AssetSummaryDbEntity
             {
-                Pk = partitionKey,
+               
                 Id = entity.Id,
                 TargetId = entity.TargetId,
                 TargetType = entity.TargetType,
