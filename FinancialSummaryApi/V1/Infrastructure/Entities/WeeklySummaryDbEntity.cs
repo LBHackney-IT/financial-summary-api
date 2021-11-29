@@ -7,18 +7,13 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
     [DynamoDBTable("FinancialSummaries", LowerCamelCaseProperties = true)]
     public class WeeklySummaryDbEntity
     {
-        [DynamoDBHashKey]
-        [DynamoDBProperty(AttributeName = "pk")]
-        public string Pk { get; set; }
-        [DynamoDBRangeKey]
-        [DynamoDBProperty(AttributeName = "id")]
+        [DynamoDBHashKey(AttributeName = "target_id")]
+        public Guid TargetId { get; set; }
+        [DynamoDBRangeKey(AttributeName = "id")]
         public Guid Id { get; set; }
 
         [DynamoDBProperty(AttributeName = "summary_type", Converter = typeof(DynamoDbEnumConverter<SummaryType>))]
         public SummaryType SummaryType { get; set; }
-
-        [DynamoDBProperty(AttributeName = "target_id")]
-        public Guid TargetId { get; set; }
 
         [DynamoDBProperty(AttributeName = "submit_date", Converter = typeof(DynamoDbDateTimeConverter))]
         public DateTime SubmitDate { get; set; }

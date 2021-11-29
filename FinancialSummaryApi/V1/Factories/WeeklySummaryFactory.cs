@@ -1,6 +1,8 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancialSummaryApi.V1.Factories
 {
@@ -24,11 +26,18 @@ namespace FinancialSummaryApi.V1.Factories
             };
         }
 
-        public static WeeklySummaryDbEntity ToDatabase(this WeeklySummary entity, string partitionKey)
+
+        public static List<WeeklySummary> ToDomain(this IEnumerable<WeeklySummaryDbEntity> databaseEntity)
+        {
+            return databaseEntity.Select(p => p.ToDomain())
+                                .OrderByDescending(x => x.WeekStartDate)
+                                .ToList();
+        }
+
+        public static WeeklySummaryDbEntity ToDatabase(this WeeklySummary entity)
         {
             return entity == null ? null : new WeeklySummaryDbEntity
             {
-                Pk = partitionKey,
                 Id = entity.Id,
                 TargetId = entity.TargetId,
                 BalanceAmount = entity.BalanceAmount,

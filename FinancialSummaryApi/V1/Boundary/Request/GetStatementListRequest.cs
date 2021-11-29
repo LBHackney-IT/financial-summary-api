@@ -13,7 +13,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// <summary>
         /// The number of a page
         /// </summary>
-        public int PageNumber { get; set; } = 1;
+        public string PaginationToken { get; set; }
 
         /// <summary>
         /// The start date from when we want to filter statements. Required only if EndDate is provided

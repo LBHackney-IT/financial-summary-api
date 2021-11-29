@@ -10,9 +10,9 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
     [DynamoDBTable("FinancialSummaries", LowerCamelCaseProperties = true)]
     public class RentGroupSummaryDbEntity
     {
-        [DynamoDBHashKey(AttributeName = "pk")]
-        public string Pk { get; set; }
-        [DynamoDBRangeKey(AttributeName = "id")]
+        [DynamoDBHashKey(AttributeName = "target_id")]
+        public Guid TargetId { get; set; }
+        [DynamoDBHashKey(AttributeName = "id")]
         public Guid Id { get; set; }
 
         [DynamoDBProperty(AttributeName = "summary_type", Converter = typeof(DynamoDbEnumConverter<SummaryType>))]
