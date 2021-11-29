@@ -11,6 +11,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <NoWarn>1701;1702;CA1707;CA1303;CA1031</NoWarn>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="V1\E2ETests\**" />
+    <Content Remove="V1\E2ETests\**" />
+    <EmbeddedResource Remove="V1\E2ETests\**" />
+    <None Remove="V1\E2ETests\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoFixture" Version="4.11.0" />
