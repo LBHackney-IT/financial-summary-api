@@ -110,7 +110,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             var rentGroupDomain = new List<RentGroupSummary> { ConstructRentGroupSummary() };
 
-            rentGroupDomain[0].ArrearsYTD = -100;
+            rentGroupDomain[0].TotalArrears = -100;
             rentGroupDomain[0].ChargedYTD = -99;
             rentGroupDomain[0].PaidYTD = -500;
             rentGroupDomain[0].TotalCharged = -100;
@@ -138,7 +138,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntity.Message.Should().Contain($"The field PaidYTD must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalPaid must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field ArrearsYTD must be between 0 and {(double) decimal.MaxValue}.");
+            apiEntity.Message.Should().Contain($"The field TotalArrears must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field ChargedYTD must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalCharged must be between 0 and {(double) decimal.MaxValue}.");
         }

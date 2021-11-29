@@ -380,7 +380,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             {
                 { "id", new AttributeValue(Guid.NewGuid().ToString()) },
                 { "summary_type", new AttributeValue(summaryTypes.GetValue(rand.Next(0, summaryTypes.Length - 1)).ToString()) },
-                { "arrears_ytd", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
+                { "total_arrears", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
                 { "charged_ytd", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
                 { "paid_ytd", new AttributeValue() { N = (rand.NextDouble() * 50).ToString() } },
                 { "target_name", new AttributeValue(rentGroupName) },
