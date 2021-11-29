@@ -12,7 +12,7 @@ namespace FinancialSummaryApi.V1.Factories
             {
                 Id = databaseEntity.Id,
                 SubmitDate = databaseEntity.SubmitDate,
-                ArrearsYTD = databaseEntity.ArrearsYTD,
+                TotalArrears = databaseEntity.TotalArrears,
                 ChargedYTD = databaseEntity.ChargedYTD,
                 PaidYTD = databaseEntity.PaidYTD,
                 TargetDescription = databaseEntity.TargetDescription,
@@ -30,7 +30,7 @@ namespace FinancialSummaryApi.V1.Factories
                 Pk = pk,
                 Id = entity.Id,
                 SubmitDate = entity.SubmitDate,
-                ArrearsYTD = entity.ArrearsYTD,
+                TotalArrears = entity.TotalArrears,
                 ChargedYTD = entity.ChargedYTD,
                 PaidYTD = entity.PaidYTD,
                 TargetDescription = entity.TargetDescription,
@@ -47,7 +47,7 @@ namespace FinancialSummaryApi.V1.Factories
             return model == null ? null : new RentGroupSummary
             {
                 SubmitDate = model.SubmitDate,
-                ArrearsYTD = model.ArrearsYTD,
+                TotalArrears = model.TotalArrears,
                 ChargedYTD = model.ChargedYTD,
                 PaidYTD = model.PaidYTD,
                 TargetDescription = model.TargetDescription,
