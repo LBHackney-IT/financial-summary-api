@@ -39,7 +39,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// 184.56
         /// </example>
         [Range(0, (double) decimal.MaxValue)]
-        public decimal ArrearsYTD { get; set; }
+        public decimal TotalArrears { get; set; }
         /// <example>
         /// 487.5
         /// </example>

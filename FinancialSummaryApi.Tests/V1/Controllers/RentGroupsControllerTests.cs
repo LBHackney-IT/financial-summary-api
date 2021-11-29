@@ -57,7 +57,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                             RentGroupName = "LeaseHolders",
                             SubmitDate = new DateTime(2021, 7, 2),
                             TargetDescription = "desc",
-                            ArrearsYTD = 100,
+                            TotalArrears = 100,
                             ChargedYTD = 120,
                             PaidYTD = 0,
                             TotalCharged = 220,
@@ -84,7 +84,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             rentGroupSummaries[0].RentGroupName.Should().Be("LeaseHolders");
             rentGroupSummaries[0].SubmitDate.Should().Be(new DateTime(2021, 7, 2));
             rentGroupSummaries[0].TargetDescription.Should().Be("desc");
-            rentGroupSummaries[0].ArrearsYTD.Should().Be(100);
+            rentGroupSummaries[0].TotalArrears.Should().Be(100);
             rentGroupSummaries[0].ChargedYTD.Should().Be(120);
             rentGroupSummaries[0].PaidYTD.Should().Be(0);
             rentGroupSummaries[0].TotalCharged.Should().Be(220);
@@ -141,7 +141,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                     RentGroupName = "LeaseHolders",
                     SubmitDate = new DateTime(2021, 7, 2),
                     TargetDescription = "desc",
-                    ArrearsYTD = 100,
+                    TotalArrears = 100,
                     ChargedYTD = 120,
                     PaidYTD = 0,
                     TotalCharged = 220,
@@ -166,7 +166,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             rentGroupSummary.RentGroupName.Should().Be("LeaseHolders");
             rentGroupSummary.SubmitDate.Should().Be(new DateTime(2021, 7, 2));
             rentGroupSummary.TargetDescription.Should().Be("desc");
-            rentGroupSummary.ArrearsYTD.Should().Be(100);
+            rentGroupSummary.TotalArrears.Should().Be(100);
             rentGroupSummary.ChargedYTD.Should().Be(120);
             rentGroupSummary.PaidYTD.Should().Be(0);
             rentGroupSummary.TotalCharged.Should().Be(220);
@@ -338,7 +338,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 ChargedYTD = 158.5M,
                 TotalPaid = 18.52M,
                 PaidYTD = 84.5M,
-                ArrearsYTD = 184.56M,
+                TotalArrears = 184.56M,
                 TotalBalance = 487.5M,
                 SubmitDate = submitDate
             };
