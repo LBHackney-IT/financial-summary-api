@@ -119,7 +119,7 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-            services.AddWkhtmltopdf();
+            //services.AddWkhtmltopdf();
             //services.AddSingleton<PdfGenerator, PdfGenerator>();
             RegisterGateways(services);
             RegisterUseCases(services);
