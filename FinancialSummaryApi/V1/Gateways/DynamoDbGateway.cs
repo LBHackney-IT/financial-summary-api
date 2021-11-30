@@ -21,13 +21,11 @@ namespace FinancialSummaryApi.V1.Gateways
     {
         private const int MAX_RESULTS = 10;
         private const string TARGETID = "target_id";
-        private readonly IAmazonDynamoDB _amazonDynamoDb;
         private readonly IDynamoDBContext _dynamoDbContext;
         private readonly IMapper _mapper;
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IAmazonDynamoDB amazonDynamoDb, IMapper mapper)
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext,IMapper mapper)
         {
             _dynamoDbContext = dynamoDbContext;
-            _amazonDynamoDb = amazonDynamoDb;
             _mapper = mapper;
         }
 
@@ -65,23 +63,7 @@ namespace FinancialSummaryApi.V1.Gateways
             }
             while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
 
-            return dbRentGroupSummary.ToDomain();
-            QueryRequest getSummaryRequest = new QueryRequest
-            {
-                TableName = "FinancialSummaries",
-                KeyConditionExpression = "pk = :V_pk",
-                FilterExpression = "summary_type = :V_summary_type and submit_date between :V_submit_date_start and :V_submit_date_end",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
-                {   { ":V_pk", new AttributeValue { S = PartitionKey } },
-                    { ":V_submit_date_start", new AttributeValue { S = submitDateStart.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_submit_date_end", new AttributeValue { S = submitDateEnd.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ") } },
-                    { ":V_summary_type", new AttributeValue { S = SummaryType.AssetSummary.ToString() } },
-                }
-            };
-
-            var data = await _amazonDynamoDb.QueryAsync(getSummaryRequest).ConfigureAwait(false);
-
-            return data.ToAssetSummary().OrderByDescending(r => r.SubmitDate).ToList();
+            return dbAssetSummary.ToDomain();
         }
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)

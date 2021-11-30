@@ -1,6 +1,8 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancialSummaryApi.V1.Factories
 {
@@ -24,6 +26,12 @@ namespace FinancialSummaryApi.V1.Factories
             };
         }
 
+        public static List<AssetSummary> ToDomain(this IEnumerable<AssetSummaryDbEntity> databaseEntity)
+        {
+            return databaseEntity.Select(p => p.ToDomain())
+                                 .OrderByDescending(x => x.SubmitDate)
+                                 .ToList();
+        }
         public static AssetSummaryDbEntity ToDatabase(this AssetSummary entity)
         {
             return entity == null ? null : new AssetSummaryDbEntity
