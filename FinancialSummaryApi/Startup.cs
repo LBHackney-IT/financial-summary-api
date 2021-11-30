@@ -187,14 +187,16 @@ namespace FinancialSummaryApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                RotativaConfiguration.Setup(env.WebRootPath, "Rotativa");
             }
             else
             {
                 app.UseHsts();
+                RotativaConfiguration.Setup(env.ContentRootPath, "wkhtmltopdf");
             }
-            RotativaConfiguration.Setup(env.WebRootPath, "Rotativa");
+           
             app.UseXRay("financial_summary_api");
-
+            
             //Get All ApiVersions,
             var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
             _apiVersions = api.ApiVersionDescriptions.ToList();

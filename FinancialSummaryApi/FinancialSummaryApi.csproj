@@ -45,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="wkhtmltopdf\" />
     <Folder Include="wwwroot\" />
     <Folder Include="terraform\" />
   </ItemGroup>
@@ -52,7 +53,15 @@
         <None Include="wwwroot\Rotativa\wkhtmltoimage.exe" />
         <None Include="wwwroot\Rotativa\wkhtmltopdf.exe" />
     </ItemGroup>
+    <ItemGroup>
+      <Compile Update="V1\Controllers\StatementController.cs">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Compile>
+    </ItemGroup>
   <ItemGroup>
+    <Content Update="V1\Views\Index.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="wwwroot\Rotativa\help-wkhtmltoimage.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -78,6 +87,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Rotativa\wkhtmltopdf.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="wkhtmltopdf\wkhtmltoimage">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="wkhtmltopdf\wkhtmltopdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
