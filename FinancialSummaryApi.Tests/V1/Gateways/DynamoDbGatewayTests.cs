@@ -30,14 +30,14 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         public DynamoDbGatewayTests()
         {
             _dynamoDb = new Mock<IDynamoDBContext>();
-            _amazonDynamoDB = new Mock<IAmazonDynamoDB>();
+             _amazonDynamoDB = new Mock<IAmazonDynamoDB>();
             if (_mapper == null)
             {
                 var mappingConfig = new MapperConfiguration(mc =>
                     mc.AddProfile(new MappingProfile()));
                 _mapper = mappingConfig.CreateMapper();
             }
-            _gateway = new DynamoDbGateway(_dynamoDb.Object, _amazonDynamoDB.Object, _mapper);
+            _gateway = new DynamoDbGateway(_dynamoDb.Object, _mapper);
         }
 
         #region Assets
@@ -285,18 +285,18 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
             var request = new GetStatementListRequest()
             {
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 PageSize = 2,
                 StartDate = new DateTime(2021, 8, 15),
                 EndDate = new DateTime(2021, 10, 15)
             };
-            var resultStatementsList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PageNumber)
+            var resultStatementsList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PaginationToken)
                 .ConfigureAwait(false);
 
             resultStatementsList.Should().NotBeNull();
-            resultStatementsList.Total.Should().Be(expectedTotal);
-            resultStatementsList.Statements.Should().NotBeNull();
-            resultStatementsList.Statements.Should().BeEmpty();
+            resultStatementsList.PaginationDetails.Should().Be(expectedTotal);
+            resultStatementsList.Results.Should().NotBeNull();
+            resultStatementsList.Results.Should().BeEmpty();
         }
 
         [Fact]
@@ -314,7 +314,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
 
             var request = new GetStatementListRequest()
             {
-                PageNumber = 1,
                 PageSize = 2,
                 StartDate = new DateTime(2021, 8, 15),
                 EndDate = new DateTime(2021, 10, 15)
@@ -323,16 +322,16 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             var expectedStatementFirst = statementsDbResponse[0];
             var expectedStatementSecond = statementsDbResponse[2];
 
-            var statementList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PageNumber)
+            var statementList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PaginationToken)
                 .ConfigureAwait(false);
 
             statementList.Should().NotBeNull();
-            statementList.Total.Should().Be(expectedTotal);
-            statementList.Statements.Should().NotBeNull();
-            statementList.Statements.Should().HaveCount(2);
+            //statementList.PaginationDetails.Should().Be(expectedTotal);
+            statementList.Results.Should().NotBeNull();
+            statementList.Results.Should().HaveCount(2);
 
-            statementList.Statements[0].Should().BeEquivalentTo(expectedStatementFirst);
-            statementList.Statements[1].Should().BeEquivalentTo(expectedStatementSecond);
+            statementList.Results[0].Should().BeEquivalentTo(expectedStatementFirst);
+            statementList.Results[1].Should().BeEquivalentTo(expectedStatementSecond);
         }
 
         [Fact]
@@ -350,7 +349,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
             var request = new GetStatementListRequest()
             {
-                PageNumber = 2,
                 PageSize = 2,
                 StartDate = new DateTime(2021, 8, 15),
                 EndDate = new DateTime(2021, 10, 15)
@@ -358,15 +356,15 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             var statementsDbResponse = _mapper.Map<List<Statement>>(StatementDbResponse);
             var expectedStatement = statementsDbResponse[5];
 
-            var statementList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PageNumber)
+            var statementList = await _gateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PaginationToken)
                 .ConfigureAwait(false);
 
             statementList.Should().NotBeNull();
-            statementList.Total.Should().Be(expectedTotal);
-            statementList.Statements.Should().NotBeNull();
-            statementList.Statements.Should().HaveCount(1);
+            // statementList.PaginationDetails.Should().Be(expectedTotal);
+            statementList.Results.Should().NotBeNull();
+            statementList.Results.Should().HaveCount(1);
 
-            statementList.Statements[0].Should().BeEquivalentTo(expectedStatement);
+            statementList.Results[0].Should().BeEquivalentTo(expectedStatement);
         }
 
         #endregion

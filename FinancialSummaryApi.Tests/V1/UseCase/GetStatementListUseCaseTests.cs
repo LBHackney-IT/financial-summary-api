@@ -95,7 +95,7 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
-            result.Statements.Should().HaveCount(2);
+            result.Results.Should().HaveCount(2);
             result.Should().BeEquivalentTo(expectedResult);
         }
 

@@ -4,6 +4,7 @@ using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
+using Hackney.Core.DynamoDb;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace FinancialSummaryApi.V1.UseCase
             _mapper = mapper;
         }
 
-        public async Task<StatementListResponse> ExecuteAsync(Guid targetId, GetStatementListRequest request)
+        public async Task<PagedResult<StatementResponse>> ExecuteAsync(Guid targetId, GetStatementListRequest request)
         {
             if (request.StartDate != DateTime.MinValue && request.EndDate != DateTime.MinValue)
             {
@@ -29,15 +30,11 @@ namespace FinancialSummaryApi.V1.UseCase
                 request.EndDate = request.EndDate.Date.GetDayRange().dayEnd;
             }
 
-            var statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PageNumber).ConfigureAwait(false);
+            var statementList = await _financeSummaryGateway.GetPagedStatementsAsync(targetId, request.StartDate, request.EndDate, request.PageSize, request.PaginationToken).ConfigureAwait(false);
 
-            var statementResponseList = _mapper.Map<List<StatementResponse>>(statementList.Statements);
-
-            return new StatementListResponse
-            {
-                Total = statementList.Total,
-                Statements = statementResponseList
-            };
+            var statementResponseList = _mapper.Map<PagedResult<StatementResponse>>(statementList);
+            return statementResponseList;
+            
         }
     }
 }

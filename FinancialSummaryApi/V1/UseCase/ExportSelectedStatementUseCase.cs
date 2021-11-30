@@ -26,7 +26,7 @@ namespace FinancialSummaryApi.V1.UseCase
             {
                 foreach (var item in request.StatementIdsToExport)
                 {
-                    var rId = await _financeSummaryGateway.GetStatementByIdAsync(item).ConfigureAwait(false);
+                    var rId = await _financeSummaryGateway.GetStatementByIdAsync(item, request.TargetId).ConfigureAwait(false);
                     response.Add(rId);
                 };
             }
