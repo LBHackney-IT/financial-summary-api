@@ -32,8 +32,8 @@ namespace FinancialSummaryApi.V1.UseCase
             }
             else
             {
-                var startDate = request.StartDate.HasValue ? request.StartDate.Value : DateTime.UtcNow;
-                var endDate = request.StartDate.HasValue ? request.StartDate.Value : DateTime.UtcNow;
+                var startDate = request.StartDate ?? DateTime.UtcNow;
+                var endDate = request.StartDate ?? DateTime.UtcNow;
                 response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
             }
 
