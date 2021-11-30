@@ -32,14 +32,14 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
         }
 
         [Theory]
-        [InlineData(0)]
-        [InlineData(-1)]
-        public void GivenInvalidPageNumber_ShouldHaveValidationError(s pageNumber)
+        [InlineData("")]
+        [InlineData("1223333")]
+        public void GivenInvalidPageNumber_ShouldHaveValidationError(string pageNumber)
         {
             var request = new GetStatementListRequest()
             {
                 PageSize = 10,
-                PaginationToken = string.Empty,
+                PaginationToken = pageNumber,
                 StartDate = new DateTime(2021, 10, 10),
                 EndDate = new DateTime(2021, 11, 11)
             };
