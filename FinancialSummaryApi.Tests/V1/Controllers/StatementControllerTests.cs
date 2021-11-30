@@ -85,7 +85,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = { },
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
@@ -127,7 +127,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 1)
             };
@@ -162,7 +162,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
             };
             var result = await _statementController.GetList(string.Empty, string.Empty, new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"), request).ConfigureAwait(false);
@@ -194,7 +194,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = -1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
@@ -228,7 +228,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
