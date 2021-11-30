@@ -194,9 +194,9 @@ namespace FinancialSummaryApi
                 app.UseHsts();
                 RotativaConfiguration.Setup(env.ContentRootPath, "wkhtmltopdf");
             }
-           
+
             app.UseXRay("financial_summary_api");
-            
+
             //Get All ApiVersions,
             var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
             _apiVersions = api.ApiVersionDescriptions.ToList();
