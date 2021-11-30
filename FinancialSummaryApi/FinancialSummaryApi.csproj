@@ -89,6 +89,9 @@
     <None Update="Rotativa\wkhtmltopdf.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="wkhtmltopdf\libjpeg.so.62">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="wkhtmltopdf\lib\libbz2.so.1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
