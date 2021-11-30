@@ -20,7 +20,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
             var request = new GetStatementListRequest()
             {
                 PageSize = pageSize,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 10, 10),
                 EndDate = new DateTime(2021, 11, 11)
             };
@@ -34,20 +34,20 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
         [Theory]
         [InlineData(0)]
         [InlineData(-1)]
-        public void GivenInvalidPageNumber_ShouldHaveValidationError(int pageNumber)
+        public void GivenInvalidPageNumber_ShouldHaveValidationError(s pageNumber)
         {
             var request = new GetStatementListRequest()
             {
                 PageSize = 10,
-                PageNumber = pageNumber,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 10, 10),
                 EndDate = new DateTime(2021, 11, 11)
             };
 
             var result = _validator.TestValidate(request);
 
-            result.ShouldHaveValidationErrorFor(x => x.PageNumber)
-                  .WithErrorMessage($"'{InsertSpaceBetweenWords(nameof(request.PageNumber))}' must be greater than or equal to '1'.");
+            result.ShouldHaveValidationErrorFor(x => x.PaginationToken)
+                  .WithErrorMessage($"'{InsertSpaceBetweenWords(nameof(request.PaginationToken))}' must be greater than or equal to '1'.");
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
             var request = new GetStatementListRequest()
             {
                 PageSize = 10,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = DateTime.MinValue,
                 EndDate = new DateTime(2021, 11, 11)
             };
@@ -73,7 +73,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
             var request = new GetStatementListRequest()
             {
                 PageSize = 10,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 11, 11),
                 EndDate = DateTime.MinValue
             };

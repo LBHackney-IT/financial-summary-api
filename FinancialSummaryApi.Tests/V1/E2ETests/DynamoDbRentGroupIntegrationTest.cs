@@ -48,7 +48,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         /// <returns></returns>
         private async Task SetupTestData(RentGroupSummary entity)
         {
-            await DynamoDbContext.SaveAsync(entity.ToDatabase(Constants.PartitionKey)).ConfigureAwait(false);
+            await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
 
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(Constants.PartitionKey, entity.Id).ConfigureAwait(false));
         }
