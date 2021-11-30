@@ -8,7 +8,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
     {
         public static string GetHTMLReportString1()
         {
-            var date = DateTime.Today.ToString("D");
+
             var sb = new StringBuilder();
             sb.Clear();
             sb.Append(@"<html>

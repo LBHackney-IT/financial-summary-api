@@ -98,7 +98,7 @@ namespace FinancialSummaryApi
                 //Get every ApiVersion attribute specified and create swagger docs for them
                 foreach (var apiVersion in _apiVersions)
                 {
-                    var version = $"v{apiVersion.ApiVersion.ToString()}";
+                    var version = $"v{apiVersion.ApiVersion}";
                     c.SwaggerDoc(version, new OpenApiInfo
                     {
                         Title = $"{ApiName}-api {version}",
