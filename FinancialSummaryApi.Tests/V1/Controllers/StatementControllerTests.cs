@@ -61,7 +61,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         public async Task GetList_WithValidRequestAndAssetId_Returns200()
         {
             var statementList = _fixture.Build<StatementResponse>()
-                        .With(_=>_.Id, new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"))
+                        .With(_ => _.Id, new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"))
                          .With(_ => _.TargetId, new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"))
                           .With(_ => _.TargetType, TargetType.Block)
                            .With(_ => _.StatementPeriodEndDate, new DateTime(2021, 8, 3))
@@ -69,10 +69,10 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                              .With(_ => _.Address, "16 Macron Court, E8 1ND")
                               .With(_ => _.StatementType, StatementType.Leasehold)
                                .With(_ => _.ChargedAmount, 350)
-                                .With(_ => _.PaidAmount, 350)
-                                 .With(_ => _.HousingBenefitAmount, 350)
-                                  .With(_ => _.StartBalance, 350)
-                                   .With(_ => _.FinishBalance, 350)
+                                .With(_ => _.PaidAmount, 600)
+                                 .With(_ => _.HousingBenefitAmount, 800)
+                                  .With(_ => _.StartBalance, 1100)
+                                   .With(_ => _.FinishBalance, 500)
                         .CreateMany(1);
             var obj1 = new PagedResult<StatementResponse>(statementList);
             _getListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<GetStatementListRequest>()))

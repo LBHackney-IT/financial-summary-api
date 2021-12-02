@@ -1,6 +1,7 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,11 +26,11 @@ namespace FinancialSummaryApi.V1.Factories
             };
         }
 
-        public static RentGroupSummaryDbEntity ToDatabase(this RentGroupSummary entity)
+        public static RentGroupSummaryDbEntity ToDatabase(this RentGroupSummary entity, Guid targetId)
         {
             return entity == null ? null : new RentGroupSummaryDbEntity
             {
-              
+                TargetId = targetId,
                 Id = entity.Id,
                 SubmitDate = entity.SubmitDate,
                 ArrearsYTD = entity.ArrearsYTD,

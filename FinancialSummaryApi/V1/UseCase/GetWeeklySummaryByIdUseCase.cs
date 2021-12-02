@@ -16,9 +16,9 @@ namespace FinancialSummaryApi.V1.UseCase
             _financeSummaryGateway = financeSummaryGateway;
         }
 
-        public async Task<WeeklySummaryResponse> ExecuteAsync(Guid id)
+        public async Task<WeeklySummaryResponse> ExecuteAsync(Guid targetId, Guid id)
         {
-            var weeklySummary = await _financeSummaryGateway.GetWeeklySummaryByIdAsync(id).ConfigureAwait(false);
+            var weeklySummary = await _financeSummaryGateway.GetWeeklySummaryByIdAsync(targetId, id).ConfigureAwait(false);
 
             return weeklySummary?.ToResponse();
         }

@@ -36,7 +36,7 @@ namespace FinancialSummaryApi.V1.Factories
         {
             return entity == null ? null : new AssetSummaryDbEntity
             {
-               
+
                 Id = entity.Id,
                 TargetId = entity.TargetId,
                 TargetType = entity.TargetType,

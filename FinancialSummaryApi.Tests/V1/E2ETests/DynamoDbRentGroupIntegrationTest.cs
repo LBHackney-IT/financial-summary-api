@@ -48,7 +48,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         /// <returns></returns>
         private async Task SetupTestData(RentGroupSummary entity)
         {
-            await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
+            await DynamoDbContext.SaveAsync(entity.ToDatabase(new Guid("51259000-0dfd-4c74-8e25-45a9c7f2fc90"))).ConfigureAwait(false);
 
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(Constants.PartitionKey, entity.Id).ConfigureAwait(false));
         }
@@ -212,7 +212,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<RentGroupSummaryResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(Constants.PartitionKey, apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(Guid.Parse("51259000-0dfd-4c74-8e25-45a9c7f2fc90"), apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 

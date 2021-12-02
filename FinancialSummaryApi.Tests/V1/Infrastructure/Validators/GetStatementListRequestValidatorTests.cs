@@ -46,8 +46,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure.Validators
 
             var result = _validator.TestValidate(request);
 
-            result.ShouldHaveValidationErrorFor(x => x.PaginationToken)
-                  .WithErrorMessage($"'{InsertSpaceBetweenWords(nameof(request.PaginationToken))}' must be greater than or equal to '1'.");
+            result.Errors.Should().HaveCount(0);
         }
 
         [Fact]

@@ -11,7 +11,7 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
         public Guid TargetId { get; set; }
         [DynamoDBRangeKey(AttributeName = "id")]
         public Guid Id { get; set; }
-       [DynamoDBProperty(AttributeName = "target_type", Converter = typeof(DynamoDbEnumConverter<TargetType>))]
+        [DynamoDBProperty(AttributeName = "target_type", Converter = typeof(DynamoDbEnumConverter<TargetType>))]
         public TargetType TargetType { get; set; }
 
         [DynamoDBProperty(AttributeName = "summary_type", Converter = typeof(DynamoDbEnumConverter<SummaryType>))]

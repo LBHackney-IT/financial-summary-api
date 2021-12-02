@@ -231,7 +231,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
         private async Task GetWeeklySummaryByTargetIdAndValidateResponse(WeeklySummary weeklySummary)
         {
-            var uri = new Uri($"api/v1/weekly-summary/{weeklySummary.Id}", UriKind.Relative);
+            var uri = new Uri($"api/v1/weekly-summary/{weeklySummary.Id}?targetId={weeklySummary.TargetId}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
