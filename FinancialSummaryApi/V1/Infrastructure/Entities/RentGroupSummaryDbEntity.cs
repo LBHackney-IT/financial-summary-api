@@ -12,7 +12,7 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
     {
         [DynamoDBHashKey(AttributeName = "target_id")]
         public Guid TargetId { get; set; }
-        [DynamoDBHashKey(AttributeName = "id")]
+        [DynamoDBRangeKey(AttributeName = "id")]
         public Guid Id { get; set; }
 
         [DynamoDBProperty(AttributeName = "summary_type", Converter = typeof(DynamoDbEnumConverter<SummaryType>))]

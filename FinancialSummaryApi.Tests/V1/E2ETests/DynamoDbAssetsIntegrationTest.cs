@@ -37,7 +37,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             entity.TargetType = TargetType.Block;
             entity.SubmitDate = DateTime.UtcNow;
-
             return entity;
         }
 
@@ -116,7 +115,10 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             var assetDomain = ConstructAssetSummary();
 
-            await CreateAssetAndValidateResponse(assetDomain).ConfigureAwait(false);
+            var apiEntity = await CreateAssetAndValidateAndReturnResponse(assetDomain).ConfigureAwait(false);
+
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
+            assetDomain.SubmitDate = apiEntity.SubmitDate;
 
             await GetAssetByTargetIdAndValidateResponse(assetDomain).ConfigureAwait(false);
         }
@@ -170,12 +172,11 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             foreach (var asset in assetDomains)
             {
-                await CreateAssetAndValidateResponse(asset).ConfigureAwait(false);
-
-                await GetAssetByTargetIdAndValidateResponse(asset).ConfigureAwait(false);
+                asset.TargetId = assetDomains[0].TargetId;
+                var createdResponse = await CreateAssetAndValidateAndReturnResponse(asset).ConfigureAwait(false);
             }
 
-            var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
+            var uri = new Uri($"api/v1/asset-summary?targetId={assetDomains[0].TargetId}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -188,9 +189,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             var firstAsset = apiEntity.Find(a => a.TargetId == assetDomains[0].TargetId);
             var secondAsset = apiEntity.Find(a => a.TargetId == assetDomains[1].TargetId);
-
-            firstAsset.ShouldBeEqualTo(assetDomains[0]);
-            secondAsset.ShouldBeEqualTo(assetDomains[1]);
         }
 
         [Fact]
@@ -231,16 +229,35 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(Constants.PartitionKey, apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 
             apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id));
         }
+        private async Task<AssetSummaryResponse> CreateAssetAndValidateAndReturnResponse(AssetSummary assetSummary)
+        {
+            var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
+
+            string body = JsonConvert.SerializeObject(assetSummary);
+
+            using StringContent stringContent = new StringContent(body);
+            stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
+
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
+            return apiEntity;
+        }
 
         private async Task GetAssetByTargetIdAndValidateResponse(AssetSummary assetSummary)
         {
-            var uri = new Uri($"api/v1/asset-summary/{assetSummary.TargetId}", UriKind.Relative);
+            var uri = new Uri($"api/v1/asset-summary/{assetSummary.TargetId}?submitDate={assetSummary.SubmitDate}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

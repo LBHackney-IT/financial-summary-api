@@ -46,7 +46,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllByDateAssetSummaryObjectsReturns200()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(
                     new List<AssetSummaryResponse>()
                     {
@@ -66,7 +66,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         }
                     });
 
-            var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, new DateTime(2021, 7, 2)).ConfigureAwait(false);
+            var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, Guid.Empty, new DateTime(2021, 7, 2)).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -96,7 +96,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllByAnotherDateAssetSummaryObjectsReturns200()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(
                     new List<AssetSummaryResponse>()
                     {
@@ -116,10 +116,10 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         }
                     });
 
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<AssetSummaryResponse> { });
 
-            var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, new DateTime(2021, 7, 1)).ConfigureAwait(false);
+            var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, Guid.Empty, new DateTime(2021, 7, 1)).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -137,12 +137,12 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllByDateAssetSummaryObjectsReturns500()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
             {
-                var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, new DateTime(2021, 7, 2)).ConfigureAwait(false);
+                var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, Guid.Empty, new DateTime(2021, 7, 2)).ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
             catch (Exception ex)

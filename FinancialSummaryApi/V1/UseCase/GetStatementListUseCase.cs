@@ -34,7 +34,7 @@ namespace FinancialSummaryApi.V1.UseCase
 
             var statementResponseList = _mapper.Map<PagedResult<StatementResponse>>(statementList);
             return statementResponseList;
-            
+
         }
     }
 }

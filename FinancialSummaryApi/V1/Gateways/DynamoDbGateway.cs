@@ -10,6 +10,8 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FinancialSummaryApi.V1.UseCase.Helpers;
 using Hackney.Core.DynamoDb;
+using Hackney.Core.Logging;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +25,9 @@ namespace FinancialSummaryApi.V1.Gateways
         private const string TARGETID = "target_id";
         private readonly IDynamoDBContext _dynamoDbContext;
         private readonly IMapper _mapper;
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext,IMapper mapper)
+        private Guid _rentGroupTargetId = new Guid("51259000-0dfd-4c74-8e25-45a9c7f2fc90");
+        public string PaginationToken { get; set; } = "{}";
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IMapper mapper)
         {
             _dynamoDbContext = dynamoDbContext;
             _mapper = mapper;
@@ -35,25 +39,25 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             await _dynamoDbContext.SaveAsync(assetSummary.ToDatabase()).ConfigureAwait(false);
         }
-
-        public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(DateTime submitDate)
+        public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(Guid assetId, DateTime submitDate)
         {
             var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
-            string paginationToken = "{}";
             var dbAssetSummary = new List<AssetSummaryDbEntity>();
             var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
             var queryConfig = new QueryOperationConfig
             {
                 BackwardSearch = true,
                 ConsistentRead = true,
-                //Filter = new QueryFilter(TARGETID, QueryOperator.Equal, assetId)
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, assetId),
+                PaginationToken = PaginationToken
             };
-            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.WeeklySummary.ToString());
-            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart, submitDateEnd);
-           
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.AssetSummary.ToString());
+            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart.ToString(AWSSDKUtils.ISO8601DateFormat), submitDateEnd.ToString(AWSSDKUtils.ISO8601DateFormat));
+
             do
             {
                 var search = table.Query(queryConfig);
+                PaginationToken = search.PaginationToken;
                 var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
                 if (resultsSet.Any())
                 {
@@ -61,13 +65,14 @@ namespace FinancialSummaryApi.V1.Gateways
 
                 }
             }
-            while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
+            while (!string.Equals(PaginationToken, "{}", StringComparison.Ordinal));
 
             return dbAssetSummary.ToDomain();
         }
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
         {
+            //var submitDateStart = submitDate.ToString("yyyy-dd-MM");
             var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
             var dbAssetSummary = new List<AssetSummaryDbEntity>();
             var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
@@ -77,8 +82,8 @@ namespace FinancialSummaryApi.V1.Gateways
                 ConsistentRead = true,
                 Filter = new QueryFilter(TARGETID, QueryOperator.Equal, assetId)
             };
-            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.WeeklySummary.ToString());
-            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart, submitDateEnd);
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.AssetSummary.ToString());
+            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart.ToString(AWSSDKUtils.ISO8601DateFormat), submitDateEnd.ToString(AWSSDKUtils.ISO8601DateFormat));
             var search = table.Query(queryConfig);
             var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
             if (resultsSet.Any())
@@ -87,7 +92,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             }
             return dbAssetSummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault().ToDomain();
-           
+
         }
 
         #endregion
@@ -96,7 +101,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task AddAsync(RentGroupSummary rentGroupSummary)
         {
-            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase()).ConfigureAwait(false);
+            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase(_rentGroupTargetId)).ConfigureAwait(false);
         }
 
         public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
@@ -104,23 +109,22 @@ namespace FinancialSummaryApi.V1.Gateways
             var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
 
             var dbRentGroupSummary = new List<RentGroupSummaryDbEntity>();
-            string paginationToken = "{}";
             var table = _dynamoDbContext.GetTargetTable<RentGroupSummaryDbEntity>();
 
             var queryConfig = new QueryOperationConfig
             {
                 BackwardSearch = true,
                 ConsistentRead = true,
-                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, ""),
-                PaginationToken = paginationToken
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, _rentGroupTargetId),
+                PaginationToken = PaginationToken
             };
-            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.WeeklySummary.ToString());
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.RentGroupSummary.ToString());
             queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart.ToString(AWSSDKUtils.ISO8601DateFormat), submitDateEnd.ToString(AWSSDKUtils.ISO8601DateFormat));
-           
+
             do
             {
                 var search = table.Query(queryConfig);
-                paginationToken = search.PaginationToken;
+                PaginationToken = search.PaginationToken;
                 var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
                 if (resultsSet.Any())
                 {
@@ -128,7 +132,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
                 }
             }
-            while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
+            while (!string.Equals(PaginationToken, "{}", StringComparison.Ordinal));
 
             return dbRentGroupSummary.ToDomain();
         }
@@ -142,9 +146,10 @@ namespace FinancialSummaryApi.V1.Gateways
             {
                 BackwardSearch = true,
                 ConsistentRead = true,
-                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, rentGroupName)
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, _rentGroupTargetId)
             };
-            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.WeeklySummary.ToString());
+            queryConfig.Filter.AddCondition("target_name", QueryOperator.Equal, rentGroupName);
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.RentGroupSummary.ToString());
             queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart, submitDateEnd);
             var search = table.Query(queryConfig);
             var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
@@ -154,7 +159,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             }
             return dbWeeklySummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault().ToDomain();
-          
+
         }
 
         #endregion
@@ -163,7 +168,6 @@ namespace FinancialSummaryApi.V1.Gateways
         public async Task<List<WeeklySummary>> GetAllWeeklySummaryAsync(Guid targetId, DateTime? startDate, DateTime? endDate)
         {
             var dbWeeklySummary = new List<WeeklySummaryDbEntity>();
-            string paginationToken = "{}";
             var table = _dynamoDbContext.GetTargetTable<WeeklySummaryDbEntity>();
 
             var queryConfig = new QueryOperationConfig
@@ -171,7 +175,7 @@ namespace FinancialSummaryApi.V1.Gateways
                 BackwardSearch = true,
                 ConsistentRead = true,
                 Filter = new QueryFilter(TARGETID, QueryOperator.Equal, targetId),
-                PaginationToken = paginationToken
+                PaginationToken = PaginationToken
             };
             queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.WeeklySummary.ToString());
             if (startDate.HasValue && endDate.HasValue)
@@ -182,7 +186,7 @@ namespace FinancialSummaryApi.V1.Gateways
             do
             {
                 var search = table.Query(queryConfig);
-                paginationToken = search.PaginationToken;
+                PaginationToken = search.PaginationToken;
                 var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
                 if (resultsSet.Any())
                 {
@@ -190,7 +194,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
                 }
             }
-            while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
+            while (!string.Equals(PaginationToken, "{}", StringComparison.Ordinal));
 
             return dbWeeklySummary.ToDomain();
         }
@@ -200,26 +204,11 @@ namespace FinancialSummaryApi.V1.Gateways
             await _dynamoDbContext.SaveAsync(weeklySummary.ToDatabase()).ConfigureAwait(false);
         }
 
-        public async Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid targetId)
+        public async Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid targetId, Guid id)
         {
-            var dbWeeklySummary = new List<WeeklySummaryDbEntity>();
-            var table = _dynamoDbContext.GetTargetTable<WeeklySummaryDbEntity>();
-            var queryConfig = new QueryOperationConfig
-            {
-                BackwardSearch = true,
-                ConsistentRead = true,
-                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, targetId)
-            };
-            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.WeeklySummary.ToString());
-           var search = table.Query(queryConfig);
-           var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
-            if (resultsSet.Any())
-            {
-                dbWeeklySummary.AddRange(_dynamoDbContext.FromDocuments<WeeklySummaryDbEntity>(resultsSet));
-
-            }
-            return dbWeeklySummary.OrderByDescending(x => x.WeekStartDate).FirstOrDefault().ToDomain();
-            }
+            var response = await _dynamoDbContext.LoadAsync<WeeklySummaryDbEntity>(targetId, id).ConfigureAwait(false);
+            return response.ToDomain();
+        }
         #endregion
 
         public async Task<PagedResult<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, string paginationToken)
