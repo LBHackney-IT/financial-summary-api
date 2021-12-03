@@ -67,9 +67,9 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummary.Should().BeNull();
         }
 
-       
 
-       
+
+
         #endregion
 
         #region RentGroups
@@ -83,8 +83,8 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             rentGroupSummary.Should().BeNull();
         }
 
-      
-       
+
+
 
         #endregion
 
