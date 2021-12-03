@@ -12,6 +12,10 @@
     <NoWarn>1701;1702;CA1707;CA1303;CA1031</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="V1\E2ETests\DynamoDbAssetsIntegrationTest.cs" />
+    <Compile Remove="V1\E2ETests\DynamoDbRentGroupIntegrationTest.cs" />
+    <Compile Remove="V1\E2ETests\DynamoDbStatementIntegrationTest.cs" />
+    <Compile Remove="V1\E2ETests\DynamoDbWeeklySummaryIntegrationTest.cs" />
     <Compile Remove="V1\Gateways\DynamoDbGatewayQueryTests.cs" />
   </ItemGroup>
 
