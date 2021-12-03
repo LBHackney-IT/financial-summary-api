@@ -99,7 +99,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         #region Rent Group Summary
 
-        public async Task AddAsync(RentGroupSummary rentGroupSummary)
+        public async Task AddRangeAsync(List<RentGroupSummary> groupSummaries)
         {
             await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase(_rentGroupTargetId)).ConfigureAwait(false);
         }

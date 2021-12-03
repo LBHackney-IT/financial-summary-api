@@ -39,8 +39,8 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "paid_ytd")]
         public decimal PaidYTD { get; set; }
 
-        [DynamoDBProperty(AttributeName = "arrears_ytd")]
-        public decimal ArrearsYTD { get; set; }
+        [DynamoDBProperty(AttributeName = "total_arrears")]
+        public decimal TotalArrears { get; set; }
 
         [DynamoDBProperty(AttributeName = "total_balance")]
         public decimal TotalBalance { get; set; }
