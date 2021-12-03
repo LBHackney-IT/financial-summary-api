@@ -61,7 +61,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         public async Task GetByTargetIdReturnsNullIfEntityDoesntExist()
         {
 
-            var assetSummary = await _gateway.GetAssetSummaryByIdAsync(new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"), new DateTime(2021, 7, 2))
+            var assetSummary = await _gateway.GetAssetSummaryByIdAsync(new Guid("83dd3d9e-3e63-420d-b22b-2313e2169ae9"), new DateTime(2021, 7, 2))
                 .ConfigureAwait(false);
 
             assetSummary.Should().BeNull();
@@ -139,7 +139,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         public async Task GetPagedStatementsAsyncFirstPageReturnsZeroTotal()
         {
             var expectedTotal = 0;
-            var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
+            var targetId = new Guid("fd9098f4-c4eb-40ce-96c1-b19e14dd072e");
             var request = new GetStatementListRequest()
             {
                 PaginationToken = string.Empty,
@@ -157,7 +157,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         [Fact]
         public async Task GetPagedStatementsFirstPageReturnsList()
         {
-            var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
+            var targetId = new Guid("d81ae03a-6aea-40ae-8137-343942f30172");
             int expectedTotal = 3;
             var expected = InsertStatement(targetId, 3);
             var request = new GetStatementListRequest()
@@ -189,7 +189,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
 
             int expectedTotal = 3;
 
-            var targetId = new Guid("fdd9c513-50b0-4fde-ae75-176f8208c4cd");
+            var targetId = new Guid("e1f4f42b-e69b-4ae7-b8d1-2a5a3d4bb18b");
             var expected = InsertStatement(targetId, 5);
             var request = new GetStatementListRequest()
             {
