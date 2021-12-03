@@ -13,7 +13,7 @@ WORKDIR /app
 COPY ./FinancialSummaryApi.sln ./
 COPY ./FinancialSummaryApi/FinancialSummaryApi.csproj ./FinancialSummaryApi/
 COPY ./FinancialSummaryApi.Tests/FinancialSummaryApi.Tests.csproj ./FinancialSummaryApi.Tests/
-
+COPY /NuGet.Config /root/.nuget/NuGet/NuGet.Config
 RUN dotnet restore ./FinancialSummaryApi/FinancialSummaryApi.csproj
 RUN dotnet restore ./FinancialSummaryApi.Tests/FinancialSummaryApi.Tests.csproj
 

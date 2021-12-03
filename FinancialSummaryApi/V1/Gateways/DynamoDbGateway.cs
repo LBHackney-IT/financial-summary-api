@@ -83,7 +83,7 @@ namespace FinancialSummaryApi.V1.Gateways
                 Filter = new QueryFilter(TARGETID, QueryOperator.Equal, assetId)
             };
             queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.AssetSummary.ToString());
-            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart.ToString(AWSSDKUtils.ISO8601DateFormat), submitDateEnd.ToString(AWSSDKUtils.ISO8601DateFormat));
+            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart, submitDateEnd);
             var search = table.Query(queryConfig);
             var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
             if (resultsSet.Any())

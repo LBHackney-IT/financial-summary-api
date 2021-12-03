@@ -67,39 +67,9 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             assetSummary.Should().BeNull();
         }
 
-        [Fact]
-        public async Task GetByTargetIdReturnsAssetSummaryIfItExists()
-        {
+       
 
-            var expectedResponse = InsertAsset(Guid.Parse("9f84f01b-fb23-43bf-9bf3-6cb37faa89c7"), new DateTime(2020, 8, 15), 1);
-            var domain = expectedResponse[0].ToDomain();
-            var assetSummaryDomain = await _gateway.GetAssetSummaryByIdAsync(domain.TargetId, domain.SubmitDate)
-                .ConfigureAwait(false);
-            foreach (var item in expectedResponse)
-            {
-                _cleanup.Add(async () =>
-               await _dbFixture.DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(item.TargetId, item.Id, default).ConfigureAwait(false));
-            }
-            assetSummaryDomain.Should().BeEquivalentTo(domain);
-        }
-
-        [Fact]
-        public async Task GetAllAssetsByDateReturnsList()
-        {
-
-            var expectedResponse = InsertAsset(Guid.Parse("36d5bef5-c2fb-42b8-9343-cdd1dcc5e8c8"), new DateTime(2020, 9, 9), 2);
-            var query = expectedResponse.FirstOrDefault();
-            var assetSummaries = await _gateway.GetAllAssetSummaryAsync(query.TargetId, query.SubmitDate)
-                .ConfigureAwait(false);
-            foreach (var item in expectedResponse)
-            {
-                _cleanup.Add(async () =>
-                await _dbFixture.DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(item.TargetId, item.Id, default).ConfigureAwait(false));
-            }
-            assetSummaries.Should().HaveCount(expectedResponse.Count);
-            assetSummaries[0].TargetId.Should().Be(expectedResponse[0].TargetId);
-            assetSummaries[1].TargetType.Should().BeEquivalentTo(expectedResponse[1].TargetType);
-        }
+       
         #endregion
 
         #region RentGroups
@@ -113,34 +83,8 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             rentGroupSummary.Should().BeNull();
         }
 
-        [Fact]
-        public async Task GetByNameReturnsRentGroupSummaryIfItExists()
-        {
-            var expected = InsertRentGroup("target name 3", new DateTime(2020, 9, 9), 1).FirstOrDefault();
-            var rentGroupSummary = await _gateway.GetRentGroupSummaryByNameAsync(expected.TargetName, expected.SubmitDate)
-                .ConfigureAwait(false);
-            _cleanup.Add(async () =>
-                await _dbFixture.DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(_rentGroupTargetId, expected.Id, default).ConfigureAwait(false));
-            var expectedResponse = expected.ToDomain();
-            rentGroupSummary.Should().BeEquivalentTo(expectedResponse);
-        }
-
-        [Fact]
-        public async Task GetAllRentGroupsByDateReturnsList()
-        {
-            var expected = InsertRentGroup("target name 1", new DateTime(2020, 9, 9), 2);
-            var rentGroupSummaries = await _gateway.GetAllRentGroupSummaryAsync(expected[0].SubmitDate)
-                .ConfigureAwait(false);
-            foreach (var item in expected)
-            {
-                _cleanup.Add(async () =>
-                await _dbFixture.DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(_rentGroupTargetId, item.Id, default).ConfigureAwait(false));
-            }
-            rentGroupSummaries.Should().HaveCount(2);
-            var expectedResponse = expected.ToDomain();
-            rentGroupSummaries.Should().BeEquivalentTo(expectedResponse);
-        }
-
+      
+       
 
         #endregion
 
