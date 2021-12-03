@@ -1,7 +1,5 @@
-using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
-using Amazon.DynamoDBv2.Model;
 using Amazon.Util;
 using AutoMapper;
 using FinancialSummaryApi.V1.Domain;
@@ -10,8 +8,6 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FinancialSummaryApi.V1.UseCase.Helpers;
 using Hackney.Core.DynamoDb;
-using Hackney.Core.Logging;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,7 +68,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
         {
-            //var submitDateStart = submitDate.ToString("yyyy-dd-MM");
+
             var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
             var dbAssetSummary = new List<AssetSummaryDbEntity>();
             var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
@@ -101,8 +97,13 @@ namespace FinancialSummaryApi.V1.Gateways
 
         public async Task AddRangeAsync(List<RentGroupSummary> groupSummaries)
         {
-            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase(_rentGroupTargetId)).ConfigureAwait(false);
+            var groupSummariesBatch = _dynamoDbContext.CreateBatchWrite<RentGroupSummaryDbEntity>();
+            var groupSummariesDb = groupSummaries.Select(s => s.ToDatabase(_rentGroupTargetId));
+
+            groupSummariesBatch.AddPutItems(groupSummariesDb);
+            await groupSummariesBatch.ExecuteAsync().ConfigureAwait(false);
         }
+
 
         public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
         {

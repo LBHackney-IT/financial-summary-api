@@ -82,33 +82,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         }
         #endregion
 
-        #region RentGroups
-
-        [Fact]
-        public async Task AddRentGroupSummaryWithValidObject()
-        {
-            _mockDynamoDb.Setup(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            var domain = _fixture.Create<RentGroupSummary>();
-
-            await _gateway.AddAsync(domain).ConfigureAwait(false);
-
-            _mockDynamoDb.Verify(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), default), Times.Once);
-        }
-
-        [Fact]
-        public async Task AddRentGroupSummaryWithInvalidObject()
-        {
-            _mockDynamoDb.Setup(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            await _gateway.AddAsync((RentGroupSummary) null).ConfigureAwait(false);
-
-            _mockDynamoDb.Verify(_ => _.SaveAsync(It.IsAny<RentGroupSummaryDbEntity>(), default), Times.Once);
-        }
-        #endregion
-
         #region WeeklySummaries
 
         [Fact]

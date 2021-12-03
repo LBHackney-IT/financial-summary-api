@@ -255,9 +255,11 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             return apiEntity;
         }
 
+
         private async Task GetAssetByTargetIdAndValidateResponse(AssetSummary assetSummary)
         {
-            var uri = new Uri($"api/v1/asset-summary/{assetSummary.TargetId}?submitDate={assetSummary.SubmitDate}", UriKind.Relative);
+            var submitDate = assetSummary.SubmitDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ");
+            var uri = new Uri($"api/v1/asset-summary/{assetSummary.TargetId}?submitDate={submitDate}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
