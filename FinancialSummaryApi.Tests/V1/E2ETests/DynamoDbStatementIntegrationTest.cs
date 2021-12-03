@@ -55,25 +55,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Details.Should().BeEquivalentTo(string.Empty);
         }
 
-        //[Fact]
-        //public async Task GetStatementListWithInvalidPageNumberReturns400()
-        //{
-        //    Guid assetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354");
-        //    var startDate = DateTime.Now;
-
-        //    var uri = new Uri($"api/v1/statements/{assetId}?pageNumber=0&startDate={startDate}&endDate={startDate}", UriKind.Relative);
-        //    var response = await Client.GetAsync(uri).ConfigureAwait(false);
-
-        //    response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-        //    var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        //    var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
-
-        //    apiEntity.Should().NotBeNull();
-        //    apiEntity.Message.Should().BeEquivalentTo("'Page Number' must be greater than or equal to '1'.");
-        //    apiEntity.StatusCode.Should().Be(400);
-        //    apiEntity.Details.Should().BeEquivalentTo(string.Empty);
-        //}
 
         [Fact]
         public async Task CreateStatementListCreatedReturns201()
