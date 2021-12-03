@@ -207,7 +207,11 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntityList = JsonConvert.DeserializeObject<List<RentGroupSummaryResponse>>(responseContent);
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(Guid.Parse("51259000-0dfd-4c74-8e25-45a9c7f2fc90"), apiEntity.Id).ConfigureAwait(false));
+            foreach (var item in apiEntityList)
+            {
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<RentGroupSummaryDbEntity>(Guid.Parse("51259000-0dfd-4c74-8e25-45a9c7f2fc90"), item.Id).ConfigureAwait(false));
+            }
+
             apiEntityList.Should().NotBeNull();
 
             apiEntityList.Should().BeEquivalentTo(rentGroupSummaries, options => options.Excluding(a => a.Id));
