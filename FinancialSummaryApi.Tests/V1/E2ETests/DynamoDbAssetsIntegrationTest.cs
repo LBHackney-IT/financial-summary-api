@@ -50,7 +50,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(Constants.PartitionKey, entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(entity.TargetId, entity.Id).ConfigureAwait(false));
         }
 
         [Fact]

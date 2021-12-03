@@ -48,7 +48,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(entity.TargetId, entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
@@ -219,7 +219,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<WeeklySummaryResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(Constants.PartitionKey, apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 
