@@ -13,6 +13,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="V1\E2ETests\DynamoDbRentGroupIntegrationTest.cs" />
+    <Compile Remove="V1\E2ETests\DynamoDbStatementIntegrationTest.cs" />
   </ItemGroup>
 
   <ItemGroup>
