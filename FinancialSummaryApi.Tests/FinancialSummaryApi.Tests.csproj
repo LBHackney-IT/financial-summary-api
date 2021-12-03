@@ -16,7 +16,6 @@
     <Compile Remove="V1\E2ETests\DynamoDbRentGroupIntegrationTest.cs" />
     <Compile Remove="V1\E2ETests\DynamoDbStatementIntegrationTest.cs" />
     <Compile Remove="V1\E2ETests\DynamoDbWeeklySummaryIntegrationTest.cs" />
-    <Compile Remove="V1\Gateways\DynamoDbGatewayQueryTests.cs" />
   </ItemGroup>
 
   <ItemGroup>
