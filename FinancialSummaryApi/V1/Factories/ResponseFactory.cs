@@ -13,7 +13,7 @@ namespace FinancialSummaryApi.V1.Factories
             {
                 Id = domain.Id,
                 SubmitDate = domain.SubmitDate,
-                ArrearsYTD = domain.ArrearsYTD,
+                TotalArrears = domain.TotalArrears,
                 ChargedYTD = domain.ChargedYTD,
                 PaidYTD = domain.PaidYTD,
                 TargetDescription = domain.TargetDescription,

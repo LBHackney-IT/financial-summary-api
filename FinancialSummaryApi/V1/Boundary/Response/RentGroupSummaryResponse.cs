@@ -45,7 +45,7 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// <example>
         /// 187.1
         /// </example>
-        public decimal ArrearsYTD { get; set; }
+        public decimal TotalArrears { get; set; }
 
         /// <example>
         /// -657.2

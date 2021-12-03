@@ -21,7 +21,7 @@ namespace FinancialSummaryApi.V1.Domain
 
         public decimal PaidYTD { get; set; }
 
-        public decimal ArrearsYTD { get; set; }
+        public decimal TotalArrears { get; set; }
 
         public decimal TotalBalance { get; set; }
 
