@@ -93,7 +93,7 @@ commands:
           name: Install dependencies
           command: |
             apt-get update && apt-get install -y yum-utils yum-plugin-downloadonly
-            yum install --downloadonly --downloaddir=/tmp
+            yum install --downloadonly --downloaddir=/tmp libxrender *rpm
             cd /tmp
             mkdir -p /var/task
             chmod +x /var/task
