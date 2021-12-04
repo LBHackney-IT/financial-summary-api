@@ -73,8 +73,6 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
-            apt-get -y install libgdiplus libc6-dev  libjpeg62-turbo
-            
       - run:
           name: Install serverless CLI
           command: npm i -g serverless
@@ -89,16 +87,6 @@ commands:
           command: |
             cd ./FinancialSummaryApi/
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
-      - run:
-          name: Install dependencies
-          command: |
-            apt-get update && apt-get install -y yum-utils yum-plugin-downloadonly
-            yum install --downloadonly --downloaddir=/tmp libxrender *rpm
-            cd /tmp
-            mkdir -p /var/task
-            chmod +x /var/task
-            cd /var/task
-            /bin/cp /tmp/*/usr/lib64/* /var/task
 jobs:
   check-code-formatting:
     executor: docker-dotnet

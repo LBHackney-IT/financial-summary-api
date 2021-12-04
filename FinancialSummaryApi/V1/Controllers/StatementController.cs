@@ -2,11 +2,14 @@ using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Hackney.Core.DynamoDb;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Rotativa.AspNetCore;
+using Syncfusion.HtmlConverter;
+using Syncfusion.Pdf;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 namespace FinancialSummaryApi.V1.Controllers
@@ -21,44 +24,43 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IAddStatementListUseCase _addListUseCase;
         private readonly IExportStatementUseCase _exportStatementUseCase;
         private readonly IExportSelectedStatementUseCase _exportSelectedItemUseCase;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
             IAddStatementListUseCase addListUseCase,
             IExportStatementUseCase exportStatementUseCase,
-            IExportSelectedStatementUseCase exportSelectedItemUseCase)
+            IExportSelectedStatementUseCase exportSelectedItemUseCase, IWebHostEnvironment hostingEnvironment)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
             _exportStatementUseCase = exportStatementUseCase;
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
+            _hostingEnvironment = hostingEnvironment;
         }
         [HttpGet]
         [Route("test")]
         public IActionResult Index()
         {
-            // var path = $"{Path.GetFullPath(Directory.GetCurrentDirectory())}/V1/Views/Index.cshtml";
-            //var htmlView = await System.IO.File.ReadAllTextAsync(path).ConfigureAwait(false);
-            //            var htmlView = @"@model string
+            //Initialize HTML to PDF converter 
+            HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
 
-            //<!DOCTYPE html>
-            //<html>
-            //<body>
-            //    <h1>@Model</h1>
-            //</body>
-            //</html>";
-            //var pdf = await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello  World").ConfigureAwait(false);
-            //var pdfStream = new System.IO.MemoryStream();
-            //pdfStream.Write(pdf, 0, pdf.Length);
-            //pdfStream.Position = 0;
-            //var  path = Path.Combine(Directory.GetCurrentDirectory(), @"Views\Index.cshtml");
-            // var abs = Path.GetFullPath("~/Views/Index.cshtm").Replace("~\\", "");
-            var test1 = new ViewAsPdf("~/Views/Index.cshtml", "Hello w");
-            //var test1 = new ViewAsPdf(abs, "Hello w");
-            // byte[] applicationPDFData = await test1.BuildFile(ControllerContext).ConfigureAwait(false);
-            return new ViewAsPdf("~/V1/Views/Index.cshtml", "Hello World");
-            //return Ok("Passed");
-            // return File(applicationPDFData, "application/pdf", "testtttt");
+            WebKitConverterSettings settings = new WebKitConverterSettings();
+
+            //Set WebKit path
+            settings.WebKitPath = Path.Combine(_hostingEnvironment.ContentRootPath, "QtBinariesLinux");
+
+            //Assign WebKit settings to HTML converter
+            htmlConverter.ConverterSettings = settings;
+
+            //Convert URL to PDF
+            PdfDocument document = htmlConverter.Convert("http://www.google.com");
+            using var stream = new MemoryStream();
+            //Save and close the PDF document 
+            document.Save(stream);
+            return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, "Sample.pdf");
+
+
         }
         /// <summary>
         /// Get a list of statements for specified asset

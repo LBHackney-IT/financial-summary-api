@@ -24,9 +24,6 @@
     <PackageReference Include="Hackney.Core.DynamoDb" Version="1.51.0" />
       <PackageReference Include="Hackney.Core.Logging" Version="1.49.0" />
     <PackageReference Include="CsvHelper" Version="27.2.0" />
-      <!-- native assets excluded as we are using lambda layers instead
-      <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.3.0" ExcludeAssets="native" />
-       -->
       <PackageReference Include="NodaMoney" Version="1.0.5" />
       <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
       <PackageReference Include="NodaMoney" Version="1.0.5" />
@@ -36,17 +33,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
-    <PackageReference Include="Rotativa.AspNetCore" Version="1.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.4.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.3" />
+    <PackageReference Include="Syncfusion.HtmlToPdfConverter.QtWebKit.Net.Core" Version="19.3.0.56" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wkhtmltopdf\" />
-    <Folder Include="wwwroot\" />
     <Folder Include="terraform\" />
   </ItemGroup>
  
@@ -55,82 +49,6 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Compile>
     </ItemGroup>
-  <ItemGroup>
-    <Content Update="V1\Views\Index.cshtml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Rotativa\help-wkhtmltoimage.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Rotativa\help-wkhtmltopdf.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Rotativa\wkhtmltoimage.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\Rotativa\wkhtmltopdf.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Rotativa\help-wkhtmltoimage.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Rotativa\help-wkhtmltopdf.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Rotativa\wkhtmltoimage.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Rotativa\wkhtmltopdf.exe">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\libjpeg.so.62">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libbz2.so.1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libexpat.so.1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libfontconfig.so.1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libfreetype.so.6">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libjpeg.so.62">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libpng15.so.15">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libuuid.so.1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libX11.so.6">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libXau.so.6">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libxcb.so.1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libXext.so.6">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\lib\libXrender.so.1">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\wkhtmltoimage">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="wkhtmltopdf\wkhtmltopdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+ 
 
 </Project>
