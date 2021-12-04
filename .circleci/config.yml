@@ -88,7 +88,15 @@ commands:
           name: Deploy lambda
           command: |
             cd ./FinancialSummaryApi/
+            apt-get update && apt-get install -y libjpeg62-turbo
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
+      - run:
+          name: Install dependencies
+          command: |
+            mkdir -p /var/task
+            chmod +x /var/task
+            cd /var/task
+            apt-get update && apt-get install -y libjpeg62-turbo
 jobs:
   check-code-formatting:
     executor: docker-dotnet

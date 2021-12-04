@@ -4,11 +4,9 @@ using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.FileProviders;
 using Rotativa.AspNetCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 namespace FinancialSummaryApi.V1.Controllers
