@@ -6,7 +6,7 @@ RUN yum update -y
 RUN  yum install -y yum-utils rpmdevtools
 RUN yum install libxrender 
 
-
+RUN chmod 755 /app/wkhtmltopdf/wkhtmltopdf
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
@@ -15,13 +15,5 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet build -c Release -o out
 RUN dotnet publish -c Release -o out
-#RUN ["apt-get", "update"]
-#RUN ["apt-get", "-y", "install", "libgdiplus"]
-RUN chmod 755 /app/wwwroot/Rotativa/wkhtmltopdf
-RUN chmod 755 /app/wwwroot/Rotativa/wkhtmltoimage
-RUN chmod 755 /app/wkhtmltopdf/wkhtmltopdf
-RUN chmod 755 /app/wkhtmltopdf/libjpeg.so.62
-RUN chmod 755 /app/wkhtmltopdf/fonts/
-RUN chmod 755 /app/wkhtmltopdf/lib/
 EXPOSE ${PORT:-3000}
 CMD ASPNETCORE_URLS=http://+:${PORT:-3000} dotnet ./out/FinancialSummaryApi.dll
