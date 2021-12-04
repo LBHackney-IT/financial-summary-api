@@ -1,5 +1,7 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.DynamoDBv2.Model;
+using Hackney.Core.Testing.DynamoDb;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -14,47 +16,18 @@ namespace FinancialSummaryApi.Tests
         protected List<Action> CleanupActions { get; set; }
         private readonly List<TableDef> _tables = new List<TableDef>
         {
+            new TableDef
+            {
+                Name = "FinancialSummaries",
+                KeyName = "target_id",
+                KeyType = ScalarAttributeType.S,
+                RangeKeyName = "id",
+                RangeKeyType = ScalarAttributeType.S
 
-            new TableDef { Name = "FinancialSummaries", KeyName = "pk", RangeName="id", KeyType = KeyType.HASH,RangeType = KeyType.RANGE,  KeyScalarType= ScalarAttributeType.S}
+            }
         };
-        //private readonly List<TableDef> _tables = new List<TableDef>
-        //{
-        //    new TableDef {
-        //        TableName = "FinancialSummaries",
-        //        PartitionKey = new AttributeDef()
-        //        {
-        //            KeyName = "id",
-        //            KeyType = KeyType.HASH,
-        //            KeyScalarType = ScalarAttributeType.S
-        //        },
-        //        Indices = new List<GlobalIndexDef>{
-        //            new GlobalIndexDef()
-        //            {
-        //                KeyName = "summary_type",
-        //                KeyType = KeyType.HASH,
-        //                KeyScalarType = ScalarAttributeType.S,
-        //                IndexName = "summary_type_dx",
-        //                ProjectionType = "ALL"
-        //            },
-        //            new GlobalIndexDef()
-        //            {
-        //                KeyName = "target_id",
-        //                KeyType = KeyType.HASH,
-        //                KeyScalarType = ScalarAttributeType.S,
-        //                IndexName = "target_id_dx",
-        //                ProjectionType = "ALL"
-        //            },
-        //            new GlobalIndexDef()
-        //            {
-        //                KeyName = "target_name",
-        //                KeyType = KeyType.HASH,
-        //                KeyScalarType = ScalarAttributeType.S,
-        //                IndexName = "target_name_dx",
-        //                ProjectionType = "ALL"
-        //            }
-        //        }
-        //    },
-        //};
+
+
 
         private static void EnsureEnvVarConfigured(string name, string defaultValue)
         {
@@ -100,32 +73,5 @@ namespace FinancialSummaryApi.Tests
         }
     }
 
-    public class TableDef
-    {
-        public string Name { get; set; }
-        public string KeyName { get; set; }
-        public string RangeName { get; set; }
-        public KeyType KeyType { get; set; }
-        public KeyType RangeType { get; set; }
-        public ScalarAttributeType KeyScalarType { get; set; }
-    }
-    //public class TableDef
-    //{
-    //    public string TableName { get; set; }
-    //    public AttributeDef PartitionKey { get; set; }
-    //    public List<GlobalIndexDef> Indices { get; set; }
-    //}
 
-    public class AttributeDef
-    {
-        public string KeyName { get; set; }
-        public ScalarAttributeType KeyScalarType { get; set; }
-        public KeyType KeyType { get; set; }
-    }
-
-    public class GlobalIndexDef : AttributeDef
-    {
-        public string IndexName { get; set; }
-        public string ProjectionType { get; set; }
-    }
 }

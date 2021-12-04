@@ -73,7 +73,8 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
-            apt-get update -qq && apt-get -y install libgdiplus libc6-dev
+            apt-get -y install libgdiplus libc6-dev  libjpeg62-turbo
+            
       - run:
           name: Install serverless CLI
           command: npm i -g serverless
@@ -88,6 +89,16 @@ commands:
           command: |
             cd ./FinancialSummaryApi/
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update && apt-get install -y yum-utils yum-plugin-downloadonly
+            yum install --downloadonly --downloaddir=/tmp libxrender *rpm
+            cd /tmp
+            mkdir -p /var/task
+            chmod +x /var/task
+            cd /var/task
+            /bin/cp /tmp/*/usr/lib64/* /var/task
 jobs:
   check-code-formatting:
     executor: docker-dotnet
@@ -162,8 +173,10 @@ jobs:
 workflows:
   check-and-deploy-development:
     jobs:
-      - check-code-formatting
-      - build-and-test
+      - check-code-formatting:
+           context: api-nuget-token-context
+      - build-and-test:
+           context: api-nuget-token-context
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
@@ -179,6 +192,7 @@ workflows:
           #  branches:
           #    only: export-develop
       - deploy-to-development:
+          context: api-nuget-token-context
           requires:
             - terraform-init-and-apply-to-development
           #filters:

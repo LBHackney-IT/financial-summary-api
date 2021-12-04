@@ -19,7 +19,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 SubmitDate = new DateTime(2021, 7, 2),
                 TargetName = "LeaseHolders",
                 TargetDescription = "desc",
-                ArrearsYTD = 100,
+                TotalArrears = 100,
                 ChargedYTD = 120,
                 PaidYTD = 150,
                 TotalBalance = -70,
@@ -33,7 +33,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             databaseEntity.Id.Should().Be(entity.Id);
             databaseEntity.SummaryType.Should().Be(SummaryType.RentGroupSummary);
             databaseEntity.SubmitDate.Should().Be(entity.SubmitDate);
-            databaseEntity.ArrearsYTD.Should().Be(entity.ArrearsYTD);
+            databaseEntity.TotalArrears.Should().Be(entity.TotalArrears);
             databaseEntity.ChargedYTD.Should().Be(entity.ChargedYTD);
             databaseEntity.PaidYTD.Should().Be(entity.PaidYTD);
             databaseEntity.TargetDescription.Should().Be(entity.TargetDescription);
@@ -52,18 +52,18 @@ namespace FinancialSummaryApi.Tests.V1.Factories
                 SubmitDate = new DateTime(2021, 7, 2),
                 TargetDescription = "desc",
                 RentGroupName = "LeaseHolders",
-                ArrearsYTD = 150,
+                TotalArrears = 150,
                 ChargedYTD = 120,
                 PaidYTD = 270,
                 TotalBalance = 0,
                 TotalCharged = 270,
                 TotalPaid = 270
             };
-            var databaseEntity = entity.ToDatabase(Constants.PartitionKey);
+            var databaseEntity = entity.ToDatabase(new Guid("d597c0fc-9e32-4f65-894c-c8922bcfed64"));
 
             entity.Id.Should().Be(databaseEntity.Id);
             entity.SubmitDate.Should().Be(databaseEntity.SubmitDate);
-            entity.ArrearsYTD.Should().Be(databaseEntity.ArrearsYTD);
+            entity.TotalArrears.Should().Be(databaseEntity.TotalArrears);
             entity.ChargedYTD.Should().Be(databaseEntity.ChargedYTD);
             entity.PaidYTD.Should().Be(databaseEntity.PaidYTD);
             entity.TargetDescription.Should().Be(databaseEntity.TargetDescription);

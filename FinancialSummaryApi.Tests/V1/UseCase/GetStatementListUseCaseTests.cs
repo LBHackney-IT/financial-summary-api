@@ -6,6 +6,7 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -70,32 +71,23 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 },
 
             };
-            int expectedTotal = 3;
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
-            var returnedResult = new StatementList()
-            {
-                Total = expectedTotal,
-                Statements = statements
-            };
-            var expectedResult = new StatementListResponse()
-            {
-                Total = expectedTotal,
-                Statements = _mapper.Map<List<StatementResponse>>(statements)
-            };
+            var returnedResult = new PagedResult<Statement>(statements);
+            var expectedResult = _mapper.Map<PagedResult<StatementResponse>>(returnedResult);
 
-            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
+            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(returnedResult);
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
 
             result.Should().NotBeNull();
-            result.Statements.Should().HaveCount(2);
+            result.Results.Should().HaveCount(2);
             result.Should().BeEquivalentTo(expectedResult);
         }
 
@@ -136,25 +128,16 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 },
 
             };
-            int expectedTotal = 3;
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 3)
             };
-            var returnedResult = new StatementList
-            {
-                Total = expectedTotal,
-                Statements = statements
-            };
-            var expectedResult = new StatementListResponse()
-            {
-                Total = expectedTotal,
-                Statements = _mapper.Map<List<StatementResponse>>(statements)
-            };
-            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
+            var returnedResult = new PagedResult<Statement>(statements);
+            var expectedResult = _mapper.Map<PagedResult<StatementResponse>>(returnedResult);
+            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(returnedResult);
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
@@ -167,27 +150,18 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         public async Task GetStatementList_WithEmpty_ReturnsStatementListResponseWithEmptyStatements()
         {
             var expectedStatements = new List<Statement>();
-            int expectedTotal = 3;
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 3,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
 
-            var expectedResult = new StatementListResponse()
-            {
-                Total = expectedTotal,
-                Statements = _mapper.Map<List<StatementResponse>>(expectedStatements)
-            };
-            var returnedResult = new StatementList()
-            {
-                Total = expectedTotal,
-                Statements = expectedStatements
-            };
 
-            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
+            var returnedResult = new PagedResult<Statement>(expectedStatements);
+            var expectedResult = _mapper.Map<PagedResult<StatementResponse>>(returnedResult);
+            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(returnedResult);
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);
@@ -199,26 +173,17 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         [Fact]
         public async Task GetStatementList_GatewayReturnsZeroTotal_ReturnsEmptyObject()
         {
-            var expectedStatements = new List<Statement>();
-            int expectedTotal = 0;
+            var expectedStatements = new PagedResult<Statement>();
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
-            var expectedResult = new StatementListResponse()
-            {
-                Total = expectedTotal,
-                Statements = _mapper.Map<List<StatementResponse>>(expectedStatements)
-            };
-            var returnedResult = new StatementList()
-            {
-                Total = expectedTotal,
-                Statements = expectedStatements
-            };
-            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<int>()))
+            var expectedResult = _mapper.Map<PagedResult<StatementResponse>>(expectedStatements);
+            var returnedResult = new PagedResult<Statement>();
+            _mockFinanceGateway.Setup(x => x.GetPagedStatementsAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<DateTime>(), It.IsAny<int>(), It.IsAny<string>()))
                 .ReturnsAsync(returnedResult);
 
             var result = await _getStatementListUseCase.ExecuteAsync(new Guid("4f2fb565-84c5-4c8a-9ada-0f03ecd26f45"), request).ConfigureAwait(false);

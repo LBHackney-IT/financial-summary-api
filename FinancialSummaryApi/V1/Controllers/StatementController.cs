@@ -1,15 +1,14 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
+using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Rotativa.AspNetCore;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Wkhtmltopdf.NetCore;
-
 namespace FinancialSummaryApi.V1.Controllers
 {
     [ApiController]
@@ -22,39 +21,44 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IAddStatementListUseCase _addListUseCase;
         private readonly IExportStatementUseCase _exportStatementUseCase;
         private readonly IExportSelectedStatementUseCase _exportSelectedItemUseCase;
-        readonly IGeneratePdf _generatePdf;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
             IAddStatementListUseCase addListUseCase,
             IExportStatementUseCase exportStatementUseCase,
-            IExportSelectedStatementUseCase exportSelectedItemUseCase, IGeneratePdf generatePdf)
+            IExportSelectedStatementUseCase exportSelectedItemUseCase)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
             _exportStatementUseCase = exportStatementUseCase;
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
-            _generatePdf = generatePdf;
         }
         [HttpGet]
         [Route("test")]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             // var path = $"{Path.GetFullPath(Directory.GetCurrentDirectory())}/V1/Views/Index.cshtml";
             //var htmlView = await System.IO.File.ReadAllTextAsync(path).ConfigureAwait(false);
-            var htmlView = @"@model string
+            //            var htmlView = @"@model string
 
-<!DOCTYPE html>
-<html>
-<body>
-    <h1>@Model</h1>
-</body>
-</html>";
-            var pdf = await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello  World").ConfigureAwait(false);
+            //<!DOCTYPE html>
+            //<html>
+            //<body>
+            //    <h1>@Model</h1>
+            //</body>
+            //</html>";
+            //var pdf = await _generatePdf.GetByteArrayViewInHtml(htmlView, "Hello  World").ConfigureAwait(false);
             //var pdfStream = new System.IO.MemoryStream();
             //pdfStream.Write(pdf, 0, pdf.Length);
             //pdfStream.Position = 0;
-            return File(pdf, "application/pdf", "testtttt");
+            //var  path = Path.Combine(Directory.GetCurrentDirectory(), @"Views\Index.cshtml");
+            // var abs = Path.GetFullPath("~/Views/Index.cshtm").Replace("~\\", "");
+            var test1 = new ViewAsPdf("~/Views/Index.cshtml", "Hello w");
+            //var test1 = new ViewAsPdf(abs, "Hello w");
+            // byte[] applicationPDFData = await test1.BuildFile(ControllerContext).ConfigureAwait(false);
+            return new ViewAsPdf("~/V1/Views/Index.cshtml", "Hello World");
+            //return Ok("Passed");
+            // return File(applicationPDFData, "application/pdf", "testtttt");
         }
         /// <summary>
         /// Get a list of statements for specified asset
@@ -66,7 +70,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <response code="200">Success. Statement models for specified asset were received successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(StatementListResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<StatementResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet("{assetId}")]

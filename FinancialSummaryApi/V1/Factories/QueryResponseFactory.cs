@@ -82,7 +82,7 @@ namespace FinancialSummaryApi.V1.Factories
                 summaries.Add(new RentGroupSummary
                 {
                     Id = Guid.Parse(item["id"].S),
-                    ArrearsYTD = decimal.Parse(item["arrears_ytd"].N, CultureInfo.InvariantCulture),
+                    TotalArrears = decimal.Parse(item["total_arrears"].N, CultureInfo.InvariantCulture),
                     ChargedYTD = decimal.Parse(item["charged_ytd"].N, CultureInfo.InvariantCulture),
                     PaidYTD = decimal.Parse(item["paid_ytd"].N, CultureInfo.InvariantCulture),
                     RentGroupName = item["target_name"].S,

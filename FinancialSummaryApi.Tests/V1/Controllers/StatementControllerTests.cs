@@ -1,3 +1,4 @@
+using AutoFixture;
 using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
@@ -6,6 +7,7 @@ using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -15,7 +17,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using Wkhtmltopdf.NetCore;
 using Xunit;
 
 
@@ -31,7 +32,8 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly Mock<IAddStatementListUseCase> _addListUseCase;
         private readonly Mock<IExportStatementUseCase> _exportStatementUseCase;
         private readonly Mock<IExportSelectedStatementUseCase> _exportSelectedItemUseCase;
-        private readonly Mock<IGeneratePdf> _gentestt;
+        private readonly Fixture _fixture = new Fixture();
+
 
         private readonly IMapper _mapper;
 
@@ -43,10 +45,9 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             _exportStatementUseCase = new Mock<IExportStatementUseCase>();
             _exportSelectedItemUseCase = new Mock<IExportSelectedStatementUseCase>();
-            _gentestt = new Mock<IGeneratePdf>();
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
-            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object, _exportStatementUseCase.Object, _exportSelectedItemUseCase.Object, _gentestt.Object)
+            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object, _exportStatementUseCase.Object, _exportSelectedItemUseCase.Object)
             {
                 ControllerContext = _controllerContext
             };
@@ -59,35 +60,28 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetList_WithValidRequestAndAssetId_Returns200()
         {
+            var statementList = _fixture.Build<StatementResponse>()
+                        .With(_ => _.Id, new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"))
+                         .With(_ => _.TargetId, new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"))
+                          .With(_ => _.TargetType, TargetType.Block)
+                           .With(_ => _.StatementPeriodEndDate, new DateTime(2021, 8, 3))
+                            .With(_ => _.RentAccountNumber, "987654321")
+                             .With(_ => _.Address, "16 Macron Court, E8 1ND")
+                              .With(_ => _.StatementType, StatementType.Leasehold)
+                               .With(_ => _.ChargedAmount, 350)
+                                .With(_ => _.PaidAmount, 600)
+                                 .With(_ => _.HousingBenefitAmount, 800)
+                                  .With(_ => _.StartBalance, 1100)
+                                   .With(_ => _.FinishBalance, 500)
+                        .CreateMany(1);
+            var obj1 = new PagedResult<StatementResponse>(statementList);
             _getListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<GetStatementListRequest>()))
-                .ReturnsAsync(
-                    new StatementListResponse()
-                    {
-                        Total = 1,
-                        Statements = new List<StatementResponse>()
-                        {
-                            new StatementResponse()
-                            {
-                                Id = new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"),
-                                TargetId = new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"),
-                                TargetType = TargetType.Block,
-                                StatementPeriodEndDate = new DateTime(2021, 8, 3),
-                                RentAccountNumber = "987654321",
-                                Address = "16 Macron Court, E8 1ND",
-                                StatementType = StatementType.Leasehold,
-                                ChargedAmount = 350,
-                                PaidAmount = 600,
-                                HousingBenefitAmount = 800,
-                                StartBalance = 1100,
-                                FinishBalance = 500
-                            }
-                        }
-                    });
+                .ReturnsAsync(obj1);
 
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = { },
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
@@ -100,36 +94,35 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            var statementList = okResult.Value as StatementListResponse;
+            var resultList = okResult.Value as PagedResult<StatementResponse>;
 
-            statementList.Should().NotBeNull();
+            resultList.Should().NotBeNull();
 
-            statementList.Statements.Should().NotBeNull();
-            statementList.Total.Should().Be(1);
+            resultList.Results.Should().NotBeNull();
 
-            statementList.Statements[0].Id.Should().Be(new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"));
-            statementList.Statements[0].TargetId.Should().Be(new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"));
-            statementList.Statements[0].TargetType.Should().Be(TargetType.Block);
-            statementList.Statements[0].StatementPeriodEndDate.Should().Be(new DateTime(2021, 8, 3));
-            statementList.Statements[0].RentAccountNumber.Should().Be("987654321");
-            statementList.Statements[0].Address.Should().Be("16 Macron Court, E8 1ND");
-            statementList.Statements[0].StatementType.Should().Be(StatementType.Leasehold);
-            statementList.Statements[0].ChargedAmount.Should().Be(350);
-            statementList.Statements[0].PaidAmount.Should().Be(600);
-            statementList.Statements[0].HousingBenefitAmount.Should().Be(800);
-            statementList.Statements[0].StartBalance.Should().Be(1100);
-            statementList.Statements[0].FinishBalance.Should().Be(500);
+            resultList.Results[0].Id.Should().Be(new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"));
+            resultList.Results[0].TargetId.Should().Be(new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"));
+            resultList.Results[0].TargetType.Should().Be(TargetType.Block);
+            resultList.Results[0].StatementPeriodEndDate.Should().Be(new DateTime(2021, 8, 3));
+            resultList.Results[0].RentAccountNumber.Should().Be("987654321");
+            resultList.Results[0].Address.Should().Be("16 Macron Court, E8 1ND");
+            resultList.Results[0].StatementType.Should().Be(StatementType.Leasehold);
+            resultList.Results[0].ChargedAmount.Should().Be(350);
+            resultList.Results[0].PaidAmount.Should().Be(600);
+            resultList.Results[0].HousingBenefitAmount.Should().Be(800);
+            resultList.Results[0].StartBalance.Should().Be(1100);
+            resultList.Results[0].FinishBalance.Should().Be(500);
         }
 
         [Fact]
         public async Task GetList_WithInvalidDateRange_Returns400()
         {
             _getListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<GetStatementListRequest>()))
-                .ReturnsAsync(new StatementListResponse());
+                .ReturnsAsync(new PagedResult<StatementResponse>());
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 1)
             };
@@ -160,11 +153,11 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         public async Task GetList_WithPartialDatesProvided_Returns400()
         {
             _getListUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<GetStatementListRequest>()))
-                .ReturnsAsync(new StatementListResponse());
+                .ReturnsAsync(new PagedResult<StatementResponse>());
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
             };
             var result = await _statementController.GetList(string.Empty, string.Empty, new Guid("4e1fe95c-50f0-4d7a-83eb-c7734339aaf0"), request).ConfigureAwait(false);
@@ -196,7 +189,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = -1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };
@@ -230,7 +223,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             var request = new GetStatementListRequest
             {
                 PageSize = 2,
-                PageNumber = 1,
+                PaginationToken = string.Empty,
                 StartDate = new DateTime(2021, 8, 3),
                 EndDate = new DateTime(2021, 8, 5)
             };

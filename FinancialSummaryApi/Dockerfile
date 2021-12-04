@@ -1,13 +1,12 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
 WORKDIR /app
-# Install dependencies
-RUN wget -q -O /tmp/libpng12.deb http://security.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
-RUN dpkg -i /tmp/libpng12.deb
-RUN rm /tmp/libpng12.deb
-# Install wkhtmltopdf
-RUN apk add --no-cache wkhtmltopdf
+# For Rotativa SDK
+RUN yum update -y
+RUN  yum install -y yum-utils rpmdevtools
+RUN yum install libxrender 
 
+RUN chmod 755 /app/wkhtmltopdf/wkhtmltopdf
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore

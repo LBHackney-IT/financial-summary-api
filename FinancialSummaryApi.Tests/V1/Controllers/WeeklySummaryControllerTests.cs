@@ -111,7 +111,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetByAssetIdValidIdReturns200()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                .ReturnsAsync(new WeeklySummaryResponse
                {
                    Id = new Guid("c5f95fc9-ade5-4b13-96bc-1adff137e246"),
@@ -126,7 +126,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                    HousingBenefitAmount = 12
                });
 
-            var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"))
+            var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("c5f95fc9-ade5-4b13-96bc-1adff137e246"), new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -154,10 +154,10 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetByAssetIdAndDateWithInvalidIdReturns404()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync((WeeklySummaryResponse) null);
 
-            var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"))
+            var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"), new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -180,12 +180,12 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetByAssetIdAndDateReturns500()
         {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
             {
-                var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
+                var result = await _weeklySummaryController.Get(string.Empty, string.Empty, new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"), new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"))
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }

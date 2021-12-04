@@ -5,10 +5,10 @@ using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
-using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
+using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -19,13 +19,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Rotativa.AspNetCore;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Wkhtmltopdf.NetCore;
 
 namespace FinancialSummaryApi
 {
@@ -99,7 +99,7 @@ namespace FinancialSummaryApi
                 //Get every ApiVersion attribute specified and create swagger docs for them
                 foreach (var apiVersion in _apiVersions)
                 {
-                    var version = $"v{apiVersion.ApiVersion.ToString()}";
+                    var version = $"v{apiVersion.ApiVersion}";
                     c.SwaggerDoc(version, new OpenApiInfo
                     {
                         Title = $"{ApiName}-api {version}",
@@ -119,8 +119,7 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-            services.AddWkhtmltopdf();
-            //services.AddSingleton<PdfGenerator, PdfGenerator>();
+
             RegisterGateways(services);
             RegisterUseCases(services);
 
@@ -133,6 +132,7 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -165,7 +165,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IGetAllAssetSummariesUseCase, GetAllAssetSummariesUseCase>();
             services.AddScoped<IGetAssetSummaryByIdUseCase, GetAssetSummaryByIdUseCase>();
             services.AddScoped<IAddAssetSummaryUseCase, AddAssetSummaryUseCase>();
-            services.AddScoped<IAddRentGroupSummaryUseCase, AddRentGroupSummaryUseCase>();
+            services.AddScoped<IAddRentGroupSummaryListUseCase, AddRentGroupSummaryListUseCase>();
             services.AddScoped<IGetRentGroupSummaryByNameUseCase, GetRentGroupSummaryByNameUseCase>();
             services.AddScoped<IGetAllRentGroupSummariesUseCase, GetAllRentGroupSummariesUseCase>();
             services.AddScoped<IGetAllWeeklySummariesUseCase, GetAllWeeklySummariesUseCase>();
@@ -188,10 +188,12 @@ namespace FinancialSummaryApi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                RotativaConfiguration.Setup(env.WebRootPath, "Rotativa");
             }
             else
             {
                 app.UseHsts();
+                RotativaConfiguration.Setup(env.ContentRootPath, "wkhtmltopdf");
             }
 
             app.UseXRay("financial_summary_api");
@@ -210,6 +212,9 @@ namespace FinancialSummaryApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();
@@ -218,6 +223,7 @@ namespace FinancialSummaryApi
                 // SwaggerGen won't find controllers that are routed via this technique.
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+            app.UseLogCall();
         }
     }
 }
