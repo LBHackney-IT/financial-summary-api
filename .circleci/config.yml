@@ -73,7 +73,7 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
-            apt-get -y install libgdiplus libc6-dev
+            apt-get -y install libgdiplus libc6-dev  libjpeg62-turbo libxrender 
             
       - run:
           name: Install serverless CLI
@@ -88,7 +88,6 @@ commands:
           name: Deploy lambda
           command: |
             cd ./FinancialSummaryApi/
-            apt-get update install -y libjpeg62-turbo
             sls deploy --stage <<parameters.stage>> --account <<parameters.aws-account>> --conceal
       - run:
           name: Install dependencies
