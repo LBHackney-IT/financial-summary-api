@@ -50,5 +50,44 @@
       </Compile>
     </ItemGroup>
  
+    <ItemGroup>
+      <None Update="QtBinariesLinux\imageformats\libqdds.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqgif.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqicns.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqico.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqjp2.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqjpeg.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqmng.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqsvg.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqtga.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqtiff.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqwbmp.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesLinux\imageformats\libqwebp.so">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+ 
 
 </Project>

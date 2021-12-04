@@ -45,10 +45,12 @@ namespace FinancialSummaryApi.V1.Controllers
             //Initialize HTML to PDF converter 
             HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
 
-            WebKitConverterSettings settings = new WebKitConverterSettings();
+            WebKitConverterSettings settings = new WebKitConverterSettings
+            {
 
-            //Set WebKit path
-            settings.WebKitPath = Path.Combine(_hostingEnvironment.ContentRootPath, "QtBinariesLinux");
+                //Set WebKit path
+                WebKitPath = Path.Combine(_hostingEnvironment.ContentRootPath, "QtBinariesLinux")
+            };
 
             //Assign WebKit settings to HTML converter
             htmlConverter.ConverterSettings = settings;
