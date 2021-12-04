@@ -73,7 +73,7 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
-            apt-get -y install libgdiplus libc6-dev  libjpeg62-turbo libxrender 
+            apt-get -y install libgdiplus libc6-dev  libjpeg62-turbo
             
       - run:
           name: Install serverless CLI

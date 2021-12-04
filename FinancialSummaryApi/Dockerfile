@@ -2,9 +2,9 @@ FROM mcr.microsoft.com/dotnet/core/sdk:3.1
 
 WORKDIR /app
 # For Rotativa SDK
-#RUN apt-get update && apt-get install -y --no-install-recommends fontconfig libfreetype6 libjpeg-turbo8 libpng16-16 libjpeg.so.62 libx11-6 libxcb1 libxext6 libxrender1 xfonts-75dpi xfonts-base libgdiplus libc6-dev
+RUN yum update -y
 RUN  yum install -y yum-utils rpmdevtools
-RUN yum install freetds
+RUN yum install libxrender 
 
 
 # Copy csproj and restore as distinct layers
