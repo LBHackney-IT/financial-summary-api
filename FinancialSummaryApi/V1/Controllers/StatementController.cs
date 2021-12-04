@@ -42,21 +42,15 @@ namespace FinancialSummaryApi.V1.Controllers
         [Route("test")]
         public IActionResult Index()
         {
-            //Initialize HTML to PDF converter 
+            //Initialize HTML to PDF converter.
             HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
-
-            WebKitConverterSettings settings = new WebKitConverterSettings
-            {
-
-                //Set WebKit path
-                WebKitPath = Path.Combine(_hostingEnvironment.ContentRootPath, "QtBinariesLinux")
-            };
-
-            //Assign WebKit settings to HTML converter
-            htmlConverter.ConverterSettings = settings;
-
+            WebKitConverterSettings webkitConverterSettings = new WebKitConverterSettings();
+            //Set the Qt Binaries folder path
+            webkitConverterSettings.WebKitPath = @"/QtBinariesWindows/";
+            //Assign Webkit converter settings to HTML converter
+            htmlConverter.ConverterSettings = webkitConverterSettings;
             //Convert URL to PDF
-            PdfDocument document = htmlConverter.Convert("http://www.google.com");
+            PdfDocument document = htmlConverter.Convert("https://www.syncfusion.com");
             using var stream = new MemoryStream();
             //Save and close the PDF document 
             document.Save(stream);
