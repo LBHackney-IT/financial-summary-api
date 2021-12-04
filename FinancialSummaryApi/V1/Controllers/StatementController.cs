@@ -46,7 +46,7 @@ namespace FinancialSummaryApi.V1.Controllers
             HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
             WebKitConverterSettings webkitConverterSettings = new WebKitConverterSettings();
             //Set the Qt Binaries folder path
-            webkitConverterSettings.WebKitPath = @"/QtBinariesWindows/";
+            webkitConverterSettings.WebKitPath = @"/QtBinariesLinux/";
             //Assign Webkit converter settings to HTML converter
             htmlConverter.ConverterSettings = webkitConverterSettings;
             //Convert URL to PDF
