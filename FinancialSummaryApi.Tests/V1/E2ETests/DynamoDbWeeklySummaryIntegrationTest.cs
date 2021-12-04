@@ -46,9 +46,9 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         /// <returns></returns>
         private async Task SetupTestData(WeeklySummary entity)
         {
-            await DynamoDbContext.SaveAsync(entity.ToDatabase(Constants.PartitionKey)).ConfigureAwait(false);
+            await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(entity.TargetId, entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
@@ -219,7 +219,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<WeeklySummaryResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(Constants.PartitionKey, apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 
@@ -231,7 +231,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
         private async Task GetWeeklySummaryByTargetIdAndValidateResponse(WeeklySummary weeklySummary)
         {
-            var uri = new Uri($"api/v1/weekly-summary/{weeklySummary.Id}", UriKind.Relative);
+            var uri = new Uri($"api/v1/weekly-summary/{weeklySummary.Id}?targetId={weeklySummary.TargetId}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

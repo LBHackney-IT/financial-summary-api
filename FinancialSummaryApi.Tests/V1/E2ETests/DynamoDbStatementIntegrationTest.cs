@@ -4,6 +4,7 @@ using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
+using Hackney.Core.DynamoDb;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -54,25 +55,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Details.Should().BeEquivalentTo(string.Empty);
         }
 
-        [Fact]
-        public async Task GetStatementListWithInvalidPageNumberReturns400()
-        {
-            Guid assetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354");
-            var startDate = DateTime.Now;
-
-            var uri = new Uri($"api/v1/statements/{assetId}?pageNumber=0&startDate={startDate}&endDate={startDate}", UriKind.Relative);
-            var response = await Client.GetAsync(uri).ConfigureAwait(false);
-
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.Message.Should().BeEquivalentTo("'Page Number' must be greater than or equal to '1'.");
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().BeEquivalentTo(string.Empty);
-        }
 
         [Fact]
         public async Task CreateStatementListCreatedReturns201()
@@ -162,17 +144,17 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 await GetStatementByIdAndValidateResponse(statementDomains[i]).ConfigureAwait(false);
             }
 
-            var uri = new Uri($"api/v1/statements/{assetId}?pageNumber=1&pageSize={int.MaxValue}&startDate={startDate}&endDate={endDate}", UriKind.Relative);
+            var uri = new Uri($"api/v1/statements/{assetId}?pageSize={int.MaxValue}&startDate={startDate}&endDate={endDate}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<StatementListResponse>(responseContent);
+            var apiEntity = JsonConvert.DeserializeObject<PagedResult<StatementResponse>>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Statements.Count.Should().BeGreaterOrEqualTo(2);
-            apiEntity.Statements.Should().BeEquivalentTo(statementDomains);
+            apiEntity.Results.Count.Should().BeGreaterOrEqualTo(2);
+            apiEntity.Results.Should().BeEquivalentTo(statementDomains);
         }
 
         [Fact]
@@ -198,18 +180,17 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 await GetStatementByIdAndValidateResponse(statementDomains[i]).ConfigureAwait(false);
             }
 
-            var uri = new Uri($"api/v1/statements/{assetId}?pageNumber=2&pageSize=2&startDate={startDate}&endDate={endDate}", UriKind.Relative);
+            var uri = new Uri($"api/v1/statements/{assetId}?pageSize=3&startDate={startDate}&endDate={endDate}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<StatementListResponse>(responseContent);
+            var apiEntity = JsonConvert.DeserializeObject<PagedResult<StatementResponse>>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.Total.Should().BeGreaterOrEqualTo(statementDomains.Count);
-            apiEntity.Statements.Count.Should().Be(1);
-            var apiStatement = apiEntity.Statements.Find(r => r.Id == statementDomains[0].Id ||
+            apiEntity.Results.Count.Should().BeGreaterOrEqualTo(statementDomains.Count);
+            var apiStatement = apiEntity.Results.Find(r => r.Id == statementDomains[0].Id ||
                                                               r.Id == statementDomains[1].Id ||
                                                               r.Id == statementDomains[2].Id);
             var domainStatement = statementDomains.FirstOrDefault(s => s.Id == apiStatement.Id);
@@ -235,7 +216,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var apiEntityList = JsonConvert.DeserializeObject<List<StatementResponse>>(responseContent);
             foreach (var apiEntity in apiEntityList)
             {
-                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<StatementDbEntity>(Constants.PartitionKey, apiEntity.Id).ConfigureAwait(false));
+                CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<StatementDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
             }
 
             apiEntityList.Should().NotBeNull();
@@ -259,12 +240,12 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            var apiEntities = JsonConvert.DeserializeObject<StatementListResponse>(responseContent);
+            var apiEntities = JsonConvert.DeserializeObject<PagedResult<StatementResponse>>(responseContent);
             apiEntities.Should().NotBeNull();
-            apiEntities.Statements.Should().NotBeNull();
-            apiEntities.Total.Should().BeGreaterOrEqualTo(1);
+            apiEntities.Results.Should().NotBeNull();
+            apiEntities.Results.Count.Should().BeGreaterOrEqualTo(1);
 
-            var apiEntity = apiEntities.Statements.FirstOrDefault(e => e.Id == statement.Id);
+            var apiEntity = apiEntities.Results.FirstOrDefault(e => e.Id == statement.Id);
             apiEntity.Should().NotBeNull();
             apiEntity.ShouldBeEqualTo(statement);
         }

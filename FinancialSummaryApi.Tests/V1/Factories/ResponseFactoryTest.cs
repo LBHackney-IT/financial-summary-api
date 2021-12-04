@@ -49,7 +49,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             {
                 Id = new Guid("98d1a25e-4a88-4117-b789-c8b7a1e8e758"),
                 SubmitDate = new DateTime(2021, 7, 1),
-                ArrearsYTD = 150,
+                TotalArrears = 150,
                 ChargedYTD = 113,
                 PaidYTD = 263,
                 TargetDescription = "Description",
@@ -63,7 +63,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
 
             response.Id.Should().Be(new Guid("98d1a25e-4a88-4117-b789-c8b7a1e8e758"));
             response.SubmitDate.Should().Be(new DateTime(2021, 7, 1));
-            response.ArrearsYTD.Should().Be(150);
+            response.TotalArrears.Should().Be(150);
             response.ChargedYTD.Should().Be(113);
             response.PaidYTD.Should().Be(263);
             response.TargetDescription.Should().Be("Description");
@@ -146,7 +146,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             {
                 Id = new Guid("98d1a25e-4a88-4117-b789-c8b7a1e8e758"),
                 SubmitDate = new DateTime(2021, 7, 1),
-                ArrearsYTD = 150,
+                TotalArrears = 150,
                 ChargedYTD = 113,
                 PaidYTD = 263,
                 TargetDescription = "Description1",
@@ -160,7 +160,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
             {
                 Id = new Guid("814ec575-ed34-4f06-a7cc-3cddb985bb00"),
                 SubmitDate = new DateTime(2021, 7, 2),
-                ArrearsYTD = 145,
+                TotalArrears = 145,
                 ChargedYTD = 100,
                 PaidYTD = 245,
                 TargetDescription = "Description2",
@@ -180,7 +180,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
 
             response[0].Id.Should().Be(new Guid("98d1a25e-4a88-4117-b789-c8b7a1e8e758"));
             response[0].SubmitDate.Should().Be(new DateTime(2021, 7, 1));
-            response[0].ArrearsYTD.Should().Be(150);
+            response[0].TotalArrears.Should().Be(150);
             response[0].ChargedYTD.Should().Be(113);
             response[0].PaidYTD.Should().Be(263);
             response[0].TargetDescription.Should().Be("Description1");
@@ -191,7 +191,7 @@ namespace FinancialSummaryApi.Tests.V1.Factories
 
             response[1].Id.Should().Be(new Guid("814ec575-ed34-4f06-a7cc-3cddb985bb00"));
             response[1].SubmitDate.Should().Be(new DateTime(2021, 7, 2));
-            response[1].ArrearsYTD.Should().Be(145);
+            response[1].TotalArrears.Should().Be(145);
             response[1].ChargedYTD.Should().Be(100);
             response[1].PaidYTD.Should().Be(245);
             response[1].TargetDescription.Should().Be("Description2");
