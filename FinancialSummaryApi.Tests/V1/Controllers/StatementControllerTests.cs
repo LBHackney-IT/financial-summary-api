@@ -8,6 +8,7 @@ using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Hackney.Core.DynamoDb;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -27,6 +28,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly StatementController _statementController;
         private readonly ControllerContext _controllerContext;
         private readonly HttpContext _httpContext;
+        private readonly Mock<IWebHostEnvironment> _hostingEnvironment;
 
         private readonly Mock<IGetStatementListUseCase> _getListUseCase;
         private readonly Mock<IAddStatementListUseCase> _addListUseCase;
@@ -42,12 +44,13 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _getListUseCase = new Mock<IGetStatementListUseCase>();
 
             _addListUseCase = new Mock<IAddStatementListUseCase>();
+            _hostingEnvironment = new Mock<IWebHostEnvironment>();
 
             _exportStatementUseCase = new Mock<IExportStatementUseCase>();
             _exportSelectedItemUseCase = new Mock<IExportSelectedStatementUseCase>();
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
-            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object, _exportStatementUseCase.Object, _exportSelectedItemUseCase.Object)
+            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object, _exportStatementUseCase.Object, _exportSelectedItemUseCase.Object, _hostingEnvironment.Object)
             {
                 ControllerContext = _controllerContext
             };
