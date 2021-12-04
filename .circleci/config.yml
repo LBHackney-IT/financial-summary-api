@@ -92,10 +92,12 @@ commands:
       - run:
           name: Install dependencies
           command: |
+            cd /tmp
+            yumdownloader libxrender *rpm
             mkdir -p /var/task
             chmod +x /var/task
             cd /var/task
-            apt-get install -y libjpeg62-turbo
+            /bin/cp /tmp/*/usr/lib64/* /var/task
 jobs:
   check-code-formatting:
     executor: docker-dotnet
