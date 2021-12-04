@@ -46,11 +46,11 @@ namespace FinancialSummaryApi.V1.Controllers
             HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
             WebKitConverterSettings webkitConverterSettings = new WebKitConverterSettings();
             //Set the Qt Binaries folder path
-            webkitConverterSettings.WebKitPath = @"/QtBinariesLinux/";
+            webkitConverterSettings.WebKitPath = Path.Combine(_hostingEnvironment.ContentRootPath, "QtBinariesWindows");
             //Assign Webkit converter settings to HTML converter
             htmlConverter.ConverterSettings = webkitConverterSettings;
             //Convert URL to PDF
-            PdfDocument document = htmlConverter.Convert("https://www.syncfusion.com");
+            PdfDocument document = htmlConverter.Convert("http://www.google.com");
             using var stream = new MemoryStream();
             //Save and close the PDF document 
             document.Save(stream);
