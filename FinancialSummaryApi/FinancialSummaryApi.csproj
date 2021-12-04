@@ -180,6 +180,15 @@
       <None Update="QtBinariesLinux\Syncfusion.WebKitWrapper">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="QtBinariesWindows\icudt49.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\icuin49.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\icuuc49.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="QtBinariesWindows\imageformats\qdds.dll">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
@@ -216,6 +225,12 @@
       <None Update="QtBinariesWindows\imageformats\qwebp.dll">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="QtBinariesWindows\libEGL.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\libGLESv2.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="QtBinariesWindows\platforms\qminimal.dll">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
@@ -223,6 +238,63 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
       <None Update="QtBinariesWindows\platforms\qwindows.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Core.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Gui.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Multimedia.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5MultimediaWidgets.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Network.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5OpenGL.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Positioning.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5PrintSupport.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Qml.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Quick.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Sensors.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Sql.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Svg.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5WebChannel.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5WebKit.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5WebKitWidgets.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Qt5Widgets.dll">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\Syncfusion.WebKitWrapper">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="QtBinariesWindows\zlib1.dll">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
