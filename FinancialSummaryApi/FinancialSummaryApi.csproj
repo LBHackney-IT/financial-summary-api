@@ -27,10 +27,6 @@
       <!-- native assets excluded as we are using lambda layers instead
       <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.3.0" ExcludeAssets="native" />
        -->
-
-      <PackageReference Include="IronPdf" Version="2021.11.4257" />
-      <PackageReference Include="IronPdf.Linux" Version="2021.11.4257" />
-
       <PackageReference Include="NodaMoney" Version="1.0.5" />
       <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
       <PackageReference Include="NodaMoney" Version="1.0.5" />
@@ -53,10 +49,7 @@
     <Folder Include="wwwroot\" />
     <Folder Include="terraform\" />
   </ItemGroup>
-    <ItemGroup>
-        <None Include="wwwroot\Rotativa\wkhtmltoimage.exe" />
-        <None Include="wwwroot\Rotativa\wkhtmltopdf.exe" />
-    </ItemGroup>
+ 
     <ItemGroup>
       <Compile Update="V1\Controllers\StatementController.cs">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
