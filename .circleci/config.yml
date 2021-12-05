@@ -82,6 +82,9 @@ commands:
             cd ./FinancialSummaryApi/
             chmod +x ./build.sh
             ./build.sh
+            ls -d */
+            cd /var/task
+            cp ../libwkhtmltox.so libwkhtmltox.so
       - run:
           name: Deploy lambda
           command: |
