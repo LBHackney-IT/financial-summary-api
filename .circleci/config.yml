@@ -84,7 +84,7 @@ commands:
             ./build.sh
             ls * -r
             mkdir -p /var/task
-            cp libwkhtmltox.so /var/task
+            cp libwkhtmltox.so libwkhtmltox.dll libwkhtmltox.dylib /var/task
             cd /var/task
             ls * -r
             
