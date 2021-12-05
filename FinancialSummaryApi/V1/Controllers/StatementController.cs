@@ -5,16 +5,9 @@ using Hackney.Core.DynamoDb;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Syncfusion.HtmlConverter;
-using Syncfusion.Pdf;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
 namespace FinancialSummaryApi.V1.Controllers
 {
@@ -42,42 +35,7 @@ namespace FinancialSummaryApi.V1.Controllers
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
             _hostingEnvironment = hostingEnvironment;
         }
-        [HttpGet]
-        [Route("test")]
-        public async Task<IActionResult> Index()
-        {
-            var ApiKey = "31b1b3.6306275acff5ed08e4c1b92177813456";
-            byte[] result;
-            var RequestBodyParameters = new
-            {
-                output = "data",
-                url = "https://www.google.co.uk"
-            };
 
-            string body = JsonSerializer.Serialize(RequestBodyParameters);
-
-            using StringContent stringContent = new StringContent(body);
-            stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("X-API-KEY", ApiKey);
-            var uri = new Uri($"https://api.restpdf.io/v1/pdf");
-            using var rsponse = await client.PostAsync(uri, stringContent).ConfigureAwait(false);
-            if (rsponse.IsSuccessStatusCode)
-            {
-
-                result = await rsponse.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
-                return File(result, System.Net.Mime.MediaTypeNames.Application.Pdf, "Sample.pdf");
-
-            }
-            else
-            {
-                return BadRequest("There was an error converting your PDF.");
-            }
-
-
-        }
         /// <summary>
         /// Get a list of statements for specified asset
         /// </summary>

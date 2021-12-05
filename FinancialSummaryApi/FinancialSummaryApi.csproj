@@ -21,6 +21,7 @@
     <PackageReference Include="AWSXRayRecorder.Handlers.AspNetCore" Version="2.7.2" />
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.8.2" />
     <PackageReference Include="AWSXRayRecorder.Handlers.EntityFramework" Version="1.1.0" />
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="Hackney.Core.DynamoDb" Version="1.51.0" />
       <PackageReference Include="Hackney.Core.Logging" Version="1.49.0" />
     <PackageReference Include="CsvHelper" Version="27.2.0" />
@@ -37,267 +38,23 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="5.4.1" />
-    <PackageReference Include="Syncfusion.HtmlToPdfConverter.QtWebKit.Net.Core" Version="19.3.0.56" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="terraform\" />
   </ItemGroup>
- 
-    <ItemGroup>
-      <Compile Update="V1\Controllers\StatementController.cs">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Compile>
-    </ItemGroup>
- 
-    <ItemGroup>
-      <None Update="QtBinariesLinux\imageformats\libqdds.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqgif.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqicns.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqico.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqjp2.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqjpeg.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqmng.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqsvg.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqtga.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqtiff.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqwbmp.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\imageformats\libqwebp.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libGL.so.1">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libicudata.so.55">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libicui18n.so.55">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libicuuc.so.55">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libjpeg.so.8">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libpng12.so.0">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Core.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5DBus.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Gui.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Multimedia.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5MultimediaWidgets.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Network.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5OpenGL.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Positioning.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5PrintSupport.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Qml.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Quick.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Sensors.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Sql.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Svg.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5WebChannel.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5WebKit.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5WebKitWidgets.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5Widgets.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libQt5XcbQpa.so.5">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libsqlite3.so.0">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\libstdc++.so.6">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\platforms\libqminimal.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\platforms\libqoffscreen.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\platforms\libqxcb.so">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesLinux\Syncfusion.WebKitWrapper">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\icudt49.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\icuin49.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\icuuc49.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qdds.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qgif.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qicns.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qico.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qjp2.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qjpeg.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qmng.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qsvg.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qtga.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qtiff.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qwbmp.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\imageformats\qwebp.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\libEGL.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\libGLESv2.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\platforms\qminimal.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\platforms\qoffscreen.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\platforms\qwindows.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Core.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Gui.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Multimedia.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5MultimediaWidgets.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Network.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5OpenGL.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Positioning.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5PrintSupport.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Qml.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Quick.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Sensors.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Sql.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Svg.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5WebChannel.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5WebKit.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5WebKitWidgets.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Qt5Widgets.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\Syncfusion.WebKitWrapper">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="QtBinariesWindows\zlib1.dll">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+
+  <ItemGroup>
+    <None Update="libwkhtmltox.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="libwkhtmltox.dylib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="libwkhtmltox.so">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
  
 
 </Project>

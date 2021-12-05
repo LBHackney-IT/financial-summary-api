@@ -43,7 +43,7 @@ namespace FinancialSummaryApi.V1.UseCase
             var result = request?.FileType switch
             {
                 "csv" => FileGenerator.WriteCSVFile(response, name, period),
-                "pdf" => null,//FileGenerator.WritePdfFile(response, name, period, _converter),
+                "pdf" => FileGenerator.WritePdfFile(response, name, period),
                 _ => null
             };
             return result;

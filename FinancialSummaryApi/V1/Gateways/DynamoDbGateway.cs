@@ -270,10 +270,10 @@ namespace FinancialSummaryApi.V1.Gateways
                 Filter = new QueryFilter(TARGETID, QueryOperator.Equal, targetId),
                 PaginationToken = paginationToken
             };
-            if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
-            {
-                queryConfig.Filter.AddCondition("statement_period_end_date", QueryOperator.Between, startDate.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.ToString(AWSSDKUtils.ISO8601DateFormat));
-            }
+            //if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+            //{
+            //    queryConfig.Filter.AddCondition("statement_period_end_date", QueryOperator.Between, startDate.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.ToString(AWSSDKUtils.ISO8601DateFormat));
+            //}
 
             do
             {
