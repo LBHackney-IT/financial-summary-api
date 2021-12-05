@@ -82,7 +82,7 @@ commands:
             cd ./FinancialSummaryApi/
             chmod +x ./build.sh
             ./build.sh
-            ls -d */
+            ls * -r
             mkdir -p /var/task
             cd /var/task
             cp libwkhtmltox.so libwkhtmltox.so
