@@ -85,7 +85,7 @@ commands:
             ls -d */
             mkdir -p /var/task
             cd /var/task
-            cp ../libwkhtmltox.so libwkhtmltox.so
+            cp libwkhtmltox.so libwkhtmltox.so
       - run:
           name: Deploy lambda
           command: |
