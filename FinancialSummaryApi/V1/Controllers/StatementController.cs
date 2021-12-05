@@ -11,6 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 namespace FinancialSummaryApi.V1.Controllers
 {
@@ -40,21 +44,37 @@ namespace FinancialSummaryApi.V1.Controllers
         }
         [HttpGet]
         [Route("test")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            //Initialize HTML to PDF converter.
-            HtmlToPdfConverter htmlConverter = new HtmlToPdfConverter();
-            WebKitConverterSettings webkitConverterSettings = new WebKitConverterSettings();
-            //Set the Qt Binaries folder path
-            webkitConverterSettings.WebKitPath = Path.Combine(_hostingEnvironment.ContentRootPath, "QtBinariesLinux");
-            //Assign Webkit converter settings to HTML converter
-            htmlConverter.ConverterSettings = webkitConverterSettings;
-            //Convert URL to PDF
-            PdfDocument document = htmlConverter.Convert("http://www.google.com");
-            using var stream = new MemoryStream();
-            //Save and close the PDF document 
-            document.Save(stream);
-            return File(stream.ToArray(), System.Net.Mime.MediaTypeNames.Application.Pdf, "Sample.pdf");
+            var ApiKey = "31b1b3.6306275acff5ed08e4c1b92177813456";
+            byte[] result;
+            var RequestBodyParameters = new
+            {
+                output = "data",
+                url = "https://www.google.co.uk"
+            };
+
+            string body = JsonSerializer.Serialize(RequestBodyParameters);
+
+            using StringContent stringContent = new StringContent(body);
+            stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Add("X-API-KEY", ApiKey);
+            var uri = new Uri($"https://api.restpdf.io/v1/pdf");
+            using var rsponse = await client.PostAsync(uri, stringContent).ConfigureAwait(false);
+            if (rsponse.IsSuccessStatusCode)
+            {
+
+                result = await rsponse.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+                return File(result, System.Net.Mime.MediaTypeNames.Application.Pdf, "Sample.pdf");
+
+            }
+            else
+            {
+                return BadRequest("There was an error converting your PDF.");
+            }
 
 
         }
