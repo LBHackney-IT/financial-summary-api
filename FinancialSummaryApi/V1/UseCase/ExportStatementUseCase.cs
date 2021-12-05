@@ -4,6 +4,7 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.UseCase
@@ -38,15 +39,19 @@ namespace FinancialSummaryApi.V1.UseCase
             }
 
             var response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
-
-
-            var result = request?.FileType switch
+            if (response.Any())
             {
-                "csv" => FileGenerator.WriteCSVFile(response, name, period),
-                "pdf" => FileGenerator.WritePdfFile(response, name, period),
-                _ => null
-            };
-            return result;
+
+                var result = request?.FileType switch
+                {
+                    "csv" => FileGenerator.WriteCSVFile(response, name, period),
+                    "pdf" => FileGenerator.WritePdfFile(response, name, period),
+                    _ => null
+                };
+                return result;
+            }
+
+            return null;
         }
     }
 }
