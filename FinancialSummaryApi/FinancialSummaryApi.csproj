@@ -43,11 +43,15 @@
   <ItemGroup>
     <Folder Include="terraform\" />
   </ItemGroup>
+    <ItemGroup>
+        <None Remove="libwkhtmltox.dll" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="libwkhtmltox.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <ItemGroup>
+      <EmbeddedResource Include="libwkhtmltox.dll">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </EmbeddedResource>
+   
     <None Update="libwkhtmltox.dylib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
