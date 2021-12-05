@@ -84,8 +84,10 @@ commands:
             ./build.sh
             ls * -r
             mkdir -p /var/task
+            cp libwkhtmltox.so /var/task
             cd /var/task
-            cp ./libwkhtmltox.so /var/task
+            ls * -r
+            
       - run:
           name: Deploy lambda
           command: |
