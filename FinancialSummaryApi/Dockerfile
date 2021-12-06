@@ -20,7 +20,7 @@ RUN apt-get update \
         --location \
         https://github.com/rdvojmoc/DinkToPdf/blob/master/v0.12.4/64%20bit/libwkhtmltox.dll?raw=true \
 	&& cp /usr/lib/libwkhtmltox* /app \
-	&& cp /usr/lib/libwkhtmltox* /app/out/FinancialSummaryApi/PDFNative/64bit/
+	&& cp /usr/lib/libwkhtmltox* /app/FinancialSummaryApi/PDFNative/64bit/
 # Copy csproj and restore as distinct layers
 COPY *.csproj ./
 RUN dotnet restore
