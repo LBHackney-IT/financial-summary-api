@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
+        <PreserveCompilationReferences>true</PreserveCompilationReferences>
     </PropertyGroup>
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -34,6 +35,7 @@
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />
         <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.3" />
+        <PackageReference Include="RazorLight" Version="2.0.0-beta4" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.4.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.4.1" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
@@ -43,21 +45,27 @@
     <ItemGroup>
         <Folder Include="terraform\" />
     </ItemGroup>
-    <ItemGroup>
-        <None Remove="libwkhtmltox.dll" />
-        <None Remove="libwkhtmltox.so" />
-    </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="libwkhtmltox.dll">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </EmbeddedResource>
-        <EmbeddedResource Include="libwkhtmltox.so">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </EmbeddedResource>
 
         <None Update="libwkhtmltox.dylib">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+
+        <None Update="PDFNative\32bit\libwkhtmltox.so">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+
+        <None Update="PDFNative\64bit\libwkhtmltox.dll">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+
+        <None Update="PDFNative\64bit\libwkhtmltox.dylib">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+
+        <None Update="PDFNative\64bit\libwkhtmltox.so">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 

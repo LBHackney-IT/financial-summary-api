@@ -1,10 +1,13 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using FinancialSummaryApi.V1;
 using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
+using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
@@ -19,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using RazorLight;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -121,7 +125,7 @@ namespace FinancialSummaryApi
 
             RegisterGateways(services);
             RegisterUseCases(services);
-
+            RegisterPdfLib(services);
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
                 builder
                     .AllowAnyOrigin()
@@ -177,6 +181,28 @@ namespace FinancialSummaryApi
             services.AddScoped<IExportSelectedStatementUseCase, ExportSelectedStatementUseCase>();
         }
 
+        private static void RegisterPdfLib(IServiceCollection services)
+        {
+            var processSufix = "32bit";
+            if (Environment.Is64BitProcess && IntPtr.Size == 8)
+            {
+                processSufix = "64bit";
+            }
+            var context = new CustomAssemblyLoadContext();
+            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), $"PDFNative\\{processSufix}\\libwkhtmltox.dll"));
+            services.AddScoped<IRazorLightEngine>(sp =>
+            {
+                var engine = new RazorLightEngineBuilder()
+                    .UseFileSystemProject(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location))
+                    .UseMemoryCachingProvider()
+                    .Build();
+                return engine;
+            });
+#pragma warning disable CA2000 // Dispose objects before losing scope
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+#pragma warning restore CA2000 // Dispose objects before losing scope
+            services.AddScoped<IPDFService, PDFService>();
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

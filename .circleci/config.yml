@@ -83,10 +83,6 @@ commands:
             chmod +x ./build.sh
             ./build.sh
             ls * -r
-            mkdir -p /var/task
-            cp libwkhtmltox.so libwkhtmltox.dll libwkhtmltox.dylib /var/task
-            cd /var/task
-            ls * -r
             
       - run:
           name: Deploy lambda
