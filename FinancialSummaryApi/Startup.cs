@@ -189,7 +189,7 @@ namespace FinancialSummaryApi
                 processSufix = "64bit";
             }
             var context = new CustomAssemblyLoadContext();
-            context.LoadUnmanagedLibrary(Path.Combine(Directory.GetCurrentDirectory(), $"PDFNative\\{processSufix}\\libwkhtmltox.dll"));
+            context.LoadUnmanagedLibrary(Path.Combine(AppContext.BaseDirectory, $"PDFNative\\{processSufix}\\libwkhtmltox.dll"));
             services.AddScoped<IRazorLightEngine>(sp =>
             {
                 var engine = new RazorLightEngineBuilder()
