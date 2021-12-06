@@ -26,14 +26,14 @@ namespace FinancialSummaryApi.V1.UseCase
             {
                 foreach (var item in request.StatementIdsToExport)
                 {
-                    var rId = await _financeSummaryGateway.GetStatementByIdAsync(item).ConfigureAwait(false);
+                    var rId = await _financeSummaryGateway.GetStatementByIdAsync(item, request.TargetId).ConfigureAwait(false);
                     response.Add(rId);
                 };
             }
             else
             {
-                var startDate = request.StartDate.HasValue ? request.StartDate.Value : DateTime.UtcNow;
-                var endDate = request.StartDate.HasValue ? request.StartDate.Value : DateTime.UtcNow;
+                var startDate = request.StartDate ?? DateTime.UtcNow;
+                var endDate = request.StartDate ?? DateTime.UtcNow;
                 response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
             }
 

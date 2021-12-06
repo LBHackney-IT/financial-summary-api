@@ -8,7 +8,6 @@ namespace FinancialSummaryApi.V1.Infrastructure.Validators
         public GetStatementListRequestValidator()
         {
             RuleFor(x => x.PageSize).GreaterThanOrEqualTo(1);
-            RuleFor(x => x.PageNumber).GreaterThanOrEqualTo(1);
         }
     }
 }

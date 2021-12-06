@@ -5,6 +5,7 @@ using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
+using Hackney.Core.DynamoDb;
 using System.Collections.Generic;
 
 namespace FinancialSummaryApi.V1.Infrastructure
@@ -23,6 +24,7 @@ namespace FinancialSummaryApi.V1.Infrastructure
                 .ConvertUsing(qr => (qr == null) ? null : qr.ToStatement());
 
             CreateMap<Statement, StatementResponse>();
+            CreateMap<PagedResult<Statement>, PagedResult<StatementResponse>>();
         }
     }
 }

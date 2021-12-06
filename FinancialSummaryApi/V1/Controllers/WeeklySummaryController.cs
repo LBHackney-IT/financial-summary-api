@@ -30,9 +30,10 @@ namespace FinancialSummaryApi.V1.Controllers
         }
 
         /// <summary>
-        /// Get Weekly summary model by provided Id
+        /// Get Weekly summary model by provided Id and targetId
         /// </summary>
         /// <param name="id">The id by which we are looking for an weekly summary</param>
+        /// <param name="targetId">The targetId by which we are looking for an weekly summary</param>
         /// <param name="token">The jwt token value</param>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <response code="200">Success. Weekly summary models is saved successfully</response>
@@ -47,9 +48,9 @@ namespace FinancialSummaryApi.V1.Controllers
         [Route("{id}")]
         public async Task<IActionResult> Get([FromHeader(Name = "Authorization")] string token,
                                              [FromHeader(Name = "x-correlation-id")] string correlationId,
-                                             [FromRoute] Guid id)
+                                             [FromRoute] Guid id, [FromQuery] Guid targetId)
         {
-            var weeklySummary = await _getWeeklySummaryByIdUseCase.ExecuteAsync(id).ConfigureAwait(false);
+            var weeklySummary = await _getWeeklySummaryByIdUseCase.ExecuteAsync(targetId, id).ConfigureAwait(false);
 
             if (weeklySummary == null)
             {

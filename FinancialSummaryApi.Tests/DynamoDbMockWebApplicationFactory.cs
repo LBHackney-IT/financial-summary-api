@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Core.Strategies;
 using FinancialSummaryApi.V1.Infrastructure;
+using Hackney.Core.Testing.DynamoDb;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
@@ -54,50 +55,10 @@ namespace FinancialSummaryApi.Tests
                     AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
 
                     var request = new CreateTableRequest(table.Name,
-                       new List<KeySchemaElement> { new KeySchemaElement(table.KeyName, table.KeyType), new KeySchemaElement(table.RangeName, table.RangeType) },
-                       new List<AttributeDefinition> { new AttributeDefinition(table.KeyName, table.KeyScalarType), new AttributeDefinition(table.RangeName, table.KeyScalarType) },
+                       new List<KeySchemaElement> { new KeySchemaElement(table.KeyName, KeyType.HASH), new KeySchemaElement(table.RangeKeyName, KeyType.RANGE) },
+                       new List<AttributeDefinition> { new AttributeDefinition(table.KeyName, ScalarAttributeType.S), new AttributeDefinition(table.RangeKeyName, ScalarAttributeType.S) },
                        new ProvisionedThroughput(3, 3));
                     _ = dynamoDb.CreateTableAsync(request).GetAwaiter().GetResult();
-                    //List<AttributeDefinition> attributeDefinitions = new List<AttributeDefinition>();
-                    //List<GlobalSecondaryIndex> globalSecondaryIndexes = new List<GlobalSecondaryIndex>();
-
-                    //attributeDefinitions.Add(new AttributeDefinition(table.PartitionKey.KeyName,
-                    //    table.PartitionKey.KeyScalarType));
-
-                    //foreach (var index in table.Indices)
-                    //{
-                    //    globalSecondaryIndexes.Add(
-                    //        new GlobalSecondaryIndex()
-                    //        {
-                    //            IndexName = index.IndexName,
-                    //            ProvisionedThroughput =
-                    //                new ProvisionedThroughput { ReadCapacityUnits = 1L, WriteCapacityUnits = 1L },
-                    //            KeySchema =
-                    //            {
-                    //                new KeySchemaElement
-                    //                {
-                    //                    AttributeName = index.KeyName, KeyType = index.KeyType
-                    //                }
-                    //            },
-                    //            Projection = new Projection { ProjectionType = index.ProjectionType }
-                    //        });
-                    //    attributeDefinitions.Add(new AttributeDefinition(index.KeyName, index.KeyScalarType));
-                    //}
-
-                    //CreateTableRequest request = new CreateTableRequest
-                    //{
-                    //    TableName = table.TableName,
-                    //    ProvisionedThroughput =
-                    //        new ProvisionedThroughput { ReadCapacityUnits = (long) 3, WriteCapacityUnits = (long) 3 },
-                    //    AttributeDefinitions = attributeDefinitions,
-                    //    KeySchema = new List<KeySchemaElement>
-                    //    {
-                    //        new KeySchemaElement(table.PartitionKey.KeyName, table.PartitionKey.KeyType)
-                    //    },
-                    //    GlobalSecondaryIndexes = globalSecondaryIndexes
-                    //};
-
-                    //_ = dynamoDb.CreateTableAsync(request).GetAwaiter().GetResult();
                 }
                 catch (ResourceInUseException)
                 {
