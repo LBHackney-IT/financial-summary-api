@@ -6,12 +6,895 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
 {
     public static class TemplateGenerator
     {
+        public static string GetHTMLReportString1()
+        {
+            var date = DateTime.Today.ToString("D");
+            var sb = new StringBuilder();
+            sb.Clear();
+            sb.Append(@"
+<html>
+<head>
+<meta http-equiv=,Content-Type, content=,text/html; charset=UTF-8,>
+
+<meta name=,generator, content=,BCL easyConverter SDK 5.0.252,>
+<meta name=,title, content=,Quaterly Statement Report,>
+<style type=,text/css,>
+
+body {margin-top: 0px;margin-left: 0px;}
+
+#page_1 {position:relative; overflow: hidden;margin: 21px 0px 23px 0px;padding: 0px;border: none;width: 795px;}
+#page_1 #id1_1 {border:none;margin: 0px 0px 0px 0px;padding: 0px;border:none;width: 795px;overflow: hidden;}
+#page_1 #id1_2 {border:none;margin: 139px 0px 0px 325px;padding: 0px;border:none;width: 470px;overflow: hidden;}
+
+#page_1 #p1dimg1 {position:absolute;top:17px;left:38px;z-index:-1;width:717px;height:1048px;}
+#page_1 #p1dimg1 #p1img1 {width:717px;height:1048px;}
+
+
+
+
+.ft0{font: 15px 'Arial';line-height: 17px;}
+.ft1{font: bold 13px 'Arial Bold';color: #222222;line-height: 16px;}
+.ft2{font: bold 13px 'Arial Bold';color: #222222;line-height: 14px;}
+.ft3{font: bold 13px 'Arial Bold';text-decoration: underline;color: #0000ee;line-height: 16px;}
+.ft4{font: 13px 'Arial';color: #222222;line-height: 16px;}
+.ft5{font: 13px 'Arial';line-height: 16px;}
+.ft6{font: 13px 'Arial';line-height: 14px;}
+.ft7{font: 13px 'Arial';line-height: 15px;}
+.ft8{font: bold 27px 'Arial Bold';line-height: 32px;}
+.ft9{font: bold 14px 'Arial Bold';line-height: 16px;}
+.ft10{font: bold 12px 'Arial Bold';line-height: 15px;}
+.ft11{font: bold 11px 'Arial Bold';line-height: 14px;}
+.ft12{font: 1px 'Arial';line-height: 1px;}
+.ft13{font: 12px 'Arial';line-height: 15px;}
+.ft14{font: bold 15px 'Arial Bold';line-height: 18px;}
+.ft15{font: bold 10px 'Arial Bold';color: #ffffff;line-height: 14px;}
+
+.p0{text-align: right;padding-right: 40px;margin-top: 0px;margin-bottom: 0px;}
+.p1{text-align: left;padding-left: 84px;margin-top: 63px;margin-bottom: 0px;}
+.p2{text-align: left;padding-left: 84px;margin-top: 0px;margin-bottom: 0px;}
+.p3{text-align: left;padding-left: 487px;margin-top: 14px;margin-bottom: 0px;}
+.p4{text-align: left;padding-left: 489px;margin-top: 0px;margin-bottom: 0px;}
+.p5{text-align: left;padding-left: 96px;margin-top: 5px;margin-bottom: 0px;}
+.p6{text-align: left;padding-left: 96px;margin-top: 0px;margin-bottom: 0px;}
+.p7{text-align: left;padding-left: 164px;margin-top: 37px;margin-bottom: 0px;}
+.p8{text-align: left;padding-left: 200px;margin-top: 3px;margin-bottom: 0px;}
+.p9{text-align: left;padding-left: 37px;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p10{text-align: left;padding-left: 57px;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p11{text-align: left;padding-left: 6px;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p12{text-align: left;padding-left: 20px;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p13{text-align: left;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p14{text-align: right;padding-right: 2px;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p15{text-align: right;padding-right: 4px;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p16{text-align: right;padding-right: 49px;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p17{text-align: right;padding-right: 13px;margin-top: 0px;margin-bottom: 0px;white-space: nowrap;}
+.p18{text-align: left;padding-left: 128px;margin-top: 0px;margin-bottom: 0px;}
+.p19{text-align: justify;padding-left: 96px;padding-right: 184px;margin-top: 28px;margin-bottom: 0px;}
+.p20{text-align: left;margin-top: 0px;margin-bottom: 0px;}
+
+.td0{border-top: #000000 1px solid;border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 125px;vertical-align: bottom;background: #cccccc;}
+.td1{border-top: #000000 1px solid;border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 145px;vertical-align: bottom;background: #cccccc;}
+.td2{border-top: #000000 1px solid;border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 106px;vertical-align: bottom;background: #cccccc;}
+.td3{border-top: #000000 1px solid;border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 74px;vertical-align: bottom;background: #cccccc;}
+.td4{border-top: #000000 1px solid;border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 86px;vertical-align: bottom;background: #cccccc;}
+.td5{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 125px;vertical-align: bottom;background: #d9d9d9;}
+.td6{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 145px;vertical-align: bottom;background: #d9d9d9;}
+.td7{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 106px;vertical-align: bottom;background: #d9d9d9;}
+.td8{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 74px;vertical-align: bottom;background: #d9d9d9;}
+.td9{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 86px;vertical-align: bottom;background: #d9d9d9;}
+.td10{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 125px;vertical-align: bottom;}
+.td11{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 145px;vertical-align: bottom;}
+.td12{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 106px;vertical-align: bottom;}
+.td13{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 74px;vertical-align: bottom;}
+.td14{border-bottom: #000000 1px solid;padding: 0px;margin: 0px;width: 86px;vertical-align: bottom;}
+.td15{padding: 0px;margin: 0px;width: 125px;vertical-align: bottom;background: #d9d9d9;}
+.td16{padding: 0px;margin: 0px;width: 145px;vertical-align: bottom;background: #d9d9d9;}
+.td17{padding: 0px;margin: 0px;width: 106px;vertical-align: bottom;background: #d9d9d9;}
+.td18{padding: 0px;margin: 0px;width: 74px;vertical-align: bottom;background: #d9d9d9;}
+.td19{padding: 0px;margin: 0px;width: 86px;vertical-align: bottom;background: #d9d9d9;}
+
+.tr0{height: 23px;}
+.tr1{height: 15px;}
+
+.t0{width: 536px;margin-left: 87px;margin-top: 5px;font: 12px 'Arial';}
+
+</style>
+</head>
+
+<body>
+<div id=,page_1,>
+<div id=,p1dimg1,>
+<img></div>
+
+
+<div id=,id1_1,>
+<p class=,p0 ft0,>page 1 of 1</p>
+<p class=,p1 ft1,>Income Services, Hackney Service Centre, 1 Hillman Street, London E8 1DY</p>
+<p class=,p2 ft2,>Tel: 0208 356 3100 24 hour payment line: 0208 356 5050</p>
+<p class=,p2 ft3,><nobr><a href=,http://www.hackney.gov.uk/your-rent,>www.hackney.gov.uk/your-rent</a></nobr></p>
+<p class=,p3 ft4,>Date: 20 November 2021</p>
+<p class=,p4 ft4,>payment : xxxxxxxxx</p>
+<p class=,p5 ft5,>Name</p>
+<p class=,p6 ft5,>Address1</p>
+<p class=,p6 ft6,>Address2</p>
+<p class=,p6 ft7,>Address3</p>
+<p class=,p6 ft5,>postcode</p>
+<p class=,p7 ft8,>STATEMENT OF YOUR ACCOUNT</p>
+<p class=,p8 ft9,>for the period 20 August 2021 to 20 November 2021</p>
+<table cellpadding=0 cellspacing=0 class=,t0,>
+<tr>
+	<td class=,tr0 td0,><p class=,p9 ft10,>Date</p></td>
+	<td class=,tr0 td1,><p class=,p9 ft11,>transaction Details</p></td>
+	<td class=,tr0 td2,><p class=,p10 ft10,>Debit</p></td>
+	<td class=,tr0 td3,><p class=,p11 ft10,>Credit</p></td>
+	<td class=,tr0 td4,><p class=,p12 ft10,>Balance</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p13 ft12,>&nbsp;</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Balance brought forward</p></td>
+	<td class=,tr1 td7,><p class=,p13 ft12,>&nbsp;</p></td>
+	<td class=,tr1 td8,><p class=,p13 ft12,>&nbsp;</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£472.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>10 Sep 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£379.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£117.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£1,501.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>01 Nov2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£748.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£799.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,410.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>17 Sep 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£599.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£659.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£481.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>30 Sep 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£877.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£999.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£895.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>18 Sep 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£555.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£337.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£448.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>12 Oct 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£786.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£941.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,935.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>13 Oct 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£945.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£934.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£401.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>05 Nov2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£877.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£654.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,962.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>18 Sep 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£673.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£592.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£888.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>24 Oct 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£277.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£128.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£704.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>17 Sep 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£435.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£469.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£1,822.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>25 Oct 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£859.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£434.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,377.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>02 Nov2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£966.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£585.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£1,399.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>25 Aug 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£528.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£229.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,670.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>24 Sep 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£167.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£240.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£1,179.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>01 Sep 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£194.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£869.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£440.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>15 Nov2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£419.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£411.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£532.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>27 Oct 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£852.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£257.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£706.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>19 Sep 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£266.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£728.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£1,824.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>26 Aug 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£295.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£352.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,892.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>17 Oct 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£418.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£693.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£501.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>22 Oct 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£473.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£411.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,688.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>30 Oct 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£522.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£836.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£563.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>08 Sep 2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Estate</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£842.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£728.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,999.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>30 Sep 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£438.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£473.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£1,688.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td5,><p class=,p15 ft13,>02 Nov2021</p></td>
+	<td class=,tr1 td6,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td7,><p class=,p16 ft13,>£792.00</p></td>
+	<td class=,tr1 td8,><p class=,p17 ft13,>£369.00</p></td>
+	<td class=,tr1 td9,><p class=,p14 ft10,>£1,426.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td10,><p class=,p15 ft13,>08 Oct 2021</p></td>
+	<td class=,tr1 td11,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td12,><p class=,p16 ft13,>£488.00</p></td>
+	<td class=,tr1 td13,><p class=,p17 ft13,>£176.00</p></td>
+	<td class=,tr1 td14,><p class=,p14 ft10,>£543.00</p></td>
+</tr>
+<tr>
+	<td class=,tr1 td15,><p class=,p15 ft13,>15 Sep 2021</p></td>
+	<td class=,tr1 td16,><p class=,p13 ft13,>Block</p></td>
+	<td class=,tr1 td17,><p class=,p16 ft13,>£746.00</p></td>
+	<td class=,tr1 td18,><p class=,p17 ft13,>£567.00</p></td>
+	<td class=,tr1 td19,><p class=,p14 ft10,>£617.00</p></td>
+</tr>
+</table>
+<p class=,p18 ft14,>As of 20 November 2021 your account balance was £617.00 in arrears.</p>
+<p class=,p19 ft15,>As your landlord, the council has a duty to make sure all charges are paid up to date. This is because the housing income goes toward the upkeep of council housing and providing services for residents. You must make weekly charges payment a priority. If you don’t pay, you risk losing your home.</p>
+</div>
+<div id=,id1_2,>
+<p class=,p20 ft0,>Quaterly Statement Report</p>
+</div>
+</div>
+</body>
+</html>
+");
+
+            return sb.ToString();
+        }
         public static string GetHTMLReportString(ExportResponse report)
         {
             var date = DateTime.Today.ToString("D");
             var sb = new StringBuilder();
             sb.Clear();
-            sb.Append(@"<html>
+            sb.Append(@"<html><head>
+<style>
+body {
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
+#page_1 {
+    position: relative;
+    overflow: hidden;
+    margin: 15px 0px 35px 53px;
+    padding: 0px;
+    border: none;
+    width: 800px;
+    height: auto;
+}
+
+    #page_1 #id1_1 {
+        border: none;
+        margin: 79px 0px 0px 4px;
+        padding: 0px;
+        border: none;
+        width: 654px;
+    }
+
+    #page_1 #id1_2 {
+        margin: 39px 0px 0px 19px;
+        padding: 0px;
+        border: none;
+        width: 652px;
+        background: #000000;
+        color: #fff;
+    }
+
+    #page_1 #p1dimg1 {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: -1;
+        width: auto;
+        height: auto;
+    }
+
+        #page_1 #p1dimg1 #p1img1 {
+            width: auto;
+            height: auto;
+        }
+
+
+
+
+#page_2 {
+    position: relative;
+    overflow: hidden;
+    margin: 1123px 0px 0px 0px;
+    padding: 0px;
+    border: none;
+    width: 0px;
+    height: 0px;
+}
+
+
+
+
+
+.dclr {
+    clear: both;
+    float: none;
+    height: 1px;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+}
+
+.ft0 {
+    font: bold 13px 'Arial';
+    color: #222222;
+    line-height: 16px;
+}
+
+.ft1 {
+    font: bold 13px 'Arial';
+    line-height: 16px;
+}
+
+.ft2 {
+    font: 13px 'Arial';
+    color: #222222;
+    line-height: 16px;
+}
+
+.ft3 {
+    font: 13px 'Arial';
+    line-height: 16px;
+}
+
+.ft4 {
+    font: bold 29px 'Arial';
+    line-height: 34px;
+}
+
+.ft5 {
+    font: bold 15px 'Arial';
+    line-height: 18px;
+}
+
+.ft6 {
+    font: bold 12px 'Arial';
+    line-height: 15px;
+}
+
+.ft7 {
+    font: 1px 'Arial';
+    line-height: 1px;
+}
+
+.ft8 {
+    font: 12px 'Arial';
+    line-height: 15px;
+}
+
+.ft9 {
+    font: 1px 'Arial';
+    line-height: 4px;
+}
+
+.ft10 {
+    font: bold 17px 'Arial';
+    line-height: 19px;
+}
+
+.ft11 {
+    font: bold 12px 'Arial';
+    color: #ffffff;
+    line-height: 15px;
+}
+
+.p0 {
+    text-align: left;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.p1 {
+    text-align: left;
+    margin-top: 1px;
+    margin-bottom: 0px;
+}
+
+.p2 {
+    text-align: left;
+    padding-left: 504px;
+    margin-top: 3px;
+    margin-bottom: 0px;
+}
+
+.p3 {
+    text-align: left;
+    padding-left: 507px;
+    margin-top: 2px;
+    margin-bottom: 0px;
+}
+
+.p4 {
+    text-align: left;
+    padding-left: 13px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+.p5 {
+    text-align: left;
+    padding-left: 13px;
+    margin-top: 2px;
+    margin-bottom: 0px;
+}
+
+.p6 {
+    text-align: left;
+    padding-left: 100px;
+    margin-top: 24px;
+    margin-bottom: 0px;
+}
+
+.p7 {
+    text-align: left;
+    padding-left: 145px;
+    margin-top: 7px;
+    margin-bottom: 0px;
+}
+
+.p8 {
+    text-align: left;
+    padding-left: 45px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p9 {
+    text-align: left;
+    padding-left: 49px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p10 {
+    text-align: left;
+    padding-left: 46px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p11 {
+    text-align: left;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p12 {
+    text-align: left;
+    padding-left: 34px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p13 {
+    text-align: left;
+    padding-left: 37px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p14 {
+    text-align: left;
+    padding-left: 1px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p15 {
+    text-align: right;
+    padding-right: 2px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p16 {
+    text-align: right;
+    padding-right: 1px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p17 {
+    text-align: left;
+    padding-left: 3px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p18 {
+    text-align: right;
+    padding-right: 3px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p19 {
+    text-align: right;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    white-space: nowrap;
+}
+
+.p20 {
+    text-align: left;
+    padding-left: 56px;
+    margin-top: 2px;
+    margin-bottom: 0px;
+}
+
+.td0 {
+    border-left: #000000 1px solid;
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    border-bottom: #cccccc 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 113px;
+    vertical-align: bottom;
+    background: #cccccc;
+}
+
+.td1 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    border-bottom: #cccccc 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 207px;
+    vertical-align: bottom;
+    background: #cccccc;
+}
+
+.td2 {
+    border-top: #000000 1px solid;
+    border-bottom: #cccccc 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 79px;
+    vertical-align: bottom;
+    background: #cccccc;
+}
+
+.td3 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    border-bottom: #cccccc 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 43px;
+    vertical-align: bottom;
+    background: #cccccc;
+}
+
+.td4 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    border-bottom: #cccccc 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 104px;
+    vertical-align: bottom;
+    background: #cccccc;
+}
+
+.td5 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    border-bottom: #cccccc 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 119px;
+    vertical-align: bottom;
+    background: #cccccc;
+}
+
+.td6 {
+    border-left: #000000 1px solid;
+    border-top: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 60px;
+    vertical-align: bottom;
+}
+
+.td7 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 53px;
+    vertical-align: bottom;
+}
+
+.td8 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 207px;
+    vertical-align: bottom;
+}
+
+.td9 {
+    border-top: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 79px;
+    vertical-align: bottom;
+}
+
+.td10 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 43px;
+    vertical-align: bottom;
+}
+
+.td11 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 104px;
+    vertical-align: bottom;
+}
+
+.td12 {
+    border-right: #000000 1px solid;
+    border-top: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 119px;
+    vertical-align: bottom;
+}
+
+.td13 {
+    border-left: #000000 1px solid;
+    border-right: #000000 1px solid;
+    border-bottom: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 113px;
+    vertical-align: bottom;
+}
+
+.td14 {
+    border-right: #000000 1px solid;
+    border-bottom: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 207px;
+    vertical-align: bottom;
+}
+
+.td15 {
+    border-bottom: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 79px;
+    vertical-align: bottom;
+}
+
+.td16 {
+    border-right: #000000 1px solid;
+    border-bottom: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 43px;
+    vertical-align: bottom;
+}
+
+.td17 {
+    border-right: #000000 1px solid;
+    border-bottom: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 104px;
+    vertical-align: bottom;
+}
+
+.td18 {
+    border-right: #000000 1px solid;
+    border-bottom: #000000 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 119px;
+    vertical-align: bottom;
+}
+
+.td19 {
+    border-left: #000000 1px solid;
+    border-right: #000000 1px solid;
+    border-bottom: #d9d9d9 1px solid;
+    padding: 0px;
+    margin: 0px;
+    width: 113px;
+    vertical-align: bottom;
+    background: #d9d9d9;
+}
+
+
+.tr0 {
+    height: 23px;
+}
+
+.tr1 {
+    height: 20px;
+}
+
+.tr2 {
+    height: 4px;
+}
+
+.tr3 {
+    height: 21px;
+}
+
+.tr4 {
+    height: 19px;
+}
+
+.t0 {
+    width: 670px;
+    margin-left: 4px;
+    margin-top: 13px;
+    font: 12px 'Arial';
+}
+
+td, th {
+    border: #000000 1px solid !important;
+    border-bottom: #d9d9d9 1px solid !important;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: bottom;
+}
+
+p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+div {
+    display: block;
+}
+
+.address {
+    border: 2px solid gray;
+    width: 250px;
+    height: 130px;
+}
+
+tr:nth-child(even) {
+    background: #d9d9d9;
+}
+
+</style>
+</head>
             <body>
     <div id='page_1'>
     <div id='p1dimg1'>

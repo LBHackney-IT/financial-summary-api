@@ -6,6 +6,6 @@ namespace FinancialSummaryApi.V1.UseCase.Interfaces
 {
     public interface IGetWeeklySummaryByIdUseCase
     {
-        Task<WeeklySummaryResponse> ExecuteAsync(Guid id);
+        Task<WeeklySummaryResponse> ExecuteAsync(Guid targetId, Guid id);
     }
 }

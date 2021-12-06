@@ -8,6 +8,7 @@ using FinancialSummaryApi.V1.UseCase;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
+using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -24,8 +25,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using WkHtmlToPdfDotNet;
-using WkHtmlToPdfDotNet.Contracts;
 
 namespace FinancialSummaryApi
 {
@@ -99,7 +98,7 @@ namespace FinancialSummaryApi
                 //Get every ApiVersion attribute specified and create swagger docs for them
                 foreach (var apiVersion in _apiVersions)
                 {
-                    var version = $"v{apiVersion.ApiVersion.ToString()}";
+                    var version = $"v{apiVersion.ApiVersion}";
                     c.SwaggerDoc(version, new OpenApiInfo
                     {
                         Title = $"{ApiName}-api {version}",
@@ -132,10 +131,6 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-            // Add converter to DI
-#pragma warning disable CA2000 // Dispose objects before losing scope
-            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-#pragma warning restore CA2000 // Dispose objects before losing scope
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -221,6 +216,7 @@ namespace FinancialSummaryApi
                 // SwaggerGen won't find controllers that are routed via this technique.
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+            app.UseLogCall();
         }
     }
 }
