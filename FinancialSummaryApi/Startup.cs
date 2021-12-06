@@ -29,19 +29,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace FinancialSummaryApi
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment ev)
         {
             Configuration = configuration;
-
+            WebHostEnvironment = ev;
             AWSSDKHandler.RegisterXRayForAllServices();
         }
 
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment WebHostEnvironment { get; }
         private static List<ApiVersionDescription> _apiVersions { get; set; }
         private const string ApiName = "Finance Summary API";
 
@@ -125,7 +127,7 @@ namespace FinancialSummaryApi
 
             RegisterGateways(services);
             RegisterUseCases(services);
-            RegisterPdfLib(services);
+            RegisterPdfLib(services, WebHostEnvironment);
             services.AddCors(opt => opt.AddPolicy("corsPolicy", builder =>
                 builder
                     .AllowAnyOrigin()
@@ -181,15 +183,29 @@ namespace FinancialSummaryApi
             services.AddScoped<IExportSelectedStatementUseCase, ExportSelectedStatementUseCase>();
         }
 
-        private static void RegisterPdfLib(IServiceCollection services)
+        private static void RegisterPdfLib(IServiceCollection services, IWebHostEnvironment ev)
         {
-            var processSufix = "32bit";
-            if (Environment.Is64BitProcess && IntPtr.Size == 8)
+            var architectureFolder = (IntPtr.Size == 8) ? "64bit" : "32bit";
+            var wkHtmlToPdfFileName = "libwkhtmltox";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                processSufix = "64bit";
+                wkHtmlToPdfFileName += ".so";
             }
-            var context = new CustomAssemblyLoadContext();
-            context.LoadUnmanagedLibrary(Path.Combine(AppContext.BaseDirectory, $"PDFNative\\{processSufix}\\libwkhtmltox.dll"));
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                wkHtmlToPdfFileName += ".dylib";
+            }
+            else
+            {
+                wkHtmlToPdfFileName += ".dll";
+            }
+
+            var wkHtmlToPdfPath = Path.Combine(
+                new string[] { ev.ContentRootPath, "PDFNative", architectureFolder, wkHtmlToPdfFileName });
+
+            CustomAssemblyLoadContext context = new CustomAssemblyLoadContext();
+            context.LoadUnmanagedLibrary(wkHtmlToPdfPath);
+
             services.AddScoped<IRazorLightEngine>(sp =>
             {
                 var engine = new RazorLightEngineBuilder()
