@@ -18,7 +18,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             rentGroupSummary.TotalBalance.Should().Be(dbEntity.TotalBalance);
             rentGroupSummary.TotalPaid.Should().Be(dbEntity.TotalPaid);
             rentGroupSummary.ChargedYTD.Should().Be(dbEntity.ChargedYTD);
-            rentGroupSummary.ArrearsYTD.Should().Be(dbEntity.ArrearsYTD);
+            rentGroupSummary.TotalArrears.Should().Be(dbEntity.TotalArrears);
             rentGroupSummary.PaidYTD.Should().Be(dbEntity.PaidYTD);
         }
     }

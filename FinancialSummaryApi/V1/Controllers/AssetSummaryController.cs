@@ -1,8 +1,10 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
+using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -35,17 +37,19 @@ namespace FinancialSummaryApi.V1.Controllers
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="token">The jwt token value</param>
+        /// <param name="targetId"></param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
+        //[LogCall(LogLevel.Information)]
         public async Task<IActionResult> GetAll([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
-                                                [FromQuery] DateTime submitDate)
+                                                [FromQuery] Guid targetId, [FromQuery] DateTime submitDate)
         {
-            var assetSummaries = await _getAllUseCase.ExecuteAsync(submitDate).ConfigureAwait(false);
+            var assetSummaries = await _getAllUseCase.ExecuteAsync(targetId, submitDate).ConfigureAwait(false);
 
             return Ok(assetSummaries);
         }

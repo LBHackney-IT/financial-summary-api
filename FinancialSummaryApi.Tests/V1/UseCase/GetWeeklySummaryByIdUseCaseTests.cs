@@ -28,10 +28,10 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         public async Task GetById_ValidIdWithDefaultDate_ReturnsWeeklySummary()
         {
             var expectedResult = _fixture.Create<WeeklySummary>();
-            _mockFinanceGateway.Setup(_ => _.GetWeeklySummaryByIdAsync(It.IsAny<Guid>()))
+            _mockFinanceGateway.Setup(_ => _.GetWeeklySummaryByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync(expectedResult);
 
-            var actualResult = await _useCase.ExecuteAsync(Guid.NewGuid()).ConfigureAwait(false);
+            var actualResult = await _useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
 
             actualResult.Should().NotBeNull();
             CompareWeeklySummary(actualResult, expectedResult);
@@ -41,10 +41,10 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         public async Task GetById_GatewayReturnsNull_ReturnsNull()
         {
             var expectedResult = _fixture.Create<WeeklySummary>();
-            _mockFinanceGateway.Setup(_ => _.GetWeeklySummaryByIdAsync(It.IsAny<Guid>()))
+            _mockFinanceGateway.Setup(_ => _.GetWeeklySummaryByIdAsync(It.IsAny<Guid>(), It.IsAny<Guid>()))
                 .ReturnsAsync((WeeklySummary) null);
 
-            var actualResult = await _useCase.ExecuteAsync(Guid.NewGuid()).ConfigureAwait(false);
+            var actualResult = await _useCase.ExecuteAsync(Guid.NewGuid(), Guid.NewGuid()).ConfigureAwait(false);
 
             actualResult.Should().BeNull();
         }
