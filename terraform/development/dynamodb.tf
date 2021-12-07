@@ -3,22 +3,22 @@ resource "aws_dynamodb_table" "FinancialSummaries_dynamodb_table" {
     billing_mode          = "PROVISIONED"
     read_capacity         = 10
     write_capacity        = 10
-    hash_key              = "pk"
+    hash_key              = "target_id"
     range_key             = "id"
 
-
-     attribute {
-        name              = "pk"
-        type              = "S"
-    }
 
     attribute {
         name              = "id"
         type              = "S"
     }
+
+    attribute {
+        name              = "target_id"
+        type              = "S"
+    }
 	
     tags = {
-        Name              = "accounts-api-${var.environment_name}"
+        Name              = "financial-summary-api-${var.environment_name}"
         Environment       = var.environment_name
         terraform-managed = true
         project_name      = var.project_name

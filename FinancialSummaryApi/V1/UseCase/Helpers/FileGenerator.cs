@@ -81,7 +81,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             var data = transactions.Select(_ => new
             {
                 Date = _.StatementPeriodEndDate.ToString("dd/MM/yyyy"),
-                RentAccountNumber = _.RentAccountNumber,
+                _.RentAccountNumber,
                 Type = _.TargetType.ToString(),
                 Charge = _.ChargedAmount,
                 Paid = _.PaidAmount,
