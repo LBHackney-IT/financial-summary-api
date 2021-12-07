@@ -11,6 +11,7 @@
   "profiles": {
     "financial_summary_api": {
       "commandName": "Project",
+      "launchBrowser": true,
       "launchUrl": "swagger/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",

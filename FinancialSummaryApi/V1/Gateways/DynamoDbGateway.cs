@@ -272,7 +272,7 @@ namespace FinancialSummaryApi.V1.Gateways
             };
             if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
             {
-                queryConfig.Filter.AddCondition("statement_period_end_date", QueryOperator.Between, startDate.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.ToString(AWSSDKUtils.ISO8601DateFormat));
+                queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, startDate.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.ToString(AWSSDKUtils.ISO8601DateFormat));
             }
 
             do

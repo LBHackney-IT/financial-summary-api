@@ -212,7 +212,7 @@ namespace FinancialSummaryApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
-
+            app.PreparePuppeteerAsync(env).GetAwaiter().GetResult();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();

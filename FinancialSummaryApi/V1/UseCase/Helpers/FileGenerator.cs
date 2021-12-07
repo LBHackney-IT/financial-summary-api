@@ -4,6 +4,8 @@ using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure;
 using NodaMoney;
+using PuppeteerSharp;
+using PuppeteerSharp.Media;
 using Razor.Templating.Core;
 using System;
 using System.Collections.Generic;
@@ -44,7 +46,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             return null;
 
         }
-        public static async Task<string> CreatePdfTemplate(List<Statement> response, List<string> lines)
+        public static async Task<Stream> CreatePdfTemplate(List<Statement> response, List<string> lines)
         {
 
             var model = new ExportResponse();
@@ -72,9 +74,24 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             }
             model.Data = data;
             string template = await RazorTemplateEngine.RenderAsync("~/V1/Templates/PDFTemplate.cshtml", model).ConfigureAwait(false);
+           
+            //var page = await browser.NewPageAsync();
 
+            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+            {
+                Headless = true,
+                ExecutablePath = PuppeteerExtensions.ExecutablePath
+            }).ConfigureAwait(false);
+            await using var page = await browser.NewPageAsync().ConfigureAwait(false);
+            await page.EmulateMediaTypeAsync(MediaType.Screen).ConfigureAwait(false);
+            await page.SetContentAsync(template).ConfigureAwait(false);
+            var pdfContent = await page.PdfStreamAsync(new PdfOptions
+            {
+                Format = PaperFormat.A4,
+                PrintBackground = true
+            }).ConfigureAwait(false);
 
-            return template.EncodeBase64();
+            return pdfContent; //template.EncodeBase64();
         }
         public static byte[] WriteCSVFile(List<Statement> transactions,List<string> lines)
         {

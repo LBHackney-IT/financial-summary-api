@@ -135,7 +135,7 @@ namespace FinancialSummaryApi.V1.Controllers
                         var pdfResult = await _exportPdfStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
                         if (pdfResult == null)
                             return NotFound($"No records found for the following ID: {request.TargetId}");
-                        return Ok(pdfResult);
+                        return File(pdfResult, "application/pdf", $"{request.TypeOfStatement}_{DateTime.UtcNow.Ticks}.{request.FileType}");
                     }
 
                 case "csv":

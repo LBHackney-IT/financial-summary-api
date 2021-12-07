@@ -6,6 +6,7 @@ using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -50,7 +51,7 @@ namespace FinancialSummaryApi.V1.UseCase
             }
         }
 
-        public async Task<string> ExecuteAsync(ExportStatementRequest request)
+        public async Task<Stream> ExecuteAsync(ExportStatementRequest request)
         {
             string name;
             string period;
