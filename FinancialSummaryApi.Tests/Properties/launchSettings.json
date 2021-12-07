@@ -21,7 +21,11 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DynamoDb_LocalMode": "true",
-        "DynamoDb_LocalServiceUrl": "http://localhost:8000"
+        "DynamoDb_LocalServiceUrl": "http://localhost:8000",
+        "Header": "{itemId} STATEMENT OF YOUR ACCOUNT",
+        "SubHeader": "for the period {itemId}",
+        "Footer": "As your landlord, the council has a duty to make sure all charges are paid up to date. This is because the housing income goes toward the upkeep of council housing and providing services for residents. You must make weekly charges payment a priority. If you don’t pay, you risk losing your home.",
+        "SubFooter": "As of {itemId} your account balance was {itemId_1} in arrears."
       },
       "applicationUrl": "https://localhost:5001;http://localhost:5000"
     }

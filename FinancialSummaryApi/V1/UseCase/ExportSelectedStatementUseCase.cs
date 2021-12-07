@@ -27,7 +27,8 @@ namespace FinancialSummaryApi.V1.UseCase
                 foreach (var item in request.StatementIdsToExport)
                 {
                     var rId = await _financeSummaryGateway.GetStatementByIdAsync(item, request.TargetId).ConfigureAwait(false);
-                    response.Add(rId);
+                    if(rId !=null)
+                        response.Add(rId);
                 };
             }
             else
@@ -38,7 +39,7 @@ namespace FinancialSummaryApi.V1.UseCase
             }
 
 
-            var result = FileGenerator.WriteManualCSVFile(response);
+            var result =response !=null ? FileGenerator.WriteManualCSVFile(response): null;
             return result;
         }
     }

@@ -25,6 +25,11 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialSummaryApi::FinancialSummaryApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
+    environment:
+     Header: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_header}
+     SubHeader: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_header}
+     Footer: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_footer}
+     SubFooter: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_footer}
     events:
       - http:
           path: /{proxy+}
