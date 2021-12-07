@@ -10,12 +10,7 @@
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     </PropertyGroup>
-    <ItemGroup>
-      <Compile Remove="puppeteer\**" />
-      <Content Remove="puppeteer\**" />
-      <EmbeddedResource Remove="puppeteer\**" />
-      <None Remove="puppeteer\**" />
-    </ItemGroup>
+  
     <ItemGroup>
         <Compile Remove="V1\UseCase\Helpers\PdfGenerator.cs" />
     </ItemGroup>
