@@ -20,17 +20,23 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IAddStatementListUseCase _addListUseCase;
         private readonly IExportStatementUseCase _exportStatementUseCase;
         private readonly IExportSelectedStatementUseCase _exportSelectedItemUseCase;
+        private readonly IExportCsvStatementUseCase _exportCsvStatementUseCase;
+        private readonly IExportPdfStatementUseCase _exportPdfStatementUseCase;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
             IAddStatementListUseCase addListUseCase,
             IExportStatementUseCase exportStatementUseCase,
-            IExportSelectedStatementUseCase exportSelectedItemUseCase)
+            IExportSelectedStatementUseCase exportSelectedItemUseCase,
+            IExportCsvStatementUseCase exportCsvStatementUseCase,
+            IExportPdfStatementUseCase exportPdfStatementUseCase)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
             _exportStatementUseCase = exportStatementUseCase;
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
+            _exportCsvStatementUseCase = exportCsvStatementUseCase;
+            _exportPdfStatementUseCase = exportPdfStatementUseCase;
         }
 
         /// <summary>
@@ -122,14 +128,29 @@ namespace FinancialSummaryApi.V1.Controllers
         [Route("export")]
         public async Task<IActionResult> ExportStatementReportAsync([FromBody] ExportStatementRequest request)
         {
-            var result = await _exportStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
-            if (result == null)
-                return NotFound("No record found");
-            if (request?.FileType == "pdf")
+            switch (request?.FileType)
             {
-                return File(result, "application/pdf", $"{request.TypeOfStatement}_{DateTime.UtcNow.Ticks}.{request.FileType}");
+                case "pdf":
+                    {
+                        var pdfResult = await _exportPdfStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
+                        if (pdfResult == null)
+                            return NotFound($"No records found for the following ID: {request.TargetId}");
+                        return Ok(pdfResult);
+                    }
+
+                case "csv":
+                    {
+
+                        var csvResult = await _exportCsvStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
+                        if (csvResult == null)
+                            return NotFound($"No records found for the following ID: {request.TargetId}");
+
+                        return File(csvResult, "text/csv", $"{request.TypeOfStatement}_{DateTime.UtcNow.Ticks}.{request.FileType}");
+                    }
+
+                default:
+                    return BadRequest("Format not supported");
             }
-            return File(result, "text/csv", $"{request.TypeOfStatement}_{DateTime.UtcNow.Ticks}.{request.FileType}");
         }
 
         [ProducesResponseType(StatusCodes.Status200OK)]
