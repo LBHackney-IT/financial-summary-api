@@ -51,9 +51,9 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             model.SubFooter = lines[1];
             model.SubFooter = lines[2];
             model.Footer = lines[3];
-            // model.BankAccountNumber = string.Join(",", transactions.Select(x => x.RentAccountNumber).Distinct().ToArray());
-            model.Balance = Money.PoundSterling(transactions.LastOrDefault().BalanceAmount).ToString();
-            model.BalanceBroughtForward = Money.PoundSterling(transactions.FirstOrDefault().FinishBalance).ToString();
+            model.BankAccountNumber = string.Join(",", transactions.Select(x => x.RentAccountNumber).Distinct().ToArray());
+            model.Balance = Money.PoundSterling(transactions.LastOrDefault().FinishBalance).ToString();
+            model.BalanceBroughtForward = Money.PoundSterling(transactions.FirstOrDefault().StartBalance).ToString();
             model.StatementPeriod = period;
             foreach (var item in transactions)
             {
@@ -61,11 +61,11 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
                 data.Add(
                    new ExportTransactionResponse
                    {
-                       Date = item.TransactionDate.ToString("dd MMM yyyy"),
+                       Date = item.StatementPeriodEndDate.ToString("dd MMM yyyy"),
                        TransactionDetail = item.TargetType.ToString(),
                        Debit = Money.PoundSterling(item.PaidAmount).ToString(),
                        Credit = Money.PoundSterling(item.HousingBenefitAmount).ToString(),
-                       Balance = Money.PoundSterling(item.BalanceAmount).ToString()
+                       Balance = Money.PoundSterling(item.FinishBalance).ToString()
                    });
             }
             model.Data = data;
