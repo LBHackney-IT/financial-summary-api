@@ -58,7 +58,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             model.BankAccountNumber = string.Join(",", response.Select(x => x.RentAccountNumber).Distinct().ToArray());
             model.Balance = Money.PoundSterling(response.LastOrDefault().FinishBalance).ToString();
             model.BalanceBroughtForward = Money.PoundSterling(response.FirstOrDefault().StartBalance).ToString();
-           // model.StatementPeriod = period;
+            // model.StatementPeriod = period;
             foreach (var item in response)
             {
 
@@ -74,7 +74,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             }
             model.Data = data;
             string template = await RazorTemplateEngine.RenderAsync("~/V1/Templates/PDFTemplate.cshtml", model).ConfigureAwait(false);
-           
+
             //var page = await browser.NewPageAsync();
 
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
@@ -93,7 +93,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
 
             return pdfContent; //template.EncodeBase64();
         }
-        public static byte[] WriteCSVFile(List<Statement> transactions,List<string> lines)
+        public static byte[] WriteCSVFile(List<Statement> transactions, List<string> lines)
         {
             var data = new List<ExportTransactionResponse>();
             foreach (var item in transactions)

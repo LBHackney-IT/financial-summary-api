@@ -16,7 +16,7 @@ namespace FinancialSummaryApi.V1.Infrastructure
             var downloadPath = Path.Join(hostingEnvironment.ContentRootPath, @"\puppeteer");
             var browserOptions = new BrowserFetcherOptions { Path = downloadPath };
             using var browserFetcher = new BrowserFetcher(browserOptions);
-           
+
             _executablePath = browserFetcher.GetExecutablePath(BrowserFetcher.DefaultChromiumRevision);
 
             await browserFetcher.DownloadAsync(BrowserFetcher.DefaultChromiumRevision).ConfigureAwait(false);
