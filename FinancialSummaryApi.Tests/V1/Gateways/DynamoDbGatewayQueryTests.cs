@@ -297,7 +297,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             Func<DateTime> funcDT = () => DateTime.UtcNow.AddDays(-2 - random.Next(100));
             statementDbEntities.AddRange(_fixture.Build<StatementDbEntity>()
                                    .With(x => x.StatementPeriodEndDate, funcDT)
-                                  // .With(x => x.S, funcDT)
                                     .With(x => x.SummaryType, SummaryType.Statement)
                                    .With(x => x.TargetId, targetId)
                                    .CreateMany(count));
