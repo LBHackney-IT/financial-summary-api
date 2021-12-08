@@ -56,7 +56,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             model.BankAccountNumber = string.Join(",", response.Select(x => x.RentAccountNumber).Distinct().ToArray());
             model.Balance = Money.PoundSterling(response.LastOrDefault().FinishBalance).ToString();
             model.BalanceBroughtForward = Money.PoundSterling(response.FirstOrDefault().StartBalance).ToString();
-           // model.StatementPeriod = period;
+            // model.StatementPeriod = period;
             foreach (var item in response)
             {
 
@@ -76,7 +76,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
 
             return template.EncodeBase64();
         }
-        public static byte[] WriteCSVFile(List<Statement> transactions,List<string> lines)
+        public static byte[] WriteCSVFile(List<Statement> transactions, List<string> lines)
         {
             var data = new List<ExportTransactionResponse>();
             foreach (var item in transactions)
