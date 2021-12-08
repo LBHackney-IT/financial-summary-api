@@ -73,6 +73,8 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
+            apt-get -y install libgdiplus libc6-dev
+            
       - run:
           name: Install serverless CLI
           command: npm i -g serverless
@@ -162,9 +164,9 @@ workflows:
   check-and-deploy-development:
     jobs:
       - check-code-formatting:
-           context: api-nuget-token-context
+          context: api-nuget-token-context
       - build-and-test:
-           context: api-nuget-token-context
+          context: api-nuget-token-context
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:

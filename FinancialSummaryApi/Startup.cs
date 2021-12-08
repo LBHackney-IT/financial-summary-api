@@ -131,6 +131,7 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -174,6 +175,9 @@ namespace FinancialSummaryApi
             services.AddScoped<IGetStatementListUseCase, GetStatementListUseCase>();
             services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
             services.AddScoped<IExportSelectedStatementUseCase, ExportSelectedStatementUseCase>();
+            services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
+            services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -208,6 +212,7 @@ namespace FinancialSummaryApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
+
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();
@@ -216,7 +221,7 @@ namespace FinancialSummaryApi
                 // SwaggerGen won't find controllers that are routed via this technique.
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-            app.UseLogCall();
+            //app.UseLogCall();
         }
     }
 }

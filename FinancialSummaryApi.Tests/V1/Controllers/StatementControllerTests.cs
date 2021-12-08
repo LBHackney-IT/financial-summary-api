@@ -32,7 +32,10 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly Mock<IAddStatementListUseCase> _addListUseCase;
         private readonly Mock<IExportStatementUseCase> _exportStatementUseCase;
         private readonly Mock<IExportSelectedStatementUseCase> _exportSelectedItemUseCase;
+        private readonly Mock<IExportCsvStatementUseCase> _exportCsvStatementUseCase;
+        private readonly Mock<IExportPdfStatementUseCase> _exportPdfStatementUseCase;
         private readonly Fixture _fixture = new Fixture();
+
 
         private readonly IMapper _mapper;
 
@@ -44,10 +47,14 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             _exportStatementUseCase = new Mock<IExportStatementUseCase>();
             _exportSelectedItemUseCase = new Mock<IExportSelectedStatementUseCase>();
-
+            _exportCsvStatementUseCase = new Mock<IExportCsvStatementUseCase>();
+            _exportPdfStatementUseCase = new Mock<IExportPdfStatementUseCase>();
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
-            _statementController = new StatementController(_getListUseCase.Object, _addListUseCase.Object, _exportStatementUseCase.Object, _exportSelectedItemUseCase.Object)
+            _statementController = new StatementController(
+                _getListUseCase.Object, _addListUseCase.Object,
+                _exportStatementUseCase.Object,
+                _exportSelectedItemUseCase.Object, _exportCsvStatementUseCase.Object, _exportPdfStatementUseCase.Object)
             {
                 ControllerContext = _controllerContext
             };
