@@ -104,7 +104,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
                     cc.NewLine = Environment.NewLine;
                     foreach (var item in lines)
                     {
-                        cw.WriteRecord(new FooterRecord { FooterText = item });
+                        cw.WriteComment(item);
                     }
                 }
                 result = ms.ToArray();

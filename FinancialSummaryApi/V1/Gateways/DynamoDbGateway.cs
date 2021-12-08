@@ -257,7 +257,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         }
 
-        public async Task<List<Statement>> GetStatementListAsync(Guid targetId, DateTime startDate, DateTime endDate)
+        public async Task<List<Statement>> GetStatementListAsync(Guid targetId, DateTime? startDate, DateTime? endDate)
         {
             var dbStatement = new List<StatementDbEntity>();
             string paginationToken = "{}";
@@ -270,9 +270,9 @@ namespace FinancialSummaryApi.V1.Gateways
                 Filter = new QueryFilter(TARGETID, QueryOperator.Equal, targetId),
                 PaginationToken = paginationToken
             };
-            if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+            if ((startDate.HasValue && startDate != DateTime.MinValue) && (endDate.HasValue && endDate != DateTime.MinValue))
             {
-                queryConfig.Filter.AddCondition("statement_period_end_date", QueryOperator.Between, startDate.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.ToString(AWSSDKUtils.ISO8601DateFormat));
+                queryConfig.Filter.AddCondition("statement_period_end_date", QueryOperator.Between, startDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat));
             }
 
             do
