@@ -22,6 +22,7 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IExportSelectedStatementUseCase _exportSelectedItemUseCase;
         private readonly IExportCsvStatementUseCase _exportCsvStatementUseCase;
         private readonly IExportPdfStatementUseCase _exportPdfStatementUseCase;
+        private readonly IExportFinishPdfStatementUseCase _exportFinishPdfStatementUseCase;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
@@ -29,7 +30,8 @@ namespace FinancialSummaryApi.V1.Controllers
             IExportStatementUseCase exportStatementUseCase,
             IExportSelectedStatementUseCase exportSelectedItemUseCase,
             IExportCsvStatementUseCase exportCsvStatementUseCase,
-            IExportPdfStatementUseCase exportPdfStatementUseCase)
+            IExportPdfStatementUseCase exportPdfStatementUseCase,
+            IExportFinishPdfStatementUseCase exportFinishPdfStatementUseCase)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
@@ -37,6 +39,7 @@ namespace FinancialSummaryApi.V1.Controllers
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
             _exportCsvStatementUseCase = exportCsvStatementUseCase;
             _exportPdfStatementUseCase = exportPdfStatementUseCase;
+            _exportFinishPdfStatementUseCase = exportFinishPdfStatementUseCase;
         }
 
         /// <summary>
@@ -153,6 +156,7 @@ namespace FinancialSummaryApi.V1.Controllers
             }
         }
 
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -170,6 +174,39 @@ namespace FinancialSummaryApi.V1.Controllers
                 return NotFound("No record found");
             return File(result, "text/csv", $"export_{DateTime.UtcNow.Ticks}.csv");
         }
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("export-exp")]
+        public async Task<IActionResult> ExportFinishStatementReportAsync([FromBody] ExportStatementRequest request)
+        {
+            switch (request?.FileType)
+            {
+                case "pdf":
+                    {
+                        var pdfResult = await _exportPdfStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
+                        if (pdfResult == null)
+                            return NotFound($"No records found for the following ID: {request.TargetId}");
+                        return Ok(pdfResult);
+                    }
+
+                case "csv":
+                    {
+
+                        var csvResult = await _exportCsvStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
+                        if (csvResult == null)
+                            return NotFound($"No records found for the following ID: {request.TargetId}");
+
+                        return File(csvResult, "text/csv", $"{request.TypeOfStatement}_{DateTime.UtcNow.Ticks}.{request.FileType}");
+                    }
+
+                default:
+                    return BadRequest("Format not supported");
+            }
+        }
+
         private static bool DatesArePartialProvided(DateTime startDate, DateTime endDate)
             => startDate != DateTime.MinValue ^ endDate != DateTime.MinValue;
 

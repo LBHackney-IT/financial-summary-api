@@ -177,6 +177,8 @@ namespace FinancialSummaryApi
             services.AddScoped<IExportSelectedStatementUseCase, ExportSelectedStatementUseCase>();
             services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
+            services.AddScoped<IExportFinishPdfStatementUseCase, ExportFinishPdfStatementUseCase>();
+
 
         }
 

@@ -46,6 +46,53 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             return null;
 
         }
+
+        public static async Task<Stream> CreateFinishPdfTemplate(List<Statement> response, List<string> lines)
+        {
+
+            var model = new ExportResponse();
+            var data = new List<ExportTransactionResponse>();
+            model.Header = lines[0];
+            model.SubFooter = lines[1];
+            model.SubFooter = lines[2];
+            model.Footer = lines[3];
+            model.BankAccountNumber = string.Join(",", response.Select(x => x.RentAccountNumber).Distinct().ToArray());
+            model.Balance = Money.PoundSterling(response.LastOrDefault().FinishBalance).ToString();
+            model.BalanceBroughtForward = Money.PoundSterling(response.FirstOrDefault().StartBalance).ToString();
+            // model.StatementPeriod = period;
+            foreach (var item in response)
+            {
+
+                data.Add(
+                   new ExportTransactionResponse
+                   {
+                       Date = item.StatementPeriodEndDate.ToString("dd MMM yyyy"),
+                       TransactionDetail = item.TargetType.ToString(),
+                       Debit = Money.PoundSterling(item.PaidAmount).ToString(),
+                       Credit = Money.PoundSterling(item.HousingBenefitAmount).ToString(),
+                       Balance = Money.PoundSterling(item.FinishBalance).ToString()
+                   });
+            }
+            model.Data = data;
+            string template = await RazorTemplateEngine.RenderAsync("~/V1/Templates/PDFTemplate.cshtml", model).ConfigureAwait(false);
+
+            await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
+            {
+                Headless = true,
+                ExecutablePath = PuppeteerExtensions.ExecutablePath
+            }).ConfigureAwait(false);
+            await using var page = await browser.NewPageAsync().ConfigureAwait(false);
+            await page.EmulateMediaTypeAsync(MediaType.Screen).ConfigureAwait(false);
+            await page.SetContentAsync(template).ConfigureAwait(false);
+            var pdfContent = await page.PdfStreamAsync(new PdfOptions
+            {
+                Format = PaperFormat.A4,
+                PrintBackground = true
+            }).ConfigureAwait(false);
+
+            return pdfContent; //template.EncodeBase64();
+
+        }
         public static async Task<string> CreatePdfTemplate(List<Statement> response, List<string> lines)
         {
 
