@@ -43,6 +43,12 @@ namespace FinancialSummaryApi.Tests
             EnsureEnvVarConfigured("DynamoDb_LocalServiceUrl", "http://localhost:8000");
             EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8kmm3g");
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "fco1i2");
+
+
+            EnsureEnvVarConfigured("Header", "Header");
+            EnsureEnvVarConfigured("SubHeader", "SubHeader");
+            EnsureEnvVarConfigured("Footer", "Footer");
+            EnsureEnvVarConfigured("SubFooter", "SubFooter");
             _factory = new DynamoDbMockWebApplicationFactory<TStartup>(_tables);
 
             Client = _factory.CreateClient();
