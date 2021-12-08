@@ -161,6 +161,10 @@ namespace FinancialSummaryApi.V1.Controllers
         [Route("selection/export")]
         public async Task<IActionResult> ExportSelectedItemAsync([FromBody] ExportSelectedStatementRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+            }
             var result = await _exportSelectedItemUseCase.ExecuteAsync(request).ConfigureAwait(false);
             if (result == null)
                 return NotFound("No record found");
