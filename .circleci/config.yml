@@ -100,7 +100,7 @@ commands:
       - run:
           name: Install puppeteer with chronium
           command: |
-            npm i puppeteer
+            npm i puppeteer --save
       - run:
           name: Build lambda
           command: |
