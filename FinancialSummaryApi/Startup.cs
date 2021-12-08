@@ -212,7 +212,7 @@ namespace FinancialSummaryApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
-            app.PreparePuppeteerAsync(env).GetAwaiter().GetResult();
+
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();
@@ -221,7 +221,7 @@ namespace FinancialSummaryApi
                 // SwaggerGen won't find controllers that are routed via this technique.
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-            app.UseLogCall();
+            //app.UseLogCall();
         }
     }
 }

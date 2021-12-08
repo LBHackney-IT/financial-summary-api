@@ -22,7 +22,7 @@ namespace FinancialSummaryApi.V1.UseCase
         {
 
             List<Statement> response = new List<Statement>();
-            if (request.StatementIdsToExport.Count > 0)
+            if (request.StatementIdsToExport?.Count > 0)
             {
                 foreach (var item in request.StatementIdsToExport)
                 {
@@ -33,9 +33,7 @@ namespace FinancialSummaryApi.V1.UseCase
             }
             else
             {
-                var startDate = request.StartDate ?? DateTime.UtcNow;
-                var endDate = request.StartDate ?? DateTime.UtcNow;
-                response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, startDate, endDate).ConfigureAwait(false);
+                response = await _financeSummaryGateway.GetStatementListAsync(request.TargetId, request.StartDate, request.EndDate).ConfigureAwait(false);
             }
 
 

@@ -51,7 +51,7 @@ namespace FinancialSummaryApi.V1.UseCase
             }
         }
 
-        public async Task<Stream> ExecuteAsync(ExportStatementRequest request)
+        public async Task<string> ExecuteAsync(ExportStatementRequest request)
         {
             string name;
             string period;
@@ -63,9 +63,7 @@ namespace FinancialSummaryApi.V1.UseCase
                 startDate = DateTime.UtcNow.AddMonths(-3);
                 endDate = DateTime.UtcNow;
                 name = TypeOfStatement.Quarterly.ToString();
-                period = $"{startDate:D} to {endDate:D}";
-                lines.Add(_header.Replace("{itemId}", name));
-                lines.Add(_subHeader.Replace("{itemId}", period));
+
             }
             else
             {
@@ -83,6 +81,9 @@ namespace FinancialSummaryApi.V1.UseCase
             {
                 var accountBalance = $"{ response.LastOrDefault().FinishBalance}";
                 var date = $"{DateTime.Today:D}";
+                period = $"{startDate:D} to {endDate:D}";
+                lines.Add(_header.Replace("{itemId}", name).ToUpper());
+                lines.Add(_subHeader.Replace("{itemId}", period));
                 lines.Add(_subFooter.Replace("{itemId}", date).Replace("{itemId_1}", accountBalance));
                 lines.Add(_footer);
                 return await FileGenerator.CreatePdfTemplate(response, lines).ConfigureAwait(false);
