@@ -186,7 +186,7 @@ namespace FinancialSummaryApi.V1.Controllers
             {
                 case "pdf":
                     {
-                        var pdfResult = await _exportPdfStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
+                        var pdfResult = await _exportFinishPdfStatementUseCase.ExecuteAsync(request).ConfigureAwait(false);
                         if (pdfResult == null)
                             return NotFound($"No records found for the following ID: {request.TargetId}");
                         return Ok(pdfResult);
