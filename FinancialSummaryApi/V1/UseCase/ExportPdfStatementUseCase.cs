@@ -62,7 +62,7 @@ namespace FinancialSummaryApi.V1.UseCase
                 startDate = DateTime.UtcNow.AddMonths(-3);
                 endDate = DateTime.UtcNow;
                 name = TypeOfStatement.Quarterly.ToString();
-               
+
             }
             else
             {
