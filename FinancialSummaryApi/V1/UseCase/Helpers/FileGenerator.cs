@@ -77,18 +77,19 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             model.Data = data;
             string template = await RazorTemplateEngine.RenderAsync("~/V1/Templates/PDFTemplate.cshtml", model).ConfigureAwait(false);
 
-            using var browserFetcher = new BrowserFetcher();
-            await browserFetcher.DownloadAsync().ConfigureAwait(false);
+            //using var browserFetcher = new BrowserFetcher();
+            //await browserFetcher.DownloadAsync().ConfigureAwait(false);
 
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
-                UserDataDir = "/tmp/chromium",
+                //UserDataDir = "/tmp/chromium",
                 Headless = true,
                 ExecutablePath = PuppeteerExtensions.ExecutablePath
             }).ConfigureAwait(false);
             await using var page = await browser.NewPageAsync().ConfigureAwait(false);
             await page.EmulateMediaTypeAsync(MediaType.Screen).ConfigureAwait(false);
             await page.SetContentAsync(template).ConfigureAwait(false);
+
             var pdfContent = await page.PdfStreamAsync(new PdfOptions
             {
                 Format = PaperFormat.A4,
