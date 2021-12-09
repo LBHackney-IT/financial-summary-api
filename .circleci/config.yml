@@ -99,7 +99,8 @@ commands:
       - run:
           name: Install puppeteer with chronium
           command: |
-            npm i puppeteer-core
+            npm i chrome-aws-lambda --save-prod
+            npm i puppeteer-core --save-prod
       - run:
           name: Build lambda
           command: |
