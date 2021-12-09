@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure;
+using Microsoft.Extensions.Logging;
 using NodaMoney;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
@@ -81,6 +82,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
 
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
+                UserDataDir = "/tmp",
                 Headless = true,
                 ExecutablePath = PuppeteerExtensions.ExecutablePath
             }).ConfigureAwait(false);
