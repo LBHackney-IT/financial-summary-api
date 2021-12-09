@@ -101,6 +101,7 @@ commands:
           command: |
             npm i chrome-aws-lambda --save-prod
             npm i puppeteer-core --save-prod
+            ls * -r
       - run:
           name: Build lambda
           command: |
