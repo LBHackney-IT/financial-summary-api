@@ -76,6 +76,9 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             model.Data = data;
             string template = await RazorTemplateEngine.RenderAsync("~/V1/Templates/PDFTemplate.cshtml", model).ConfigureAwait(false);
 
+            using var browserFetcher = new BrowserFetcher();
+            await browserFetcher.DownloadAsync().ConfigureAwait(false);
+
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = true,
