@@ -32,6 +32,6 @@ namespace FinancialSummaryApi.V1.Factories
             return databaseEntity.Select(p => p.ToDomain())
                                  .OrderBy(x => x.StatementPeriodEndDate)
                                  .ToList();
-        }  
+        }
     }
 }

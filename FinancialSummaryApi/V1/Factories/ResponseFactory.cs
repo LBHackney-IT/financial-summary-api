@@ -52,6 +52,6 @@ namespace FinancialSummaryApi.V1.Factories
             return domainList?.Select(domain => domain.ToResponse())?.ToList();
         }
 
-      
+
     }
 }
