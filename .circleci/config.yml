@@ -74,7 +74,6 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
-            apt-get -y install libgdiplus libc6-dev
             
       - run:
           name: Install serverless CLI
@@ -100,7 +99,7 @@ commands:
       - run:
           name: Install puppeteer with chronium
           command: |
-            npm i puppeteer --save
+            npm i puppeteer-core
       - run:
           name: Build lambda
           command: |
