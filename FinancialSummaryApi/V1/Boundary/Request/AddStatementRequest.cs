@@ -27,6 +27,10 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// <example>
         /// 2021-04-27T23:00:00.0000000+00:00
         /// </example>
+        public DateTime StatementPeriodStartDate { get; set; }
+        /// <example>
+        /// 2021-04-27T23:00:00.0000000+00:00
+        /// </example>
         public DateTime StatementPeriodEndDate { get; set; }
 
         /// <example>
