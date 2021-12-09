@@ -82,7 +82,7 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
 
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
-                UserDataDir = "/tmp",
+                UserDataDir = "/tmp/chromium",
                 Headless = true,
                 ExecutablePath = PuppeteerExtensions.ExecutablePath
             }).ConfigureAwait(false);
