@@ -52,26 +52,6 @@ namespace FinancialSummaryApi.V1.Factories
             return domainList?.Select(domain => domain.ToResponse())?.ToList();
         }
 
-        public static WeeklySummaryResponse ToResponse(this WeeklySummary domain)
-        {
-            return domain == null ? null : new WeeklySummaryResponse
-            {
-                Id = domain.Id,
-                TargetId = domain.TargetId,
-                BalanceAmount = domain.BalanceAmount,
-                ChargedAmount = domain.ChargedAmount,
-                FinancialMonth = domain.FinancialMonth,
-                FinancialYear = domain.FinancialYear,
-                HousingBenefitAmount = domain.HousingBenefitAmount,
-                PaidAmount = domain.PaidAmount,
-                PeriodNo = domain.PeriodNo,
-                WeekStartDate = domain.WeekStartDate,
-            };
-        }
-
-        public static List<WeeklySummaryResponse> ToResponse(this IEnumerable<WeeklySummary> domainList)
-        {
-            return domainList?.Select(domain => domain.ToResponse())?.ToList();
-        }
+      
     }
 }

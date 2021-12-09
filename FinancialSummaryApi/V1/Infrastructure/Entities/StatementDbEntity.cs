@@ -16,7 +16,8 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "summary_type", Converter = typeof(DynamoDbEnumConverter<SummaryType>))]
         public SummaryType SummaryType { get; set; }
-
+        [DynamoDBProperty(AttributeName = "statement_period_start_date", Converter = typeof(DynamoDbDateTimeConverter))]
+        public DateTime StatementPeriodStartDate { get; set; }
         [DynamoDBProperty(AttributeName = "statement_period_end_date", Converter = typeof(DynamoDbDateTimeConverter))]
         public DateTime StatementPeriodEndDate { get; set; }
 

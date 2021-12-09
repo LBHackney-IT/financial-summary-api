@@ -82,32 +82,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
         }
         #endregion
 
-        #region WeeklySummaries
-
-        [Fact]
-        public async Task AddWeeklySummaryWithValidObject()
-        {
-            _mockDynamoDb.Setup(_ => _.SaveAsync(It.IsAny<WeeklySummaryDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            var domain = _fixture.Create<WeeklySummary>();
-
-            await _gateway.AddAsync(domain).ConfigureAwait(false);
-
-            _mockDynamoDb.Verify(_ => _.SaveAsync(It.IsAny<WeeklySummaryDbEntity>(), default), Times.Once);
-        }
-
-        [Fact]
-        public async Task AddWeeklySummaryWithInvalidObject()
-        {
-            _mockDynamoDb.Setup(_ => _.SaveAsync(It.IsAny<WeeklySummaryDbEntity>(), It.IsAny<CancellationToken>()))
-                .Returns(Task.CompletedTask);
-
-            await _gateway.AddAsync((WeeklySummary) null).ConfigureAwait(false);
-
-            _mockDynamoDb.Verify(_ => _.SaveAsync(It.IsAny<WeeklySummaryDbEntity>(), default), Times.Once);
-        }
-        #endregion
 
 
     }
