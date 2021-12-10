@@ -1,5 +1,4 @@
 using Amazon.DynamoDBv2.DataModel;
-using Amazon.DynamoDBv2.Model;
 using AutoFixture;
 using AutoMapper;
 using FinancialSummaryApi.V1.Domain;
