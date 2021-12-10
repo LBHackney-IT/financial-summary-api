@@ -11,7 +11,21 @@
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove=".local-chromium\**" />
+      <Content Remove=".local-chromium\**" />
+      <EmbeddedResource Remove=".local-chromium\**" />
+      <None Remove=".local-chromium\**" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Remove="V1\Controllers\WeeklySummaryController.cs" />
+        <Compile Remove="V1\Infrastructure\Entities\WeeklySummaryDbEntity.cs" />
+        <Compile Remove="V1\UseCase\AddWeeklySummaryUseCase.cs" />
+        <Compile Remove="V1\UseCase\GetAllWeeklySummariesUseCase.cs" />
+        <Compile Remove="V1\UseCase\GetWeeklySummaryByIdUseCase.cs" />
         <Compile Remove="V1\UseCase\Helpers\PdfGenerator.cs" />
+        <Compile Remove="V1\UseCase\Interfaces\IAddWeeklySummaryUseCase.cs" />
+        <Compile Remove="V1\UseCase\Interfaces\IGetAllWeeklySummariesUseCase.cs" />
+        <Compile Remove="V1\UseCase\Interfaces\IGetWeeklySummaryByIdUseCase.cs" />
     </ItemGroup>
 
     <ItemGroup>

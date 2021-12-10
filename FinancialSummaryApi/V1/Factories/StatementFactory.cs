@@ -21,6 +21,7 @@ namespace FinancialSummaryApi.V1.Factories
                 PaidAmount = statementDbEntity.PaidAmount,
                 RentAccountNumber = statementDbEntity.RentAccountNumber,
                 StartBalance = statementDbEntity.StartBalance,
+                StatementPeriodStartDate = statementDbEntity.StatementPeriodStartDate,
                 StatementPeriodEndDate = statementDbEntity.StatementPeriodEndDate,
                 StatementType = statementDbEntity.StatementType,
                 TargetType = statementDbEntity.TargetType,

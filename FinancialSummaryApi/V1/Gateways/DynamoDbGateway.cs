@@ -165,52 +165,6 @@ namespace FinancialSummaryApi.V1.Gateways
 
         #endregion
 
-        #region Get Weekly Summary
-        public async Task<List<WeeklySummary>> GetAllWeeklySummaryAsync(Guid targetId, DateTime? startDate, DateTime? endDate)
-        {
-            var dbWeeklySummary = new List<WeeklySummaryDbEntity>();
-            var table = _dynamoDbContext.GetTargetTable<WeeklySummaryDbEntity>();
-
-            var queryConfig = new QueryOperationConfig
-            {
-                BackwardSearch = true,
-                ConsistentRead = true,
-                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, targetId),
-                PaginationToken = PaginationToken
-            };
-            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.WeeklySummary.ToString());
-            if (startDate.HasValue && endDate.HasValue)
-            {
-                queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, startDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat));
-            }
-
-            do
-            {
-                var search = table.Query(queryConfig);
-                PaginationToken = search.PaginationToken;
-                var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
-                if (resultsSet.Any())
-                {
-                    dbWeeklySummary.AddRange(_dynamoDbContext.FromDocuments<WeeklySummaryDbEntity>(resultsSet));
-
-                }
-            }
-            while (!string.Equals(PaginationToken, "{}", StringComparison.Ordinal));
-
-            return dbWeeklySummary.ToDomain();
-        }
-
-        public async Task AddAsync(WeeklySummary weeklySummary)
-        {
-            await _dynamoDbContext.SaveAsync(weeklySummary.ToDatabase()).ConfigureAwait(false);
-        }
-
-        public async Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid targetId, Guid id)
-        {
-            var response = await _dynamoDbContext.LoadAsync<WeeklySummaryDbEntity>(targetId, id).ConfigureAwait(false);
-            return response.ToDomain();
-        }
-        #endregion
 
         public async Task<PagedResult<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, string paginationToken)
         {

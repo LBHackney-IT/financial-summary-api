@@ -37,36 +37,6 @@ namespace FinancialSummaryApi.V1.Factories
             return assets;
         }
 
-        public static List<WeeklySummary> ToWeeklySummary(this QueryResponse response)
-        {
-            if (response is null)
-            {
-                throw new ArgumentNullException(nameof(response));
-            }
-
-            List<WeeklySummary> weeklySummaries = new List<WeeklySummary>();
-
-            foreach (Dictionary<string, AttributeValue> item in response.Items)
-            {
-                weeklySummaries.Add(new WeeklySummary
-                {
-                    Id = Guid.Parse(item["id"].S),
-                    TargetId = Guid.Parse(item["target_id"].S),
-                    PeriodNo = short.Parse(item["period_no"].N),
-                    FinancialYear = short.Parse(item["financial_year"].N),
-                    FinancialMonth = short.Parse(item["financial_month"].N),
-                    WeekStartDate = DateTime.Parse(item["week_start_date"].S),
-                    ChargedAmount = decimal.Parse(item["charged_amount"].N, CultureInfo.InvariantCulture),
-                    PaidAmount = decimal.Parse(item["paid_amount"].N, CultureInfo.InvariantCulture),
-                    BalanceAmount = decimal.Parse(item["balance_amount"].N, CultureInfo.InvariantCulture),
-                    HousingBenefitAmount = decimal.Parse(item["housing_benefit_amount"].N, CultureInfo.InvariantCulture),
-                    SubmitDate = DateTime.Parse(item["submit_date"].S),
-                });
-            }
-
-            return weeklySummaries;
-        }
-
         public static List<RentGroupSummary> ToRentGroupSummary(this QueryResponse response)
         {
             if (response is null)

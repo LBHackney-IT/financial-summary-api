@@ -88,51 +88,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
 
         #endregion
 
-        #region WeeklySummaries
-        [Fact]
-        public async Task GetByIdReturnsNullIfEntityDoesntExist()
-        {
-
-            var weeklySummary = await _gateway.GetWeeklySummaryByIdAsync(new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"), new Guid("0b4f7df6-2749-420d-bdd1-ee65b8ed0032"))
-                .ConfigureAwait(false);
-
-
-            weeklySummary.Should().BeNull();
-        }
-
-        [Fact]
-        public async Task GetByIdReturnsWeeklySummaryIfItExists()
-        {
-
-            var expected = InsertWeeklySummary(Guid.Parse("4fc2872e-5131-4399-8959-c4a17b611f9c"), DateTime.Today, 1).FirstOrDefault();
-            var weeklySummaryResponse = await _gateway.GetWeeklySummaryByIdAsync(expected.TargetId, expected.Id)
-                .ConfigureAwait(false);
-            _cleanup.Add(async () =>
-              await _dbFixture.DynamoDbContext.DeleteAsync<WeeklySummaryDbEntity>(weeklySummaryResponse.TargetId, weeklySummaryResponse.Id, default).ConfigureAwait(false));
-            var domain = expected.ToDomain();
-            weeklySummaryResponse.Should().BeEquivalentTo(domain);
-        }
-
-        [Fact]
-        public async Task GetAllWeeklySummariesByDateReturnsList()
-        {
-            var expected = InsertWeeklySummary(Guid.Parse("4fc2872e-5131-4399-8959-c4a17b611f9c"), new DateTime(2020, 8, 15).ToUniversalTime(), 2);
-
-            var weeklySummaries = await _gateway.GetAllWeeklySummaryAsync(expected[0].TargetId, expected[0].SubmitDate.AddDays(-1), expected[0].SubmitDate.AddDays(1))
-                .ConfigureAwait(false);
-            foreach (var item in weeklySummaries)
-            {
-                _cleanup.Add(async () =>
-             await _dbFixture.DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(item.TargetId, item.Id, default).ConfigureAwait(false));
-            }
-            weeklySummaries.Should().HaveCount(2);
-
-            weeklySummaries.Should().BeEquivalentTo(expected.ToDomain());
-        }
-
-
-        #endregion
-
         #region Statements
 
         [Fact]
@@ -268,26 +223,6 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                 .GetRemainingAsync().GetAwaiter().GetResult().OrderByDescending(x => x.SubmitDate)
                                  .ToList(); ;
             return rentGroupSummariesResult;
-        }
-        private List<WeeklySummaryDbEntity> InsertWeeklySummary(Guid targetId, DateTime submitDate, int count)
-        {
-            var weeklySummaries = new List<WeeklySummaryDbEntity>();
-            weeklySummaries.AddRange(_fixture.Build<WeeklySummaryDbEntity>()
-                                   .With(x => x.SubmitDate, submitDate)
-                                    .With(x => x.SummaryType, SummaryType.WeeklySummary)
-                                   .With(x => x.TargetId, targetId)
-                                   .CreateMany(count));
-
-            foreach (var item in weeklySummaries)
-            {
-                _dbFixture.DynamoDbContext.SaveAsync(item).GetAwaiter().GetResult();
-            }
-            var weeklySummaryDbEntities = _dbFixture.DynamoDbContext
-                .QueryAsync<WeeklySummaryDbEntity>(weeklySummaries[0].TargetId, null)
-                .GetRemainingAsync().GetAwaiter().GetResult().OrderByDescending(x => x.SubmitDate)
-                                 .ToList();
-
-            return weeklySummaryDbEntities;
         }
 
         private List<StatementDbEntity> InsertStatement(Guid targetId, int count)
