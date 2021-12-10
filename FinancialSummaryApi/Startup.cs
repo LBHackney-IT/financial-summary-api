@@ -167,9 +167,6 @@ namespace FinancialSummaryApi
             services.AddScoped<IAddRentGroupSummaryListUseCase, AddRentGroupSummaryListUseCase>();
             services.AddScoped<IGetRentGroupSummaryByNameUseCase, GetRentGroupSummaryByNameUseCase>();
             services.AddScoped<IGetAllRentGroupSummariesUseCase, GetAllRentGroupSummariesUseCase>();
-            //services.AddScoped<IGetAllWeeklySummariesUseCase, GetAllWeeklySummariesUseCase>();
-            //services.AddScoped<IAddWeeklySummaryUseCase, AddWeeklySummaryUseCase>();
-            //services.AddScoped<IGetWeeklySummaryByIdUseCase, GetWeeklySummaryByIdUseCase>();
             services.AddScoped<IDbHealthCheckUseCase, DbHealthCheckUseCase>();
             services.AddScoped<IAddStatementListUseCase, AddStatementListUseCase>();
             services.AddScoped<IGetStatementListUseCase, GetStatementListUseCase>();
