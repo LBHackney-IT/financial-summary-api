@@ -30,7 +30,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         private Statement ConstructStatement()
         {
             var entity = _fixture.Create<Statement>();
-
+            entity.StatementPeriodStartDate = DateTime.UtcNow;
             entity.StatementPeriodEndDate = DateTime.UtcNow;
 
             return entity;
@@ -81,6 +81,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 {
                     TargetId = new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"),
                     TargetType = TargetType.Estate,
+                    StatementPeriodStartDate = new DateTime(2021, 6, 1),
                     StatementPeriodEndDate = new DateTime(2021, 7, 1),
                     RentAccountNumber = "123456789",
                     Address = "16 Macron Court, E8 1ND",

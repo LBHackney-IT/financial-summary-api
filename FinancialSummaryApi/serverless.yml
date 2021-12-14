@@ -10,14 +10,7 @@ provider:
   stage: ${opt:stage}
   account: ${opt:account}
   region: eu-west-2
-  apiKeys:
-    - secureAccess:
-      - api-key-${self:service}-${self:provider.stage}
-  usagePlan:
-    - secureAccess:
-        throttle:
-          burstLimit: 200
-          rateLimit: 100
+
 package:
   artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
 functions:
@@ -26,6 +19,7 @@ functions:
     handler: FinancialSummaryApi::FinancialSummaryApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
     environment:
+     REQUIRED_GOOGL_GROUPS: ${ssm:/housing-finance/${self:provider.stage}/authorization/required-google-groups}
      Header: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_header}
      SubHeader: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_header}
      Footer: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_footer}
@@ -34,8 +28,18 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
+          authorizer:
+            arn: ${ssm:/api-authenticator/${self:provider.stage}/arn}
+            type: request
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            managedExternally: true
           private: true
           cors: true
+      - http:
+          path: /swagger/{proxy+}
+          method: GET
+          private: false
 resources:
   Resources:
     GatewayResponseDefault4XX:

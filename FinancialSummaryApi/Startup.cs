@@ -8,7 +8,8 @@ using FinancialSummaryApi.V1.UseCase;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
-using Hackney.Core.Logging;
+using Hackney.Core.Authorization;
+using Hackney.Core.JWT;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -118,6 +119,7 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
+            services.AddTokenFactory();
 
             RegisterGateways(services);
             RegisterUseCases(services);
@@ -167,9 +169,6 @@ namespace FinancialSummaryApi
             services.AddScoped<IAddRentGroupSummaryListUseCase, AddRentGroupSummaryListUseCase>();
             services.AddScoped<IGetRentGroupSummaryByNameUseCase, GetRentGroupSummaryByNameUseCase>();
             services.AddScoped<IGetAllRentGroupSummariesUseCase, GetAllRentGroupSummariesUseCase>();
-            services.AddScoped<IGetAllWeeklySummariesUseCase, GetAllWeeklySummariesUseCase>();
-            services.AddScoped<IAddWeeklySummaryUseCase, AddWeeklySummaryUseCase>();
-            services.AddScoped<IGetWeeklySummaryByIdUseCase, GetWeeklySummaryByIdUseCase>();
             services.AddScoped<IDbHealthCheckUseCase, DbHealthCheckUseCase>();
             services.AddScoped<IAddStatementListUseCase, AddStatementListUseCase>();
             services.AddScoped<IGetStatementListUseCase, GetStatementListUseCase>();
@@ -213,6 +212,7 @@ namespace FinancialSummaryApi
                 }
             });
 
+            app.UseGoogleGroupAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();
