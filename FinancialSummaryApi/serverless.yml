@@ -27,6 +27,8 @@ functions:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialSummaryApi::FinancialSummaryApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
+    environment:
+     REQUIRED_GOOGL_GROUPS: ${ssm:/housing-finance/${self:provider.stage}/authorization/required-google-groups}
     events:
       - http:
           path: /{proxy+}

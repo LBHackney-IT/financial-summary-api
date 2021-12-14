@@ -24,6 +24,8 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1;
+using Hackney.Core.Authorization;
+using Hackney.Core.JWT;
 
 namespace FinancialSummaryApi
 {
@@ -115,6 +117,7 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
+            services.AddTokenFactory();
 
             RegisterGateways(services);
             RegisterUseCases(services);
@@ -210,6 +213,7 @@ namespace FinancialSummaryApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
+            app.UseGoogleGroupAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();

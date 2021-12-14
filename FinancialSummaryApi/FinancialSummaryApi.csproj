@@ -19,6 +19,8 @@
     <PackageReference Include="AWSXRayRecorder.Handlers.AspNetCore" Version="2.7.2" />
     <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.8.2" />
     <PackageReference Include="AWSXRayRecorder.Handlers.EntityFramework" Version="1.1.0" />
+    <PackageReference Include="Hackney.Core.Authorization" Version="1.62.0-preview0009" />
+    <PackageReference Include="Hackney.Core.JWT" Version="1.63.0-preview0013" />
     <PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="4.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="4.1.1" />

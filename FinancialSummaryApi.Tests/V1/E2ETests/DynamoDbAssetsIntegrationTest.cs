@@ -203,9 +203,10 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var uri = new Uri($"api/v1/asset-summary?submitDate={asset.SubmitDate.AddDays(-2):yyyy-MM-dd}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK, responseContent);
+
             var apiEntity = JsonConvert.DeserializeObject<List<AssetSummaryResponse>>(responseContent);
 
             apiEntity.Should().NotBeNull();
