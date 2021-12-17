@@ -16,14 +16,6 @@ services:
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=fco1i2
       - AWS_SECRET_ACCESS_KEY=8kmm3g
-    links:
-      - dev-database
-  dev-database:
-    env_file:
-      - database.env
-    image: postgres:12
-    volumes:
-      - ./database:/docker-entrypoint-initdb.d
 
   finance-summary-api-test:
     image: finance-summary-api-test

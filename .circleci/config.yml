@@ -190,41 +190,67 @@ workflows:
               only: development
   check-and-deploy-staging-and-production:
       jobs:
+      - check-code-formatting:
+          context: api-nuget-token-context
+          filters:
+            branches:
+              only: master
       - build-and-test:
+          context: api-nuget-token-context
           filters:
             branches:
               only: master
       - assume-role-staging:
-          context: api-assume-role-staging-context
+          context: api-assume-role-housing-staging-context
           requires:
               - build-and-test
           filters:
              branches:
                only: master
-      - deploy-to-staging:
-          context: api-nuget-token-context
+      - terraform-init-and-apply-to-staging:
           requires:
             - assume-role-staging
           filters:
             branches:
               only: master
-      - assume-role-production:
-          context: api-assume-role-production-context
+      - deploy-to-staging:
+          context: api-nuget-token-context
           requires:
-              - deploy-to-staging
+            - terraform-init-and-apply-to-staging
           filters:
-             branches:
-               only: master
-      - permit-production-release:
+            branches:
+              only: master
+      - permit-production-terraform-release:
           type: approval
           requires:
             - deploy-to-staging
           filters:
             branches:
               only: master
-      - deploy-to-production:
+      - terraform-init-and-apply-to-production:
+          requires:
+            - permit-production-terraform-release
+          filters:
+            branches:
+              only: master
+      - permit-production-release:
+          type: approval
+          requires:
+              - terraform-init-and-apply-to-production
+          filters:
+             branches:
+               only: master
+      - assume-role-production:
           context: api-assume-role-housing-production-context
           requires:
+              - permit-production-release
+          filters:
+             branches:
+               only: master
+      - deploy-to-production:
+          context: api-nuget-token-context
+          requires:
+            - assume-role-production
             - permit-production-release
           filters:
             branches:
