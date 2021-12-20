@@ -46,7 +46,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllByDateAssetSummaryObjectsReturns200()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(
                     new List<AssetSummaryResponse>()
                     {
@@ -66,7 +66,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         }
                     });
 
-            var result = await _assetSummaryController.GetAll("", new DateTime(2021, 7, 2)).ConfigureAwait(false);
+            var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, Guid.Empty, new DateTime(2021, 7, 2)).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -96,7 +96,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllByAnotherDateAssetSummaryObjectsReturns200()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(
                     new List<AssetSummaryResponse>()
                     {
@@ -116,10 +116,10 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                         }
                     });
 
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(new List<AssetSummaryResponse> { });
 
-            var result = await _assetSummaryController.GetAll("", new DateTime(2021, 7, 1)).ConfigureAwait(false);
+            var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, Guid.Empty, new DateTime(2021, 7, 1)).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -137,12 +137,12 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllByDateAssetSummaryObjectsReturns500()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ThrowsAsync(new Exception("Test exception"));
 
             try
             {
-                var result = await _assetSummaryController.GetAll("", new DateTime(2021, 7, 2)).ConfigureAwait(false);
+                var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, Guid.Empty, new DateTime(2021, 7, 2)).ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
             catch (Exception ex)
@@ -171,7 +171,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                    TotalExpenditure = 123
                });
 
-            var result = await _assetSummaryController.Get("", new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"), new DateTime(2021, 7, 1))
+            var result = await _assetSummaryController.Get(string.Empty, string.Empty, new Guid("2a6e12ca-3691-4fa7-bd77-5039652f0354"), new DateTime(2021, 7, 1))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -203,7 +203,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ReturnsAsync((AssetSummaryResponse) null);
 
-            var result = await _assetSummaryController.Get("", new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"), new DateTime(2021, 6, 30))
+            var result = await _assetSummaryController.Get(string.Empty, string.Empty, new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"), new DateTime(2021, 6, 30))
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -231,7 +231,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _assetSummaryController.Get("", new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"), new DateTime(2021, 6, 30))
+                var result = await _assetSummaryController.Get(string.Empty, string.Empty, new Guid("6791051d-961d-4e16-9853-6e7e45b01b49"), new DateTime(2021, 6, 30))
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }
@@ -275,7 +275,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 TotalExpenditure = 123
             };
 
-            var result = await _assetSummaryController.Create("", request)
+            var result = await _assetSummaryController.Create(string.Empty, string.Empty, request)
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -328,7 +328,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 SubmitDate = new DateTime(2021, 7, 1)
             };
 
-            var result = await _assetSummaryController.Create("", request)
+            var result = await _assetSummaryController.Create(string.Empty, string.Empty, request)
                 .ConfigureAwait(false);
 
             result.Should().NotBeNull();
@@ -367,7 +367,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task CreateAssetSummaryWithInvalidDataReturns400()
         {
-            var result = await _assetSummaryController.Create("", null).ConfigureAwait(false);
+            var result = await _assetSummaryController.Create(string.Empty, string.Empty, null).ConfigureAwait(false);
 
             result.Should().NotBeNull();
 
@@ -394,7 +394,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             try
             {
-                var result = await _assetSummaryController.Create("", new AddAssetSummaryRequest { })
+                var result = await _assetSummaryController.Create(string.Empty, string.Empty, new AddAssetSummaryRequest { })
                     .ConfigureAwait(false);
                 Assert.True(false, "Exception must be thrown!");
             }

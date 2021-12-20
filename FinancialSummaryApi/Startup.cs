@@ -1,29 +1,31 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using FinancialSummaryApi.V1.Controllers;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using FinancialSummaryApi.V1;
+using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Gateways;
+using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
+using FluentValidation.AspNetCore;
+using Hackney.Core.Authorization;
+using Hackney.Core.JWT;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using FinancialSummaryApi.V1.Gateways.Abstracts;
-using FinancialSummaryApi.V1;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace FinancialSummaryApi
 {
@@ -43,9 +45,11 @@ namespace FinancialSummaryApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(typeof(Startup));
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .AddFluentValidation(o => o.RegisterValidatorsFromAssemblyContaining<Startup>());
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
@@ -61,8 +65,8 @@ namespace FinancialSummaryApi
                     new OpenApiSecurityScheme
                     {
                         In = ParameterLocation.Header,
-                        Description = "Your Hackney API Key",
-                        Name = "X-Api-Key",
+                        Description = "Your JWT token",
+                        Name = "Authorization",
                         Type = SecuritySchemeType.ApiKey
                     });
 
@@ -95,7 +99,7 @@ namespace FinancialSummaryApi
                 //Get every ApiVersion attribute specified and create swagger docs for them
                 foreach (var apiVersion in _apiVersions)
                 {
-                    var version = $"v{apiVersion.ApiVersion.ToString()}";
+                    var version = $"v{apiVersion.ApiVersion}";
                     c.SwaggerDoc(version, new OpenApiInfo
                     {
                         Title = $"{ApiName}-api {version}",
@@ -115,6 +119,7 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
+            services.AddTokenFactory();
 
             RegisterGateways(services);
             RegisterUseCases(services);
@@ -128,14 +133,7 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-        }
 
-        private static void ConfigureDbContext(IServiceCollection services)
-        {
-            var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
-
-            services.AddDbContext<FinanceSummaryContext>(
-                opt => opt.UseNpgsql(connectionString).AddXRayInterceptor(true));
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)
@@ -161,7 +159,6 @@ namespace FinancialSummaryApi
         private static void RegisterGateways(IServiceCollection services)
         {
             services.AddScoped<IFinanceSummaryGateway, DynamoDbGateway>();
-            services.AddSingleton<DynamoDbContextWrapper>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -169,13 +166,17 @@ namespace FinancialSummaryApi
             services.AddScoped<IGetAllAssetSummariesUseCase, GetAllAssetSummariesUseCase>();
             services.AddScoped<IGetAssetSummaryByIdUseCase, GetAssetSummaryByIdUseCase>();
             services.AddScoped<IAddAssetSummaryUseCase, AddAssetSummaryUseCase>();
-            services.AddScoped<IAddRentGroupSummaryUseCase, AddRentGroupSummaryUseCase>();
+            services.AddScoped<IAddRentGroupSummaryListUseCase, AddRentGroupSummaryListUseCase>();
             services.AddScoped<IGetRentGroupSummaryByNameUseCase, GetRentGroupSummaryByNameUseCase>();
             services.AddScoped<IGetAllRentGroupSummariesUseCase, GetAllRentGroupSummariesUseCase>();
-            services.AddScoped<IGetAllWeeklySummariesUseCase, GetAllWeeklySummariesUseCase>();
-            services.AddScoped<IAddWeeklySummaryUseCase, AddWeeklySummaryUseCase>();
-            services.AddScoped<IGetWeeklySummaryByIdUseCase, GetWeeklySummaryByIdUseCase>();
             services.AddScoped<IDbHealthCheckUseCase, DbHealthCheckUseCase>();
+            services.AddScoped<IAddStatementListUseCase, AddStatementListUseCase>();
+            services.AddScoped<IGetStatementListUseCase, GetStatementListUseCase>();
+            services.AddScoped<IExportStatementUseCase, ExportStatementUseCase>();
+            services.AddScoped<IExportSelectedStatementUseCase, ExportSelectedStatementUseCase>();
+            services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
+            services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -210,6 +211,8 @@ namespace FinancialSummaryApi
                         $"{ApiName}-api {apiVersionDescription.GetFormattedApiVersion()}");
                 }
             });
+
+            app.UseGoogleGroupAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseSwagger();
             app.UseRouting();
@@ -218,6 +221,7 @@ namespace FinancialSummaryApi
                 // SwaggerGen won't find controllers that are routed via this technique.
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
+            //app.UseLogCall();
         }
     }
 }

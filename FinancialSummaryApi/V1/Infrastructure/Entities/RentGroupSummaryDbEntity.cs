@@ -1,17 +1,31 @@
 using Amazon.DynamoDBv2.DataModel;
+using FinancialSummaryApi.V1.Domain;
+using System;
 
 namespace FinancialSummaryApi.V1.Infrastructure.Entities
 {
     /// <summary>
     /// DynamoDB model for the table finance_summary
     /// </summary>
+    [DynamoDBTable("FinancialSummaries", LowerCamelCaseProperties = true)]
     public class RentGroupSummaryDbEntity
     {
+        [DynamoDBHashKey(AttributeName = "target_id")]
+        public Guid TargetId { get; set; }
+        [DynamoDBRangeKey(AttributeName = "id")]
+        public Guid Id { get; set; }
+
+        [DynamoDBProperty(AttributeName = "summary_type", Converter = typeof(DynamoDbEnumConverter<SummaryType>))]
+        public SummaryType SummaryType { get; set; }
+
+        [DynamoDBProperty(AttributeName = "submit_date", Converter = typeof(DynamoDbDateTimeConverter))]
+        public DateTime SubmitDate { get; set; }
+
         [DynamoDBProperty(AttributeName = "target_description")]
         public string TargetDescription { get; set; }
 
-        [DynamoDBProperty(AttributeName = "rent_group_name")]
-        public string RentGroupName { get; set; }
+        [DynamoDBProperty(AttributeName = "target_name")]
+        public string TargetName { get; set; }
 
         [DynamoDBProperty(AttributeName = "total_charged")]
         public decimal TotalCharged { get; set; }
@@ -25,8 +39,8 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
         [DynamoDBProperty(AttributeName = "paid_ytd")]
         public decimal PaidYTD { get; set; }
 
-        [DynamoDBProperty(AttributeName = "arrears_ytd")]
-        public decimal ArrearsYTD { get; set; }
+        [DynamoDBProperty(AttributeName = "total_arrears")]
+        public decimal TotalArrears { get; set; }
 
         [DynamoDBProperty(AttributeName = "total_balance")]
         public decimal TotalBalance { get; set; }

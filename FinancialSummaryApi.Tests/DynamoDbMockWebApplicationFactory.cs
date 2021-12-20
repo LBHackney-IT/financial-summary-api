@@ -4,10 +4,12 @@ using Amazon.DynamoDBv2.Model;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Core.Strategies;
 using FinancialSummaryApi.V1.Infrastructure;
+using Hackney.Core.Testing.DynamoDb;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 
 namespace FinancialSummaryApi.Tests
@@ -47,20 +49,24 @@ namespace FinancialSummaryApi.Tests
             {
                 try
                 {
-                    // Hanna Holosova
+                    // Hanna Holosova// Code repalace by Edward 
                     // This command helps to prevent the next exception:
                     // Amazon.XRay.Recorder.Core.Exceptions.EntityNotAvailableException : Entity doesn't exist in AsyncLocal
                     AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;
 
                     var request = new CreateTableRequest(table.Name,
-                        new List<KeySchemaElement> { new KeySchemaElement(table.KeyName, KeyType.HASH) },
-                        new List<AttributeDefinition> { new AttributeDefinition(table.KeyName, table.KeyType) },
-                        new ProvisionedThroughput(3, 3));
+                       new List<KeySchemaElement> { new KeySchemaElement(table.KeyName, KeyType.HASH), new KeySchemaElement(table.RangeKeyName, KeyType.RANGE) },
+                       new List<AttributeDefinition> { new AttributeDefinition(table.KeyName, ScalarAttributeType.S), new AttributeDefinition(table.RangeKeyName, ScalarAttributeType.S) },
+                       new ProvisionedThroughput(3, 3));
                     _ = dynamoDb.CreateTableAsync(request).GetAwaiter().GetResult();
                 }
                 catch (ResourceInUseException)
                 {
                     // It already exists :-)
+                }
+                catch (Exception exception)
+                {
+                    throw new Exception("Exception in checking table existence", exception);
                 }
             }
         }

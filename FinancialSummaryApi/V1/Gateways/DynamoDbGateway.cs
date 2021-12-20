@@ -1,9 +1,13 @@
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.Util;
+using AutoMapper;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
+using FinancialSummaryApi.V1.UseCase.Helpers;
+using Hackney.Core.DynamoDb;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,18 +17,16 @@ namespace FinancialSummaryApi.V1.Gateways
 {
     public class DynamoDbGateway : IFinanceSummaryGateway
     {
-        private readonly DynamoDbContextWrapper _wrapper;
+        private const int MAX_RESULTS = 10;
+        private const string TARGETID = "target_id";
         private readonly IDynamoDBContext _dynamoDbContext;
-
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext,
-            DynamoDbContextWrapper wrapper)
+        private readonly IMapper _mapper;
+        private Guid _rentGroupTargetId = new Guid("51259000-0dfd-4c74-8e25-45a9c7f2fc90");
+        public string PaginationToken { get; set; } = "{}";
+        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IMapper mapper)
         {
             _dynamoDbContext = dynamoDbContext;
-
-            // Hanna Holasava
-            // We need this wrapper only for unit tests purposes.
-            // If you will find other way to test this, please contact me!
-            _wrapper = wrapper;
+            _mapper = mapper;
         }
 
         #region Asset Summary
@@ -33,100 +35,227 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             await _dynamoDbContext.SaveAsync(assetSummary.ToDatabase()).ConfigureAwait(false);
         }
-
-        public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(DateTime submitDate)
+        public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(Guid assetId, DateTime submitDate)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
+            var dbAssetSummary = new List<AssetSummaryDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, assetId),
+                PaginationToken = PaginationToken
+            };
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.AssetSummary.ToString());
+            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart.ToString(AWSSDKUtils.ISO8601DateFormat), submitDateEnd.ToString(AWSSDKUtils.ISO8601DateFormat));
 
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block, TargetType.Core));
+            do
+            {
+                var search = table.Query(queryConfig);
+                PaginationToken = search.PaginationToken;
+                var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+                if (resultsSet.Any())
+                {
+                    dbAssetSummary.AddRange(_dynamoDbContext.FromDocuments<AssetSummaryDbEntity>(resultsSet));
 
-            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
+                }
+            }
+            while (!string.Equals(PaginationToken, "{}", StringComparison.Ordinal));
 
-            return data.Select(s => s.ToAssetDomain()).OrderByDescending(r => r.SubmitDate).ToList();
+            return dbAssetSummary.ToDomain();
         }
 
         public async Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
 
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
-            scanConditions.Add(new ScanCondition("TargetId", ScanOperator.Equal, assetId));
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.Estate, TargetType.Block, TargetType.Core));
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
+            var dbAssetSummary = new List<AssetSummaryDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, assetId)
+            };
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.AssetSummary.ToString());
+            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart, submitDateEnd);
+            var search = table.Query(queryConfig);
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+            if (resultsSet.Any())
+            {
+                dbAssetSummary.AddRange(_dynamoDbContext.FromDocuments<AssetSummaryDbEntity>(resultsSet));
 
-            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
+            }
+            return dbAssetSummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault().ToDomain();
 
-            return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault()?.ToAssetDomain();
         }
 
         #endregion
 
         #region Rent Group Summary
 
-        public async Task AddAsync(RentGroupSummary rentGroupSummary)
+        public async Task AddRangeAsync(List<RentGroupSummary> groupSummaries)
         {
-            await _dynamoDbContext.SaveAsync(rentGroupSummary.ToDatabase()).ConfigureAwait(false);
+            var groupSummariesBatch = _dynamoDbContext.CreateBatchWrite<RentGroupSummaryDbEntity>();
+            var groupSummariesDb = groupSummaries.Select(s => s.ToDatabase(_rentGroupTargetId));
+
+            groupSummariesBatch.AddPutItems(groupSummariesDb);
+            await groupSummariesBatch.ExecuteAsync().ConfigureAwait(false);
         }
+
 
         public async Task<List<RentGroupSummary>> GetAllRentGroupSummaryAsync(DateTime submitDate)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
 
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.In, TargetType.RentGroup));
+            var dbRentGroupSummary = new List<RentGroupSummaryDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<RentGroupSummaryDbEntity>();
 
-            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, _rentGroupTargetId),
+                PaginationToken = PaginationToken
+            };
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.RentGroupSummary.ToString());
+            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart.ToString(AWSSDKUtils.ISO8601DateFormat), submitDateEnd.ToString(AWSSDKUtils.ISO8601DateFormat));
 
-            return data.Select(s => s.ToRentGroupDomain()).OrderByDescending(r => r.SubmitDate).ToList();
+            do
+            {
+                var search = table.Query(queryConfig);
+                PaginationToken = search.PaginationToken;
+                var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+                if (resultsSet.Any())
+                {
+                    dbRentGroupSummary.AddRange(_dynamoDbContext.FromDocuments<RentGroupSummaryDbEntity>(resultsSet));
+
+                }
+            }
+            while (!string.Equals(PaginationToken, "{}", StringComparison.Ordinal));
+
+            return dbRentGroupSummary.ToDomain();
         }
 
         public async Task<RentGroupSummary> GetRentGroupSummaryByNameAsync(string rentGroupName, DateTime submitDate)
         {
-            List<ScanCondition> scanConditions = new List<ScanCondition>();
-
-            scanConditions.Add(new ScanCondition("SubmitDate", ScanOperator.Between, GetDayRange(submitDate).Item1, GetDayRange(submitDate).Item2));
-            scanConditions.Add(new ScanCondition("TargetType", ScanOperator.Equal, TargetType.RentGroup));
-            // ToDo: Change way to search by rent_group_name
-            //scanConditions.Add(new ScanCondition("RentGroupSummaryData.rent_group_name", ScanOperator.Equal, rentGroupName));
-
-            List<FinanceSummaryDbEntity> data = await _wrapper.ScanAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
-
-            return data.OrderByDescending(r => r.SubmitDate).FirstOrDefault(s => string.Equals(s.RentGroupSummaryData?.RentGroupName, rentGroupName)).ToRentGroupDomain();
-        }
-
-        #endregion
-
-        #region Get Weekly Summary
-        public async Task<List<WeeklySummary>> GetAllWeeklySummaryAsync(Guid targetId, DateTime? startDate, DateTime? endDate)
-        {
-            var scanConditions = new List<ScanCondition>();
-
-            if (targetId != Guid.Parse("00000000-0000-0000-0000-000000000000"))
-                scanConditions.Add(new ScanCondition("TargetId", ScanOperator.Equal, targetId));
-            if (startDate.HasValue && endDate.HasValue)
+            var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();
+            var dbWeeklySummary = new List<RentGroupSummaryDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<RentGroupSummaryDbEntity>();
+            var queryConfig = new QueryOperationConfig
             {
-                scanConditions.Add(new ScanCondition("WeekStartDate", ScanOperator.Between, startDate, endDate));
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, _rentGroupTargetId)
+            };
+            queryConfig.Filter.AddCondition("target_name", QueryOperator.Equal, rentGroupName);
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.RentGroupSummary.ToString());
+            queryConfig.Filter.AddCondition("submit_date", QueryOperator.Between, submitDateStart, submitDateEnd);
+            var search = table.Query(queryConfig);
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+            if (resultsSet.Any())
+            {
+                dbWeeklySummary.AddRange(_dynamoDbContext.FromDocuments<RentGroupSummaryDbEntity>(resultsSet));
+
             }
-            var transactionSummaries = await _wrapper.ScanSummaryAsync(_dynamoDbContext, scanConditions).ConfigureAwait(false);
+            return dbWeeklySummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault().ToDomain();
 
-            var result = transactionSummaries.Select(p => p.ToWeeklySummaryDomain()).ToList();
-
-            return result.OrderByDescending(r => r.WeekStartDate).ToList();
         }
 
-        public async Task AddAsync(WeeklySummary weeklySummary)
-        {
-            await _dynamoDbContext.SaveAsync(weeklySummary.ToDatabase()).ConfigureAwait(false);
-        }
-        public async Task<WeeklySummary> GetWeeklySummaryByIdAsync(Guid id)
-        {
-            var data = await _wrapper.LoadSummaryAsync(_dynamoDbContext, id).ConfigureAwait(false);
-
-            return data?.ToWeeklySummaryDomain();
-        }
         #endregion
 
-        private static Tuple<DateTime, DateTime> GetDayRange(DateTime date)
-            => new Tuple<DateTime, DateTime>(date.Date, date.Date.AddHours(23).AddMinutes(59));
+
+        public async Task<PagedResult<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, string paginationToken)
+        {
+            pageSize = pageSize > 0 ? pageSize : MAX_RESULTS;
+            var dbStatements = new List<StatementDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<StatementDbEntity>();
+
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Limit = pageSize,
+                PaginationToken = PaginationDetails.DecodeToken(paginationToken),
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, targetId)
+            };
+            queryConfig.Filter.AddCondition("summary_type", QueryOperator.Equal, SummaryType.Statement.ToString());
+
+            if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+            {
+                queryConfig.Filter.AddCondition("statement_period_end_date", QueryOperator.Between, startDate.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.ToString(AWSSDKUtils.ISO8601DateFormat));
+            }
+            var search = table.Query(queryConfig);
+
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+
+            paginationToken = search.PaginationToken;
+            if (resultsSet.Any())
+            {
+                dbStatements.AddRange(_dynamoDbContext.FromDocuments<StatementDbEntity>(resultsSet));
+
+                // Look ahead for any more, but only if we have a token
+                if (!string.IsNullOrEmpty(PaginationDetails.EncodeToken(paginationToken)))
+                {
+                    queryConfig.PaginationToken = paginationToken;
+                    queryConfig.Limit = 1;
+                    search = table.Query(queryConfig);
+                    resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+                    if (!resultsSet.Any())
+                        paginationToken = null;
+                }
+            }
+
+            return new PagedResult<Statement>(dbStatements.Select(x => x.ToDomain()), new PaginationDetails(paginationToken));
+
+        }
+
+        public async Task<List<Statement>> GetStatementListAsync(Guid targetId, DateTime? startDate, DateTime? endDate)
+        {
+            var dbStatement = new List<StatementDbEntity>();
+            string paginationToken = "{}";
+            var table = _dynamoDbContext.GetTargetTable<StatementDbEntity>();
+
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, targetId),
+                PaginationToken = paginationToken
+            };
+            if ((startDate.HasValue && startDate != DateTime.MinValue) && (endDate.HasValue && endDate != DateTime.MinValue))
+            {
+                queryConfig.Filter.AddCondition("statement_period_end_date", QueryOperator.Between, startDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat), endDate.Value.ToString(AWSSDKUtils.ISO8601DateFormat));
+            }
+
+            do
+            {
+                var search = table.Query(queryConfig);
+                paginationToken = search.PaginationToken;
+                var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+                if (resultsSet.Any())
+                {
+                    dbStatement.AddRange(_dynamoDbContext.FromDocuments<StatementDbEntity>(resultsSet));
+
+                }
+            }
+            while (!string.Equals(paginationToken, "{}", StringComparison.Ordinal));
+
+            return dbStatement.ToDomain();
+        }
+        public async Task AddRangeAsync(List<Statement> statements)
+        {
+            var statementBatch = _dynamoDbContext.CreateBatchWrite<StatementDbEntity>();
+            var statementsDb = _mapper.Map<IEnumerable<StatementDbEntity>>(statements);
+            statementBatch.AddPutItems(statementsDb);
+            await statementBatch.ExecuteAsync().ConfigureAwait(false);
+        }
+
+        public async Task<Statement> GetStatementByIdAsync(Guid id, Guid targetId)
+        {
+            var data = await _dynamoDbContext.LoadAsync<StatementDbEntity>(targetId, id).ConfigureAwait(false);
+            return _mapper.Map<Statement>(data);
+        }
     }
 }

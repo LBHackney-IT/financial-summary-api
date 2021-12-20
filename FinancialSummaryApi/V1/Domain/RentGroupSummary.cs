@@ -9,8 +9,6 @@ namespace FinancialSummaryApi.V1.Domain
     {
         public Guid Id { get; set; }
 
-        public TargetType TargetType { get; set; }
-
         public string TargetDescription { get; set; }
 
         public string RentGroupName { get; set; }
@@ -23,7 +21,7 @@ namespace FinancialSummaryApi.V1.Domain
 
         public decimal PaidYTD { get; set; }
 
-        public decimal ArrearsYTD { get; set; }
+        public decimal TotalArrears { get; set; }
 
         public decimal TotalBalance { get; set; }
 

@@ -27,11 +27,10 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             var rentGroupSummary = new RentGroupSummary
             {
                 Id = new Guid("32d8365a-d0ea-405b-a46e-2e563b043abd"),
-                TargetType = TargetType.RentGroup,
                 RentGroupName = "LeaseHolder",
                 TargetDescription = "desc",
                 SubmitDate = DateTime.UtcNow.Date,
-                ArrearsYTD = 100,
+                TotalArrears = 100,
                 ChargedYTD = 120,
                 PaidYTD = 120,
                 TotalBalance = -100,
@@ -57,11 +56,10 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
             var rentGroupSummary = new RentGroupSummary
             {
                 Id = new Guid("32d8365a-d0ea-405b-a46e-2e563b043abd"),
-                TargetType = TargetType.RentGroup,
                 RentGroupName = "LeaseHolder",
                 TargetDescription = "desc",
                 SubmitDate = new DateTime(2021, 7, 2),
-                ArrearsYTD = 100,
+                TotalArrears = 100,
                 ChargedYTD = 120,
                 PaidYTD = 120,
                 TotalBalance = -100,

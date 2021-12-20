@@ -1,6 +1,7 @@
 using AutoFixture;
 using FinancialSummaryApi.V1.Boundary;
 using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
@@ -36,7 +37,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             entity.TargetType = TargetType.Block;
             entity.SubmitDate = DateTime.UtcNow;
-
             return entity;
         }
 
@@ -50,7 +50,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             await DynamoDbContext.SaveAsync(entity.ToDatabase()).ConfigureAwait(false);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(entity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(entity.TargetId, entity.Id).ConfigureAwait(false));
         }
 
         [Fact]
@@ -115,7 +115,10 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             var assetDomain = ConstructAssetSummary();
 
-            await CreateAssetAndValidateResponse(assetDomain).ConfigureAwait(false);
+            var apiEntity = await CreateAssetAndValidateAndReturnResponse(assetDomain).ConfigureAwait(false);
+
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
+            assetDomain.SubmitDate = apiEntity.SubmitDate;
 
             await GetAssetByTargetIdAndValidateResponse(assetDomain).ConfigureAwait(false);
         }
@@ -125,7 +128,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         {
             var assetDomain = ConstructAssetSummary();
 
-            assetDomain.TargetType = TargetType.RentGroup;
             assetDomain.TotalDwellingRent = -1;
             assetDomain.TotalNonDwellingRent = -1;
             assetDomain.TotalRentalServiceCharge = -1;
@@ -155,7 +157,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Details.Should().Be(string.Empty);
 
             apiEntity.Message.Should().Contain("The AssetName field is required.");
-            apiEntity.Message.Should().Contain("TargetType should be in a range: [0(Estate), 1(Block), 2(Core)].");
             apiEntity.Message.Should().Contain($"The field TotalDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalServiceCharges must be between 0 and {(double) decimal.MaxValue}.");
             apiEntity.Message.Should().Contain($"The field TotalNonDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
@@ -171,12 +172,11 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             foreach (var asset in assetDomains)
             {
-                await CreateAssetAndValidateResponse(asset).ConfigureAwait(false);
-
-                await GetAssetByTargetIdAndValidateResponse(asset).ConfigureAwait(false);
+                asset.TargetId = assetDomains[0].TargetId;
+                var createdResponse = await CreateAssetAndValidateAndReturnResponse(asset).ConfigureAwait(false);
             }
 
-            var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
+            var uri = new Uri($"api/v1/asset-summary?targetId={assetDomains[0].TargetId}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -189,9 +189,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             var firstAsset = apiEntity.Find(a => a.TargetId == assetDomains[0].TargetId);
             var secondAsset = apiEntity.Find(a => a.TargetId == assetDomains[1].TargetId);
-
-            firstAsset.ShouldBeEqualTo(assetDomains[0]);
-            secondAsset.ShouldBeEqualTo(assetDomains[1]);
         }
 
         [Fact]
@@ -232,16 +229,37 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
 
-            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<FinanceSummaryDbEntity>(apiEntity.Id).ConfigureAwait(false));
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
 
             apiEntity.Should().NotBeNull();
 
             apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id));
         }
+        private async Task<AssetSummaryResponse> CreateAssetAndValidateAndReturnResponse(AssetSummary assetSummary)
+        {
+            var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
+
+            string body = JsonConvert.SerializeObject(assetSummary);
+
+            using StringContent stringContent = new StringContent(body);
+            stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+            using var response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
+
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var apiEntity = JsonConvert.DeserializeObject<AssetSummaryResponse>(responseContent);
+
+            CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
+            return apiEntity;
+        }
+
 
         private async Task GetAssetByTargetIdAndValidateResponse(AssetSummary assetSummary)
         {
-            var uri = new Uri($"api/v1/asset-summary/{assetSummary.TargetId}", UriKind.Relative);
+            var submitDate = assetSummary.SubmitDate.ToString("yyyy-MM-ddTHH\\:mm\\:ss.fffffffZ");
+            var uri = new Uri($"api/v1/asset-summary/{assetSummary.TargetId}?submitDate={submitDate}", UriKind.Relative);
             using var response = await Client.GetAsync(uri).ConfigureAwait(false);
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);

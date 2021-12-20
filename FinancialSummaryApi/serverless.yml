@@ -10,29 +10,36 @@ provider:
   stage: ${opt:stage}
   account: ${opt:account}
   region: eu-west-2
-  apiKeys:
-    - secureAccess:
-      - api-key-${self:service}-${self:provider.stage}
-  usagePlan:
-    - secureAccess:
-        throttle:
-          burstLimit: 200
-          rateLimit: 100
 
 package:
   artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
-
 functions:
   FinancialSummaryApi:
     name: ${self:service}-${self:provider.stage}
     handler: FinancialSummaryApi::FinancialSummaryApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
+    environment:
+     REQUIRED_GOOGL_GROUPS: ${ssm:/housing-finance/${self:provider.stage}/authorization/required-google-groups}
+     Header: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_header}
+     SubHeader: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_header}
+     Footer: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_footer}
+     SubFooter: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_footer}
     events:
       - http:
           path: /{proxy+}
           method: ANY
+          authorizer:
+            arn: ${ssm:/api-authenticator/${self:provider.stage}/arn}
+            type: request
+            resultTtlInSeconds: 0
+            identitySource: method.request.header.Authorization
+            managedExternally: true
           private: true
           cors: true
+      - http:
+          path: /swagger/{proxy+}
+          method: GET
+          private: false
 resources:
   Resources:
     GatewayResponseDefault4XX:
@@ -102,6 +109,7 @@ resources:
                   Action:
                     - "dynamodb:BatchGet*"
                     - "dynamodb:BatchWrite"
+                    - "dynamodb:BatchWriteItem"
                     - "dynamodb:DeleteItem"
                     - "dynamodb:DescribeStream"
                     - "dynamodb:DescribeTable"
@@ -119,23 +127,15 @@ resources:
                           - 'table/FinancialSummaries'
                 - Effect: Allow
                   Action:
-                    - "dynamodb:BatchGet*"
-                    - "dynamodb:BatchWrite"
-                    - "dynamodb:DeleteItem"
-                    - "dynamodb:DescribeStream"
-                    - "dynamodb:DescribeTable"
-                    - "dynamodb:Get*"
-                    - "dynamodb:PutItem"
                     - "dynamodb:Query"
                     - "dynamodb:Scan"
-                    - "dynamodb:UpdateItem"
                   Resource:
                     - 'Fn::Join':
                         - ':'
                         - - 'arn:aws:dynamodb'
                           - Ref: 'AWS::Region'
                           - Ref: 'AWS::AccountId'
-                          - 'table/TransactionSummaries'
+                          - 'table/FinancialSummaries/index/*'
 custom:
   vpc:
     development:

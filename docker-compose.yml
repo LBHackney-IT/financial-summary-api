@@ -6,6 +6,8 @@ services:
     build:
       context: FinancialSummaryApi/
       dockerfile: ./Dockerfile
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
       - 3000:3000
     environment:
@@ -14,20 +16,14 @@ services:
       - AWS_REGION=eu-west-2
       - AWS_ACCESS_KEY_ID=fco1i2
       - AWS_SECRET_ACCESS_KEY=8kmm3g
-    links:
-      - dev-database
-  dev-database:
-    env_file:
-      - database.env
-    image: postgres:12
-    volumes:
-      - ./database:/docker-entrypoint-initdb.d
 
   finance-summary-api-test:
     image: finance-summary-api-test
     build:
       context: .
       dockerfile: FinancialSummaryApi.Tests/Dockerfile
+      args:
+      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     environment:
       - DynamoDb_LocalMode=true
       - DynamoDb_LocalServiceUrl=http://dynamodb-database:8000

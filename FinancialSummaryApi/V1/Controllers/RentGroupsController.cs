@@ -16,15 +16,15 @@ namespace FinancialSummaryApi.V1.Controllers
     [ApiVersion("1.0")]
     public class RentGroupsController : BaseController
     {
-        private readonly IAddRentGroupSummaryUseCase _addUseCase;
+        private readonly IAddRentGroupSummaryListUseCase _addListUseCase;
         private readonly IGetRentGroupSummaryByNameUseCase _getByNameUseCase;
         private readonly IGetAllRentGroupSummariesUseCase _getAllUseCase;
 
-        public RentGroupsController(IAddRentGroupSummaryUseCase addUseCase,
+        public RentGroupsController(IAddRentGroupSummaryListUseCase addListUseCase,
             IGetRentGroupSummaryByNameUseCase getByNameUseCase,
             IGetAllRentGroupSummariesUseCase getAllUseCase)
         {
-            _addUseCase = addUseCase;
+            _addListUseCase = addListUseCase;
             _getByNameUseCase = getByNameUseCase;
             _getAllUseCase = getAllUseCase;
         }
@@ -33,13 +33,16 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Get a list of Rent Group summary models
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Rent Group summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
         [ProducesResponseType(typeof(List<RentGroupSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromHeader(Name = "x-correlation-id")] string correlationId, [FromQuery] DateTime submitDate)
+        public async Task<IActionResult> GetAll([FromHeader(Name = "Authorization")] string token,
+                                                [FromHeader(Name = "x-correlation-id")] string correlationId,
+                                                [FromQuery] DateTime submitDate)
         {
             var rentGroups = await _getAllUseCase.ExecuteAsync(submitDate).ConfigureAwait(false);
 
@@ -50,6 +53,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// Get Rent Group summary model by provided groupName
         /// </summary>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="token">The jwt token value</param>
         /// <param name="rentGroupName">The rent group name to get the data for</param>
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Rent Group summary models was received successfully</response>
@@ -62,7 +66,10 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         [Route("{rentGroupName}")]
-        public async Task<IActionResult> Get([FromHeader(Name = "x-correlation-id")] string correlationId, [FromRoute] string rentGroupName, [FromQuery] DateTime submitDate)
+        public async Task<IActionResult> Get([FromHeader(Name = "Authorization")] string token,
+                                             [FromHeader(Name = "x-correlation-id")] string correlationId,
+                                             [FromRoute] string rentGroupName,
+                                             [FromQuery] DateTime submitDate)
         {
             var rentGroup = await _getByNameUseCase.ExecuteAsync(rentGroupName, submitDate).ConfigureAwait(false);
 
@@ -75,22 +82,25 @@ namespace FinancialSummaryApi.V1.Controllers
         }
 
         /// <summary>
-        /// Create new Rent Group summary model
+        /// Create new list of rent group summary models
         /// </summary>
+        /// <param name="token">The jwt token value</param>
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
-        /// <param name="summaryRequest">Rent Group summary model for create</param>
-        /// <response code="201">Rent Group summary model was created successfully</response>
+        /// <param name="summaryRequests">List of rent group summary models for creation</param>
+        /// <response code="201">Created. Rent group summary models were created successfully</response>
         /// <response code="400">Bad Request</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(RentGroupSummaryResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(StatementResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPost]
-        public async Task<IActionResult> Create([FromHeader(Name = "x-correlation-id")] string correlationId, [FromBody] AddRentGroupSummaryRequest summaryRequest)
+        public async Task<IActionResult> Create([FromHeader(Name = "Authorization")] string token,
+                                                [FromHeader(Name = "x-correlation-id")] string correlationId,
+                                                [FromBody] List<AddRentGroupSummaryRequest> summaryRequests)
         {
-            if (summaryRequest == null)
+            if (summaryRequests == null || summaryRequests.Count == 0)
             {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Rent Group Summary model cannot be null"));
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Rent group summary models cannot be null or empty"));
             }
 
             if (!ModelState.IsValid)
@@ -98,9 +108,9 @@ namespace FinancialSummaryApi.V1.Controllers
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
             }
 
-            var resultRentGroupSummary = await _addUseCase.ExecuteAsync(summaryRequest).ConfigureAwait(false);
+            var resultSummaries = await _addListUseCase.ExecuteAsync(summaryRequests).ConfigureAwait(false);
 
-            return CreatedAtAction("Get", new { rentGroupName = summaryRequest.RentGroupName }, resultRentGroupSummary);
+            return StatusCode((int) HttpStatusCode.Created, resultSummaries);
         }
     }
 }

@@ -36,16 +36,3 @@ terraform {
     key     = "services/financial-summary-api/state"
   }
 }
-
-resource "aws_sns_topic" "financial-summary_topic" {
-    name                        = "financial-summary.fifo"
-    fifo_topic                  = true
-    content_based_deduplication = true
-    kms_master_key_id = "alias/aws/sns"
-}
-
-resource "aws_ssm_parameter" "new_financial-summary_created_sns_arn" {
-    name  = "/sns-topic/${var.environment_name}/financial-summary_created/arn"
-    type  = "String"
-    value = aws_sns_topic.financial-summary_topic.arn
-}

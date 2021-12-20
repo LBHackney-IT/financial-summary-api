@@ -1,56 +1,54 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancialSummaryApi.V1.Factories
 {
     public static class AssetSummaryFactory
     {
-        public static AssetSummary ToAssetDomain(this FinanceSummaryDbEntity databaseEntity)
+        public static AssetSummary ToDomain(this AssetSummaryDbEntity databaseEntity)
         {
-            if (databaseEntity == null)
-            {
-                return null;
-            }
-            if (databaseEntity.AssetSummaryData == null)
-            {
-                throw new Exception("Loaded data from the database cannot be parsed as a Asset data. Id: " + databaseEntity.Id);
-            }
-            return new AssetSummary
+            return databaseEntity == null ? null : new AssetSummary
             {
                 Id = databaseEntity.Id,
                 TargetId = databaseEntity.TargetId,
                 TargetType = databaseEntity.TargetType,
-                AssetName = databaseEntity.AssetSummaryData.AssetName,
+                AssetName = databaseEntity.TargetName,
                 SubmitDate = databaseEntity.SubmitDate,
-                TotalDwellingRent = databaseEntity.AssetSummaryData.TotalDwellingRent,
-                TotalNonDwellingRent = databaseEntity.AssetSummaryData.TotalNonDwellingRent,
-                TotalRentalServiceCharge = databaseEntity.AssetSummaryData.TotalRentalServiceCharge,
-                TotalServiceCharges = databaseEntity.AssetSummaryData.TotalServiceCharges,
-                TotalIncome = databaseEntity.AssetSummaryData.TotalIncome,
-                TotalExpenditure = databaseEntity.AssetSummaryData.TotalExpenditure
+                TotalDwellingRent = databaseEntity.TotalDwellingRent,
+                TotalNonDwellingRent = databaseEntity.TotalNonDwellingRent,
+                TotalRentalServiceCharge = databaseEntity.TotalRentalServiceCharge,
+                TotalServiceCharges = databaseEntity.TotalServiceCharges,
+                TotalIncome = databaseEntity.TotalIncome,
+                TotalExpenditure = databaseEntity.TotalExpenditure,
             };
         }
 
-        public static FinanceSummaryDbEntity ToDatabase(this AssetSummary entity)
+        public static List<AssetSummary> ToDomain(this IEnumerable<AssetSummaryDbEntity> databaseEntity)
         {
-            return entity == null ? null : new FinanceSummaryDbEntity
+            return databaseEntity.Select(p => p.ToDomain())
+                                 .OrderByDescending(x => x.SubmitDate)
+                                 .ToList();
+        }
+        public static AssetSummaryDbEntity ToDatabase(this AssetSummary entity)
+        {
+            return entity == null ? null : new AssetSummaryDbEntity
             {
+
                 Id = entity.Id,
                 TargetId = entity.TargetId,
                 TargetType = entity.TargetType,
                 SubmitDate = entity.SubmitDate,
-                AssetSummaryData = new AssetSummaryDbEntity()
-                {
-                    AssetName = entity.AssetName,
-                    TotalDwellingRent = entity.TotalDwellingRent,
-                    TotalNonDwellingRent = entity.TotalNonDwellingRent,
-                    TotalRentalServiceCharge = entity.TotalRentalServiceCharge,
-                    TotalServiceCharges = entity.TotalServiceCharges,
-                    TotalIncome = entity.TotalIncome,
-                    TotalExpenditure = entity.TotalExpenditure
-                }
+                TargetName = entity.AssetName,
+                TotalDwellingRent = entity.TotalDwellingRent,
+                TotalNonDwellingRent = entity.TotalNonDwellingRent,
+                TotalRentalServiceCharge = entity.TotalRentalServiceCharge,
+                TotalServiceCharges = entity.TotalServiceCharges,
+                TotalIncome = entity.TotalIncome,
+                TotalExpenditure = entity.TotalExpenditure,
+                SummaryType = SummaryType.AssetSummary
             };
         }
 
@@ -67,7 +65,7 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalRentalServiceCharge = requestModel.TotalRentalServiceCharge,
                 TotalServiceCharges = requestModel.TotalServiceCharges,
                 TotalIncome = requestModel.TotalIncome,
-                TotalExpenditure = requestModel.TotalExpenditure
+                TotalExpenditure = requestModel.TotalExpenditure,
             };
         }
     }

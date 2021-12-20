@@ -1,4 +1,3 @@
-using FinancialSummaryApi.V1.Domain;
 using System;
 
 namespace FinancialSummaryApi.V1.Boundary.Response
@@ -12,14 +11,6 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// 5f799ec9-4ba4-49f5-8ed1-ba82184b149f
         /// </example>
         public Guid Id { get; set; }
-
-        /// <summary>
-        /// Values: [RentGroup]
-        /// </summary>
-        /// <example>
-        /// RentGroup
-        /// </example>
-        public TargetType TargetType { get; set; }
 
         /// <example>
         /// Leaseholders
@@ -54,7 +45,7 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// <example>
         /// 187.1
         /// </example>
-        public decimal ArrearsYTD { get; set; }
+        public decimal TotalArrears { get; set; }
 
         /// <example>
         /// -657.2

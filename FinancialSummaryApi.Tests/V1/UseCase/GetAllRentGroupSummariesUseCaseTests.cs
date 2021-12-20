@@ -31,10 +31,9 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 new RentGroupSummary
                 {
                     Id = new Guid("c4b19453-4e1c-40ba-b937-db41a46eca45"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders",
                     TargetDescription = "desc",
-                    ArrearsYTD = 100,
+                    TotalArrears = 100,
                     SubmitDate = new DateTime(2021, 7, 2),
                     ChargedYTD = 102,
                     PaidYTD = 160,
@@ -45,10 +44,9 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 new RentGroupSummary
                 {
                     Id = new Guid("814ab48c-090e-42fc-9e17-67bf6b3eb48f"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders2",
                     TargetDescription = "desc",
-                    ArrearsYTD = 100,
+                    TotalArrears = 100,
                     SubmitDate = new DateTime(2021, 7, 2),
                     ChargedYTD = 102,
                     PaidYTD = 160,
@@ -75,10 +73,9 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 new RentGroupSummary
                 {
                     Id = new Guid("c4b19453-4e1c-40ba-b937-db41a46eca45"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders",
                     TargetDescription = "desc",
-                    ArrearsYTD = 100,
+                    TotalArrears = 100,
                     SubmitDate = DateTime.UtcNow.Date,
                     ChargedYTD = 102,
                     PaidYTD = 160,
@@ -89,10 +86,9 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 new RentGroupSummary
                 {
                     Id = new Guid("814ab48c-090e-42fc-9e17-67bf6b3eb48f"),
-                    TargetType = TargetType.RentGroup,
                     RentGroupName = "LeaseHolders2",
                     TargetDescription = "desc",
-                    ArrearsYTD = 100,
+                    TotalArrears = 100,
                     SubmitDate = DateTime.UtcNow.Date,
                     ChargedYTD = 102,
                     PaidYTD = 160,
