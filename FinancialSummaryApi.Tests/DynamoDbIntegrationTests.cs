@@ -44,6 +44,7 @@ namespace FinancialSummaryApi.Tests
             EnsureEnvVarConfigured("DynamoDb_LocalSecretKey", "8kmm3g");
             EnsureEnvVarConfigured("DynamoDb_LocalAccessKey", "fco1i2");
 
+            EnsureEnvVarConfigured("URLS_TO_SKIP_AUTH", "some-valid-url");
             EnsureEnvVarConfigured("REQUIRED_GOOGLE_GROUPS", "some-valid-google-group");
 
             EnsureEnvVarConfigured("Header", "Header");
