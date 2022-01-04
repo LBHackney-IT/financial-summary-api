@@ -19,7 +19,7 @@ functions:
     handler: FinancialSummaryApi::FinancialSummaryApi.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
     environment:
-     URLS_TO_SKIP_AUTH: ${ssm:/housing-finance/${self:development}/authorization/urls-to-skip-auth}
+     URLS_TO_SKIP_AUTH: /housing-finance/development/authorization/urls_to_skip_auth
      REQUIRED_GOOGLE_GROUPS: ${ssm:/housing-finance/${self:provider.stage}/authorization/required-google-groups}
      Header: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_header}
      SubHeader: ${ssm:/housing-finance/${self:provider.stage}/report_export_settings_sub_header}
