@@ -41,7 +41,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
             _assetSummaryController = new AssetSummaryController(_getAllUseCase.Object, _getByIdUseCase.Object, _mockGetByIdAndYearUseCase.Object,
-                _addUseCase.Object )
+                _addUseCase.Object)
             {
                 ControllerContext = _controllerContext
             };
