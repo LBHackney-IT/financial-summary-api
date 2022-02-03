@@ -44,6 +44,10 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalIncome = domain.TotalIncome,
                 TotalExpenditure = domain.TotalExpenditure,
                 AssetName = domain.AssetName,
+                SumamryYear = domain.SumamryYear,
+                TotalDwellings = domain.TotalDwellings,
+                TotalFreeholders = domain.TotalFreeholders,
+                TotalLeaseholders = domain.TotalLeaseholders
             };
         }
 

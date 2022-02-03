@@ -257,5 +257,26 @@ namespace FinancialSummaryApi.V1.Gateways
             var data = await _dynamoDbContext.LoadAsync<StatementDbEntity>(targetId, id).ConfigureAwait(false);
             return _mapper.Map<Statement>(data);
         }
+
+        public async Task<AssetSummary> GetAssetSummaryByIdAndYearAsync(Guid assetId, short summaryYear)
+        {
+            var dbAssetSummary = new List<AssetSummaryDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Filter = new QueryFilter(TARGETID, QueryOperator.Equal, assetId)
+            };
+            queryConfig.Filter.AddCondition("summary_year", QueryOperator.Equal, summaryYear);
+            var search = table.Query(queryConfig);
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+            if (resultsSet.Any())
+            {
+                dbAssetSummary.AddRange(_dynamoDbContext.FromDocuments<AssetSummaryDbEntity>(resultsSet));
+
+            }
+            return dbAssetSummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault().ToDomain();
+        }
     }
 }

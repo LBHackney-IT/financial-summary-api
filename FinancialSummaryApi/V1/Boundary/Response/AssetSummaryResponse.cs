@@ -71,5 +71,25 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// 2021-06-25T13:19:47.993Z
         /// </example>
         public DateTime SubmitDate { get; set; }
+
+        /// <summary>
+        /// Summary Year for Estimate 
+        /// </summary>
+        public short SumamryYear { get; set; }
+
+        /// <summary>
+        /// Total Leaseholder Count 
+        /// </summary>
+        public int TotalLeaseholders { get; set; }
+
+        /// <summary>
+        /// Total Freehoders Count
+        /// </summary>
+        public int TotalFreeholders { get; set; }
+
+        /// <summary>
+        /// TOtal Dwellings Count
+        /// </summary>
+        public int TotalDwellings { get; set; }
     }
 }

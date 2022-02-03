@@ -41,5 +41,17 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "total_expenditure")]
         public decimal TotalExpenditure { get; set; }
+
+        [DynamoDBProperty(AttributeName = "summary_year")]
+        public short SumamryYear { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_leaseholders")]
+        public int TotalLeaseholders { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_freeholders")]
+        public int TotalFreeholders { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_dwellings")]
+        public int TotalDwellings { get; set; }
     }
 }

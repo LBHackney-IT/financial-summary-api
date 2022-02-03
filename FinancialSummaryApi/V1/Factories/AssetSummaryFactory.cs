@@ -23,6 +23,10 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalServiceCharges = databaseEntity.TotalServiceCharges,
                 TotalIncome = databaseEntity.TotalIncome,
                 TotalExpenditure = databaseEntity.TotalExpenditure,
+                TotalDwellings = databaseEntity.TotalDwellings,
+                TotalFreeholders = databaseEntity.TotalFreeholders,
+                TotalLeaseholders = databaseEntity.TotalLeaseholders,
+                SumamryYear = databaseEntity.SumamryYear
             };
         }
 
@@ -48,7 +52,11 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalServiceCharges = entity.TotalServiceCharges,
                 TotalIncome = entity.TotalIncome,
                 TotalExpenditure = entity.TotalExpenditure,
-                SummaryType = SummaryType.AssetSummary
+                SummaryType = SummaryType.AssetSummary,
+                TotalDwellings = entity.TotalDwellings,
+                TotalFreeholders = entity.TotalFreeholders,
+                TotalLeaseholders = entity.TotalLeaseholders,
+                SumamryYear = entity.SumamryYear
             };
         }
 
@@ -66,6 +74,10 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalServiceCharges = requestModel.TotalServiceCharges,
                 TotalIncome = requestModel.TotalIncome,
                 TotalExpenditure = requestModel.TotalExpenditure,
+                TotalDwellings = requestModel.TotalDwellings,
+                TotalFreeholders = requestModel.TotalFreeholders,
+                TotalLeaseholders = requestModel.TotalLeaseholders,
+                SumamryYear = requestModel.SumamryYear
             };
         }
     }
