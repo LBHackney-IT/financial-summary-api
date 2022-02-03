@@ -20,15 +20,18 @@ namespace FinancialSummaryApi.V1.Controllers
     {
         private readonly IGetAllAssetSummariesUseCase _getAllUseCase;
         private readonly IGetAssetSummaryByIdUseCase _getByIdUseCase;
+        private readonly IGetAssetSummaryByIdAndYearUseCase _getAssetSummaryByIdAndYearUseCase;
         private readonly IAddAssetSummaryUseCase _addUseCase;
 
         public AssetSummaryController(
             IGetAllAssetSummariesUseCase getAllUseCase,
             IGetAssetSummaryByIdUseCase getByIdUseCase,
+            IGetAssetSummaryByIdAndYearUseCase getAssetSummaryByIdAndYearUseCase,
             IAddAssetSummaryUseCase addAssetSummaryUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
+            _getAssetSummaryByIdAndYearUseCase = getAssetSummaryByIdAndYearUseCase;
             _addUseCase = addAssetSummaryUseCase;
         }
 
@@ -85,6 +88,39 @@ namespace FinancialSummaryApi.V1.Controllers
 
             return Ok(assetSummary);
         }
+
+        /// <summary>
+        /// Get Asset summary model by provided assetId
+        /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="token">The jwt token value</param>
+        /// <param name="summaryYear">The date when the requested data was generated</param>
+        /// <param name="assetId">The value by which we are looking for an asset summary</param>
+        /// <response code="200">Success. Asset summary models was received successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Asset with provided id cannot be found</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpGet]
+        [Route("estimates/{assetId}")]
+        public async Task<IActionResult> Get([FromHeader(Name = "Authorization")] string token,
+                                             [FromHeader(Name = "x-correlation-id")] string correlationId,
+                                             [FromRoute] Guid assetId,
+                                             [FromQuery] short summaryYear)
+        {
+            var assetSummary = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear).ConfigureAwait(false);
+
+            if (assetSummary == null)
+            {
+                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Asset Summary by provided assetId cannot be found!"));
+            }
+
+            return Ok(assetSummary);
+        }
+
 
         /// <summary>
         /// Create new Asset summary model
