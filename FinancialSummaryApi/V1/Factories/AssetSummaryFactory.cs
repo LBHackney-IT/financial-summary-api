@@ -26,7 +26,7 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalDwellings = databaseEntity.TotalDwellings,
                 TotalFreeholders = databaseEntity.TotalFreeholders,
                 TotalLeaseholders = databaseEntity.TotalLeaseholders,
-                SumamryYear = databaseEntity.SumamryYear
+                SummaryYear = databaseEntity.SummaryYear
             };
         }
 
@@ -56,7 +56,7 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalDwellings = entity.TotalDwellings,
                 TotalFreeholders = entity.TotalFreeholders,
                 TotalLeaseholders = entity.TotalLeaseholders,
-                SumamryYear = entity.SumamryYear
+                SummaryYear = entity.SummaryYear
             };
         }
 
@@ -77,7 +77,7 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalDwellings = requestModel.TotalDwellings,
                 TotalFreeholders = requestModel.TotalFreeholders,
                 TotalLeaseholders = requestModel.TotalLeaseholders,
-                SumamryYear = requestModel.SumamryYear
+                SummaryYear = requestModel.SummaryYear
             };
         }
     }

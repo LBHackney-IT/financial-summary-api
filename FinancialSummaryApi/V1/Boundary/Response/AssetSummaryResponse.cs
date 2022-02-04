@@ -75,7 +75,7 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// <summary>
         /// Summary Year for Estimate 
         /// </summary>
-        public short SumamryYear { get; set; }
+        public short SummaryYear { get; set; }
 
         /// <summary>
         /// Total Leaseholder Count 

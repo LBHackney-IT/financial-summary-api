@@ -67,7 +67,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         [RequiredDateTime]
         public DateTime SubmitDate { get; set; }
 
-        public short SumamryYear { get; set; }
+        public short SummaryYear { get; set; }
 
         public int TotalLeaseholders { get; set; }
 
