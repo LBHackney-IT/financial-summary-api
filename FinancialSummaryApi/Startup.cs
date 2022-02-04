@@ -1,9 +1,11 @@
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using FinancialSummaryApi.V1;
 using FinancialSummaryApi.V1.Controllers;
+using FinancialSummaryApi.V1.Exceptions.CustomExceptions;
+using FinancialSummaryApi.V1.Exceptions.Extensions;
+using FinancialSummaryApi.V1.Extensions;
 using FinancialSummaryApi.V1.Gateways;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
-using FinancialSummaryApi.V1.Infrastructure;
 using FinancialSummaryApi.V1.UseCase;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
@@ -26,8 +28,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using FinancialSummaryApi.V1.Exceptions.CustomExceptions;
-using FinancialSummaryApi.V1.Exceptions.Extensions;
 
 namespace FinancialSummaryApi
 {
@@ -138,7 +138,6 @@ namespace FinancialSummaryApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });*/
-
         }
 
         private static void ConfigureLogging(IServiceCollection services, IConfiguration configuration)

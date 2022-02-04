@@ -1,4 +1,4 @@
-using FinancialSummaryApi.V1.Infrastructure;
+using FinancialSummaryApi.V1.Extensions;
 using FluentAssertions;
 using System;
 using Xunit;

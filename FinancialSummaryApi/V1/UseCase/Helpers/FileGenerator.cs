@@ -2,7 +2,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
-using FinancialSummaryApi.V1.Infrastructure;
+using FinancialSummaryApi.V1.Extensions;
 using NodaMoney;
 using Razor.Templating.Core;
 using System;
@@ -18,7 +18,6 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
     {
         public static byte[] WritePdfFile(List<Statement> transactions, string name, string period)
         {
-
             var report = new ExportResponse();
             var data = new List<ExportTransactionResponse>();
 
@@ -28,7 +27,6 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             report.StatementPeriod = period;
             foreach (var item in transactions)
             {
-
                 data.Add(
                    new ExportTransactionResponse
                    {
@@ -42,11 +40,10 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             report.Data = data;
 
             return null;
-
         }
+
         public static async Task<string> CreatePdfTemplate(List<Statement> response, List<string> lines)
         {
-
             var model = new ExportResponse();
             var data = new List<ExportTransactionResponse>();
             model.Header = lines[0];
@@ -59,7 +56,6 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             // model.StatementPeriod = period;
             foreach (var item in response)
             {
-
                 data.Add(
                    new ExportTransactionResponse
                    {
@@ -73,15 +69,14 @@ namespace FinancialSummaryApi.V1.UseCase.Helpers
             model.Data = data;
             string template = await RazorTemplateEngine.RenderAsync("~/V1/Templates/PDFTemplate.cshtml", model).ConfigureAwait(false);
 
-
             return template.EncodeBase64();
         }
+
         public static byte[] WriteCSVFile(List<Statement> transactions, List<string> lines)
         {
             var data = new List<ExportTransactionResponse>();
             foreach (var item in transactions)
             {
-
                 data.Add(
                    new ExportTransactionResponse
                    {

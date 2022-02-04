@@ -3,7 +3,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.Model;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Core.Strategies;
-using FinancialSummaryApi.V1.Infrastructure;
+using FinancialSummaryApi.V1.Extensions;
 using Hackney.Core.Testing.DynamoDb;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -49,7 +49,7 @@ namespace FinancialSummaryApi.Tests
             {
                 try
                 {
-                    // Hanna Holosova// Code repalace by Edward 
+                    // Hanna Holosova// Code repalace by Edward
                     // This command helps to prevent the next exception:
                     // Amazon.XRay.Recorder.Core.Exceptions.EntityNotAvailableException : Entity doesn't exist in AsyncLocal
                     AWSXRayRecorder.Instance.ContextMissingStrategy = ContextMissingStrategy.LOG_ERROR;

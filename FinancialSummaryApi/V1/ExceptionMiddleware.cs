@@ -1,6 +1,6 @@
 using FinancialSummaryApi.V1.Exceptions.CustomExceptions;
 using FinancialSummaryApi.V1.Exceptions.Models;
-using FinancialSummaryApi.V1.Infrastructure;
+using FinancialSummaryApi.V1.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

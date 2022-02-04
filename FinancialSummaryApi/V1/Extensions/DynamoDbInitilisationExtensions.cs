@@ -1,10 +1,10 @@
+using System;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
 using Amazon.Runtime;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
-namespace FinancialSummaryApi.V1.Infrastructure
+namespace FinancialSummaryApi.V1.Extensions
 {
     public static class DynamoDbInitilisationExtensions
     {

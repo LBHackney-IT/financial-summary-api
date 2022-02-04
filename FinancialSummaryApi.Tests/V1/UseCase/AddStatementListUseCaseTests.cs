@@ -9,6 +9,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.Mappings;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
