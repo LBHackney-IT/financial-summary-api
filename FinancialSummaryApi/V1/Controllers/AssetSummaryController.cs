@@ -1,15 +1,12 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Exceptions.Models;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
-using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
-using FinancialSummaryApi.V1.Exceptions.Models;
 
 namespace FinancialSummaryApi.V1.Controllers
 {
@@ -48,7 +45,6 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        //[LogCall(LogLevel.Information)]
         public async Task<IActionResult> GetAll([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromQuery] Guid targetId, [FromQuery] DateTime submitDate)
@@ -109,7 +105,6 @@ namespace FinancialSummaryApi.V1.Controllers
             var assetSummary = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear).ConfigureAwait(false);
             return Ok(assetSummary);
         }
-
 
         /// <summary>
         /// Create new Asset summary model

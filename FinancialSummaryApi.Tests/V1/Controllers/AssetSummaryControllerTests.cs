@@ -11,11 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
-using FinancialSummaryApi.V1.Exceptions.CustomExceptions;
-using FinancialSummaryApi.V1.Exceptions.Models;
-using FinancialSummaryApi.V1.Gateways.Abstracts;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Controllers
@@ -30,7 +26,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly Mock<IGetAssetSummaryByIdUseCase> _getByIdUseCase;
         private readonly Mock<IGetAssetSummaryByIdAndYearUseCase> _mockGetByIdAndYearUseCase;
         private readonly Mock<IAddAssetSummaryUseCase> _addUseCase;
-        private readonly Mock<IFinanceSummaryGateway> _financeSummaryGateway;
 
         public AssetSummaryControllerTests()
         {
@@ -41,8 +36,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _mockGetByIdAndYearUseCase = new Mock<IGetAssetSummaryByIdAndYearUseCase>();
 
             _addUseCase = new Mock<IAddAssetSummaryUseCase>();
-
-            _financeSummaryGateway = new Mock<IFinanceSummaryGateway>();
 
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));

@@ -1,7 +1,7 @@
 using AutoFixture;
 using FinancialSummaryApi.V1.Boundary.Response;
-using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
+using FinancialSummaryApi.V1.Exceptions.Models;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
 using Hackney.Core.DynamoDb;
@@ -13,7 +13,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using FinancialSummaryApi.V1.Exceptions.Models;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.E2ETests
@@ -55,7 +54,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.StatusCode.Should().Be(400);
             apiEntity.Details.Should().BeEquivalentTo(string.Empty);
         }
-
 
         [Fact]
         public async Task CreateStatementListCreatedReturns201()
@@ -252,6 +250,5 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             apiEntity.Should().NotBeNull();
             apiEntity.ShouldBeEqualTo(statement);
         }
-
     }
 }
