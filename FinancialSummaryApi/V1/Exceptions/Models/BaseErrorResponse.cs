@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace FinancialSummaryApi.V1.Exceptions.Models
 {
@@ -15,7 +16,7 @@ namespace FinancialSummaryApi.V1.Exceptions.Models
             Details = details ?? string.Empty;
         }
 
-        public BaseErrorResponse(IEnumerable<ModelStateError> modelErrors, string message = "Invalid request object. Please correct the specified errors and try again.")
+        public BaseErrorResponse(int statusCode, IEnumerable<ModelStateError> modelErrors, string message = "Invalid request object. Please correct the specified errors and try again.")
         {
             if (modelErrors == null)
             {
@@ -30,8 +31,9 @@ namespace FinancialSummaryApi.V1.Exceptions.Models
             }
 
             Message = message;
+            StatusCode = statusCode;
 
-            Errors = new ValidationErrorCollection();
+            Errors = new List<ValidationError>();
 
             foreach (var res in modelStateErrors)
             {
@@ -66,11 +68,11 @@ namespace FinancialSummaryApi.V1.Exceptions.Models
         /// <example>
         /// The field PaidAmount must be from 0 to 79228162514264337593543950335
         /// </example>
-        public string Details { get; set; }
+        public string Details { get; set; } = string.Empty;
 
         /// <summary>
         /// List of errors
         /// </summary>
-        public ValidationErrorCollection Errors { get; set; }
+        public List<ValidationError> Errors { get; set; }
     }
 }

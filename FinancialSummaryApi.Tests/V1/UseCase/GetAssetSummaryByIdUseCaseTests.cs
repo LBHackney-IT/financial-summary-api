@@ -7,6 +7,8 @@ using FluentAssertions;
 using Moq;
 using System;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.Exceptions.CustomExceptions;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.UseCase
@@ -51,15 +53,16 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
         }
 
         [Fact]
-        public async Task GetById_GatewayReturnsNull_ReturnsNull()
+        public void GetById_GatewayReturnsNull_ThrowsException()
         {
-            var expectedResult = _fixture.Create<AssetSummary>();
+            _fixture.Create<AssetSummary>();
             _mockFinanceGateway.Setup(_ => _.GetAssetSummaryByIdAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
                 .ReturnsAsync((AssetSummary) null);
 
-            var actualResult = await _useCase.ExecuteAsync(Guid.NewGuid(), new DateTime(2021, 06, 28)).ConfigureAwait(false);
-
-            actualResult.Should().BeNull();
+            _useCase
+                .Invoking(useCase => useCase.ExecuteAsync(Guid.NewGuid(), new DateTime(2021, 06, 28)))
+                .Should().Throw<ApiException>()
+                .Where(ex => ex.StatusCode == StatusCodes.Status404NotFound);
         }
 
         private static void CompareAssetSummary(AssetSummaryResponse model1, AssetSummary model2)

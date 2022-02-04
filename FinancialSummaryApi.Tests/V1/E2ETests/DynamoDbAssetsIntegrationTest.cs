@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using FinancialSummaryApi.V1.Exceptions.Models;
+using Microsoft.AspNetCore.Http;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.E2ETests
@@ -125,7 +126,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Fact]
-        public async Task CreateAssetBadRequestReturns400()
+        public async Task CreateAssetInvalidRequestReturns422()
         {
             var assetDomain = ConstructAssetSummary();
 
@@ -148,22 +149,23 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
             apiEntity.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain("The AssetName field is required.");
-            apiEntity.Message.Should().Contain($"The field TotalDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalServiceCharges must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalNonDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalRentalServiceCharge must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalIncome must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalExpenditure must be between 0 and {(double) decimal.MaxValue}.");
+            var errorList = apiEntity.Errors.Select(l => l.Message).ToList();
+            errorList.Should().Contain("The AssetName field is required.");
+            errorList.Should().Contain($"The field TotalDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalServiceCharges must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalNonDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalRentalServiceCharge must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalIncome must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalExpenditure must be between 0 and {(double) decimal.MaxValue}.");
         }
 
         [Fact]

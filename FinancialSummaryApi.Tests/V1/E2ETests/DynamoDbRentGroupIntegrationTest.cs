@@ -9,6 +9,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -108,7 +109,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Fact]
-        public async Task CreateRentGroupBadRequestReturns400()
+        public async Task CreateRentGroupInvalidRequestReturns422()
         {
             var rentGroupDomain = new List<RentGroupSummary> { ConstructRentGroupSummary() };
 
@@ -129,20 +130,21 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.StatusCode.Should().Be(422);
             apiEntity.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain($"The field PaidYTD must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalPaid must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalArrears must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field ChargedYTD must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalCharged must be between 0 and {(double) decimal.MaxValue}.");
+            var errorList = apiEntity.Errors.Select(l => l.Message).ToList();
+            errorList.Should().Contain($"The field PaidYTD must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalPaid must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalArrears must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field ChargedYTD must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalCharged must be between 0 and {(double) decimal.MaxValue}.");
         }
 
         [Fact]

@@ -47,7 +47,7 @@ namespace FinancialSummaryApi.V1
                         break;
 
                     case InvalidModelStateException invalidModelStateException:
-                        errorResponse = new BaseErrorResponse(invalidModelStateException.Errors, invalidModelStateException.Message);
+                        errorResponse = new BaseErrorResponse(StatusCodes.Status422UnprocessableEntity, invalidModelStateException.Errors, invalidModelStateException.Message);
                         break;
 
                     case ArgumentNullException _:

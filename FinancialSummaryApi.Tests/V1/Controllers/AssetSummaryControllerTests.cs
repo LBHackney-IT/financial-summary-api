@@ -13,7 +13,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.Exceptions.CustomExceptions;
 using FinancialSummaryApi.V1.Exceptions.Models;
+using FinancialSummaryApi.V1.Gateways.Abstracts;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Controllers
@@ -28,6 +30,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly Mock<IGetAssetSummaryByIdUseCase> _getByIdUseCase;
         private readonly Mock<IGetAssetSummaryByIdAndYearUseCase> _mockGetByIdAndYearUseCase;
         private readonly Mock<IAddAssetSummaryUseCase> _addUseCase;
+        private readonly Mock<IFinanceSummaryGateway> _financeSummaryGateway;
 
         public AssetSummaryControllerTests()
         {
@@ -38,6 +41,8 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _mockGetByIdAndYearUseCase = new Mock<IGetAssetSummaryByIdAndYearUseCase>();
 
             _addUseCase = new Mock<IAddAssetSummaryUseCase>();
+
+            _financeSummaryGateway = new Mock<IFinanceSummaryGateway>();
 
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
@@ -203,32 +208,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         }
 
         [Fact]
-        public async Task GetByAssetIdAndDateWithInvalidIdReturns404()
-        {
-            _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
-                .ReturnsAsync((AssetSummaryResponse) null);
-
-            var result = await _assetSummaryController.Get(string.Empty, string.Empty, new Guid("ff353355-d884-4bc9-a684-f0ccc616ba4e"), new DateTime(2021, 6, 30))
-                .ConfigureAwait(false);
-
-            result.Should().NotBeNull();
-
-            var notFoundResult = result as NotFoundObjectResult;
-
-            notFoundResult.Should().NotBeNull();
-
-            var response = notFoundResult.Value as BaseErrorResponse;
-
-            response.Should().NotBeNull();
-
-            response.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
-
-            response.Message.Should().Be("No Asset Summary by provided assetId cannot be found!");
-
-            response.Details.Should().Be("");
-        }
-
-        [Fact]
         public async Task GetByAssetIdAndDateReturns500()
         {
             _getByIdUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
@@ -367,28 +346,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             assetResponse.TotalServiceCharges.Should().Be(0);
             assetResponse.TotalIncome.Should().Be(0);
             assetResponse.TotalExpenditure.Should().Be(0);
-        }
-
-        [Fact]
-        public async Task CreateAssetSummaryWithInvalidDataReturns400()
-        {
-            var result = await _assetSummaryController.Create(string.Empty, string.Empty, null).ConfigureAwait(false);
-
-            result.Should().NotBeNull();
-
-            var badRequestResult = result as BadRequestObjectResult;
-
-            badRequestResult.Should().NotBeNull();
-
-            var response = badRequestResult.Value as BaseErrorResponse;
-
-            response.Should().NotBeNull();
-
-            response.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
-
-            response.Details.Should().Be("");
-
-            response.Message.Should().Be("AssetSummary model cannot be null");
         }
 
         [Fact]

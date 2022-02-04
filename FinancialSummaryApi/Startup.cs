@@ -134,10 +134,10 @@ namespace FinancialSummaryApi
                     .AllowAnyOrigin()
                     .AllowAnyMethod()));
 
-            services.Configure<ApiBehaviorOptions>(options =>
+            /*services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
-            });
+            });*/
 
         }
 

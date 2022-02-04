@@ -94,7 +94,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Fact]
-        public async Task CreateStatementBadRequestReturns400()
+        public async Task CreateStatementInvalidRequestReturns422()
         {
             var statementDomain = new List<Statement> { ConstructStatement() };
 
@@ -113,18 +113,19 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.StatusCode.Should().Be(422);
             apiEntity.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain("'Paid Amount' must be greater than or equal to '0'.");
-            apiEntity.Message.Should().Contain("'Charged Amount' must be greater than or equal to '0'.");
-            apiEntity.Message.Should().Contain("'Housing Benefit Amount' must be greater than or equal to '0'.");
+            var errorList = apiEntity.Errors.Select(l => l.Message).ToList();
+            errorList.Should().Contain("'Paid Amount' must be greater than or equal to '0'.");
+            errorList.Should().Contain("'Charged Amount' must be greater than or equal to '0'.");
+            errorList.Should().Contain("'Housing Benefit Amount' must be greater than or equal to '0'.");
         }
 
         [Fact]
