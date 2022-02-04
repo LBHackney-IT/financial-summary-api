@@ -1,4 +1,5 @@
-using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Exceptions.CustomExceptions;
+using FinancialSummaryApi.V1.Exceptions.Models;
 using FinancialSummaryApi.V1.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
@@ -6,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1
@@ -32,39 +33,54 @@ namespace FinancialSummaryApi.V1
             {
                 await _next.Invoke(context).ConfigureAwait(false);
             }
-            catch (ArgumentNullException ex)
-            {
-                await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest).ConfigureAwait(false);
-            }
-            catch (ArgumentException ex)
-            {
-                await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest).ConfigureAwait(false);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest).ConfigureAwait(false);
-            }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError).ConfigureAwait(false);
-            }
-        }
+                Debugger.Break(); // Break if debugger is attached
 
-        private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode code)
-        {
-            _logger.LogError(ex, ex.StackTrace);
+                var errorMessage = ex.GetFullMessage();
+                BaseErrorResponse errorResponse;
 
-            var response = context.Response;
-            response.ContentType = "application/json";
-            response.StatusCode = (int) code;
-            var allMessageText = ex.GetFullMessage();
+                switch (ex)
+                {
+                    case ApiException apiException:
+                        errorResponse = new BaseErrorResponse(apiException.StatusCode, apiException.Message, apiException.Details) { Errors = apiException.Errors };
+                        break;
 
-            var details = _env.IsDevelopment() && code == HttpStatusCode.InternalServerError
-                ? ex.StackTrace?.ToString() :
-                  string.Empty;
+                    case InvalidModelStateException invalidModelStateException:
+                        errorResponse = new BaseErrorResponse(invalidModelStateException.Errors, invalidModelStateException.Message);
+                        break;
 
-            await response.WriteAsync(JsonConvert.SerializeObject(new BaseErrorResponse((int) code, allMessageText, details)))
+                    case ArgumentNullException _:
+                        errorResponse = new BaseErrorResponse(StatusCodes.Status400BadRequest, errorMessage, string.Empty);
+                        break;
+
+                    case ArgumentException _:
+                        errorResponse = new BaseErrorResponse(StatusCodes.Status400BadRequest, errorMessage, string.Empty);
+                        break;
+
+                    case KeyNotFoundException _:
+                        errorResponse = new BaseErrorResponse(StatusCodes.Status400BadRequest, errorMessage, string.Empty);
+                        break;
+
+                    case UnauthorizedAccessException _:
+                        errorResponse = new BaseErrorResponse(StatusCodes.Status401Unauthorized, "Request unauthorized", string.Empty);
+                        break;
+
+                    default:
+                        // unhandled error
+                        _logger.LogError(ex, ex.StackTrace);
+                        var details = _env.IsDevelopment() ? ex.StackTrace : string.Empty;
+                        errorResponse = new BaseErrorResponse(StatusCodes.Status500InternalServerError, $"An unhandled error occurred: {errorMessage}", details);
+                        break;
+                }
+
+                var response = context.Response;
+                response.ContentType = "application/problem+json";
+                response.StatusCode = errorResponse.StatusCode;
+                await response
+                    .WriteAsync(JsonConvert.SerializeObject(errorResponse))
                     .ConfigureAwait(false);
+            }
         }
     }
 }

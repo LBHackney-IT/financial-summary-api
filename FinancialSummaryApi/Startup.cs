@@ -26,6 +26,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FinancialSummaryApi.V1.Exceptions.CustomExceptions;
+using FinancialSummaryApi.V1.Exceptions.Extensions;
 
 namespace FinancialSummaryApi
 {
@@ -39,7 +41,7 @@ namespace FinancialSummaryApi
         }
 
         public IConfiguration Configuration { get; }
-        private static List<ApiVersionDescription> _apiVersions { get; set; }
+        private static List<ApiVersionDescription> ApiVersions { get; set; }
         private const string ApiName = "Finance Summary API";
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -49,7 +51,10 @@ namespace FinancialSummaryApi
             services
                 .AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+                .ConfigureApiBehaviorOptions(opt => opt.InvalidModelStateResponseFactory = context
+                    => throw new InvalidModelStateException(context.ModelState.AllModelStateErrors()))
                 .AddFluentValidation(o => o.RegisterValidatorsFromAssemblyContaining<Startup>());
+
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(1, 0);
@@ -97,7 +102,7 @@ namespace FinancialSummaryApi
                 });
 
                 //Get every ApiVersion attribute specified and create swagger docs for them
-                foreach (var apiVersion in _apiVersions)
+                foreach (var apiVersion in ApiVersions)
                 {
                     var version = $"v{apiVersion.ApiVersion}";
                     c.SwaggerDoc(version, new OpenApiInfo
@@ -199,13 +204,13 @@ namespace FinancialSummaryApi
 
             //Get All ApiVersions,
             var api = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
-            _apiVersions = api.ApiVersionDescriptions.ToList();
+            ApiVersions = api.ApiVersionDescriptions.ToList();
 
             //Swagger ui to view the swagger.json file
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                foreach (var apiVersionDescription in _apiVersions)
+                foreach (var apiVersionDescription in ApiVersions)
                 {
                     //Create a swagger endpoint for each swagger version
                     c.SwaggerEndpoint($"{apiVersionDescription.GetFormattedApiVersion()}/swagger.json",
