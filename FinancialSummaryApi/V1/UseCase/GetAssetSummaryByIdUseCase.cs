@@ -4,6 +4,7 @@ using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using System;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.Extensions;
 
 namespace FinancialSummaryApi.V1.UseCase
 {
@@ -22,9 +23,11 @@ namespace FinancialSummaryApi.V1.UseCase
             {
                 submitDate = DateTime.UtcNow;
             }
-            var assetSummary = await _financeSummaryGateway.GetAssetSummaryByIdAsync(assetId, submitDate).ConfigureAwait(false);
+            var assetSummary = await _financeSummaryGateway.GetAssetSummaryByIdAsync(assetId, submitDate)
+                .EnsureExistsAsync("No Asset Summary by provided assetId cannot be found!")
+                .ConfigureAwait(false);
 
-            return assetSummary?.ToResponse();
+            return assetSummary.ToResponse();
         }
     }
 }

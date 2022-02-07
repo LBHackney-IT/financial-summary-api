@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
 using AutoMapper;
 using FinancialSummaryApi.V1.Boundary.Request;
@@ -6,9 +7,8 @@ using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using Hackney.Core.DynamoDb;
-using System.Collections.Generic;
 
-namespace FinancialSummaryApi.V1.Infrastructure
+namespace FinancialSummaryApi.V1.Mappings
 {
     public class MappingProfile : Profile
     {

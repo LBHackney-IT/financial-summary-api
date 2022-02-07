@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.Exceptions.Models;
+
 namespace FinancialSummaryApi.V1.Controllers
 {
     [ApiController]

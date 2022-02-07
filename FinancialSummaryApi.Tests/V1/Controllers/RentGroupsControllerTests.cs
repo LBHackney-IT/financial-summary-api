@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.Exceptions.Models;
 using Xunit;
 
 namespace FinancialSummaryApi.Tests.V1.Controllers

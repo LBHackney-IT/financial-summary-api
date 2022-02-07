@@ -4,7 +4,8 @@ using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
-using FinancialSummaryApi.V1.Infrastructure;
+using FinancialSummaryApi.V1.Exceptions.Models;
+using FinancialSummaryApi.V1.Mappings;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FluentAssertions;
 using Hackney.Core.DynamoDb;
@@ -18,7 +19,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
-
 
 namespace FinancialSummaryApi.Tests.V1.Controllers
 {
@@ -35,7 +35,6 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly Mock<IExportCsvStatementUseCase> _exportCsvStatementUseCase;
         private readonly Mock<IExportPdfStatementUseCase> _exportPdfStatementUseCase;
         private readonly Fixture _fixture = new Fixture();
-
 
         private readonly IMapper _mapper;
 

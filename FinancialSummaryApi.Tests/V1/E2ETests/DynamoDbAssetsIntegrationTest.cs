@@ -1,11 +1,12 @@
 using AutoFixture;
 using FinancialSummaryApi.V1.Boundary;
 using FinancialSummaryApi.V1.Boundary.Response;
-using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
+using FinancialSummaryApi.V1.Exceptions.Models;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -124,7 +125,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Fact]
-        public async Task CreateAssetBadRequestReturns400()
+        public async Task CreateAssetInvalidRequestReturns422()
         {
             var assetDomain = ConstructAssetSummary();
 
@@ -147,22 +148,23 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
                 response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
             }
 
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
 
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
 
             apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
+            apiEntity.StatusCode.Should().Be(StatusCodes.Status422UnprocessableEntity);
             apiEntity.Details.Should().Be(string.Empty);
 
-            apiEntity.Message.Should().Contain("The AssetName field is required.");
-            apiEntity.Message.Should().Contain($"The field TotalDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalServiceCharges must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalNonDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalRentalServiceCharge must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalIncome must be between 0 and {(double) decimal.MaxValue}.");
-            apiEntity.Message.Should().Contain($"The field TotalExpenditure must be between 0 and {(double) decimal.MaxValue}.");
+            var errorList = apiEntity.Errors.Select(l => l.Message).ToList();
+            errorList.Should().Contain("The AssetName field is required.");
+            errorList.Should().Contain($"The field TotalDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalServiceCharges must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalNonDwellingRent must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalRentalServiceCharge must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalIncome must be between 0 and {(double) decimal.MaxValue}.");
+            errorList.Should().Contain($"The field TotalExpenditure must be between 0 and {(double) decimal.MaxValue}.");
         }
 
         [Fact]
@@ -235,6 +237,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id));
         }
+
         private async Task<AssetSummaryResponse> CreateAssetAndValidateAndReturnResponse(AssetSummary assetSummary)
         {
             var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
@@ -254,7 +257,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
             return apiEntity;
         }
-
 
         private async Task GetAssetByTargetIdAndValidateResponse(AssetSummary assetSummary)
         {

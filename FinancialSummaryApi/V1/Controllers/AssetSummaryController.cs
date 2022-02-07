@@ -1,13 +1,11 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Exceptions.Models;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
-using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.Controllers
@@ -47,7 +45,6 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
-        //[LogCall(LogLevel.Information)]
         public async Task<IActionResult> GetAll([FromHeader(Name = "Authorization")] string token,
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromQuery] Guid targetId, [FromQuery] DateTime submitDate)
@@ -80,12 +77,6 @@ namespace FinancialSummaryApi.V1.Controllers
                                              [FromQuery] DateTime submitDate)
         {
             var assetSummary = await _getByIdUseCase.ExecuteAsync(assetId, submitDate).ConfigureAwait(false);
-
-            if (assetSummary == null)
-            {
-                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Asset Summary by provided assetId cannot be found!"));
-            }
-
             return Ok(assetSummary);
         }
 
@@ -112,15 +103,8 @@ namespace FinancialSummaryApi.V1.Controllers
                                              [FromQuery] short summaryYear)
         {
             var assetSummary = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear).ConfigureAwait(false);
-
-            if (assetSummary == null)
-            {
-                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Asset Summary by provided assetId cannot be found!"));
-            }
-
             return Ok(assetSummary);
         }
-
 
         /// <summary>
         /// Create new Asset summary model
@@ -139,16 +123,6 @@ namespace FinancialSummaryApi.V1.Controllers
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromBody] AddAssetSummaryRequest assetSummary)
         {
-            if (assetSummary == null)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "AssetSummary model cannot be null"));
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
-            }
-
             var resultAsset = await _addUseCase.ExecuteAsync(assetSummary).ConfigureAwait(false);
 
             return CreatedAtAction("Get", new { assetId = assetSummary.TargetId }, resultAsset);

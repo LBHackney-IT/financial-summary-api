@@ -1,6 +1,6 @@
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DataModel;
-using FinancialSummaryApi.V1.Infrastructure;
+using FinancialSummaryApi.V1.Extensions;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -19,7 +19,7 @@ namespace FinancialSummaryApi.Tests.V1.Infrastructure
         [InlineData(null)]
         [InlineData("false")]
         [InlineData("true")]
-        public void ConfigureDynamoDBTestNoLocalModeEnvVarUsesAWSService(string localModeEnvVar)
+        public void ConfigureDynamoDbTestNoLocalModeEnvVarUsesAwsService(string localModeEnvVar)
         {
             Environment.SetEnvironmentVariable("DynamoDb_LocalMode", localModeEnvVar);
 

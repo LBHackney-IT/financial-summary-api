@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace FinancialSummaryApi.V1.Infrastructure
+namespace FinancialSummaryApi.V1.Extensions
 {
     public static class Base64Extentions
     {
