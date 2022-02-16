@@ -124,17 +124,21 @@ namespace FinancialSummaryApi.V1.Controllers
             return Ok(assetSummary);
         }
 
+        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPatch("estimates/{assetId}")]
         public async Task<IActionResult> PatchEstimate([FromBody] JsonPatchDocument<AssetSummaryUpdateRequest> patchDocument,
                                                        [FromRoute] Guid assetId,
-                                                       [FromQuery] DateTime submitYear)
+                                                       [FromQuery] DateTime submitDate)
         {
             if (patchDocument == null)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "AssetSummary model cannot be null!"));
             }
 
-            var response = await _getByIdUseCase.ExecuteAsync(assetId, submitYear).ConfigureAwait(false);
+            var response = await _getByIdUseCase.ExecuteAsync(assetId, submitDate).ConfigureAwait(false);
 
             if (response == null)
             {
