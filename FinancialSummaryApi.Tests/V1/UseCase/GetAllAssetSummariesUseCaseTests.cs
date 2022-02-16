@@ -54,11 +54,11 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 }
             };
 
-            _mockFinanceGateway.Setup(x => x.GetAllAssetSummaryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(assetSummaries);
+            _mockFinanceGateway.Setup(x => x.GetAllAssetSummaryAsync(It.IsAny<Guid>(), It.IsAny<DateTime?>())).ReturnsAsync(assetSummaries);
 
-            var expectedResult = new List<AssetSummaryResponse>(assetSummaries.ToResponse());
+            var expectedResult = new List<AssetSummaryViewResponse>(assetSummaries.ToViewResponse());
 
-            var result = await _getAllAssetSummariesUseCase.ExecuteAsync(assetSummaries[0].TargetId, new DateTime(2021, 7, 2)).ConfigureAwait(false);
+            var result = await _getAllAssetSummariesUseCase.ExecuteAsync(assetSummaries[0].TargetId).ConfigureAwait(false);
 
             result.Should().HaveCount(2);
 
@@ -99,11 +99,11 @@ namespace FinancialSummaryApi.Tests.V1.UseCase
                 }
             };
 
-            _mockFinanceGateway.Setup(x => x.GetAllAssetSummaryAsync(It.IsAny<Guid>(), It.IsAny<DateTime>())).ReturnsAsync(assetSummaries);
+            _mockFinanceGateway.Setup(x => x.GetAllAssetSummaryAsync(It.IsAny<Guid>(), It.IsAny<DateTime?>())).ReturnsAsync(assetSummaries);
 
-            var expectedResult = new List<AssetSummaryResponse>(assetSummaries.ToResponse());
+            var expectedResult = new List<AssetSummaryViewResponse>(assetSummaries.ToViewResponse());
 
-            var result = await _getAllAssetSummariesUseCase.ExecuteAsync(assetSummaries[0].TargetId, new DateTime()).ConfigureAwait(false);
+            var result = await _getAllAssetSummariesUseCase.ExecuteAsync(assetSummaries[0].TargetId).ConfigureAwait(false);
 
             result.Should().HaveCount(2);
 

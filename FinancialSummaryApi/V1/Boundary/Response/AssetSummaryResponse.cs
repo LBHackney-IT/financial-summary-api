@@ -21,6 +21,8 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// </example>
         public Guid TargetId { get; set; }
 
+        public ValuesType ValuesType { get; set; }
+
         /// <summary>
         /// Values: [Estate, Block, Core]
         /// </summary>

@@ -12,6 +12,7 @@ namespace FinancialSummaryApi.V1.Domain
         public Guid TargetId { get; set; }
 
         public TargetType TargetType { get; set; }
+        public ValuesType ValuesType { get; set; }
 
         public string AssetName { get; set; }
 
