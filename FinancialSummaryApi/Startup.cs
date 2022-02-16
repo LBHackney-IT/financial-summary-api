@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,9 @@ namespace FinancialSummaryApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services
+                .AddMvc()
+                .AddNewtonsoftJson(opts => opts.SerializerSettings.Converters.Add(new StringEnumConverter()));
             services.AddAutoMapper(typeof(Startup));
             services
                 .AddMvc()
@@ -158,7 +162,7 @@ namespace FinancialSummaryApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<IFinanceSummaryGateway, DynamoDbGateway>();
+            services.AddScoped<IFinanceSummaryGateway, IDynamoDbGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -177,6 +181,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
             services.AddScoped<IGetAssetSummaryByIdAndYearUseCase, GetAssetSummaryByIdAndYearUseCase>();
+            services.AddScoped<IUpdateAssetSummaryUseCase, UpdateAssetSummaryUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

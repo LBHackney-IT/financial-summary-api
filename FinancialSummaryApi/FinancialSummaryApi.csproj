@@ -35,13 +35,15 @@
         <PackageReference Include="AWSXRayRecorder.Handlers.AspNetCore" Version="2.7.2" />
         <PackageReference Include="AWSXRayRecorder.Handlers.AwsSdk" Version="2.8.2" />
         <PackageReference Include="AWSXRayRecorder.Handlers.EntityFramework" Version="1.1.0" />
-        <PackageReference Include="Hackney.Core.Authorization" Version="1.63.0-preview0013" />
+        <PackageReference Include="Hackney.Core.Authorization" Version="1.66.0" />
 
         <PackageReference Include="Hackney.Core.DynamoDb" Version="1.51.0" />
 
-        <PackageReference Include="Hackney.Core.JWT" Version="1.63.0-preview0013" />
+        <PackageReference Include="Hackney.Core.JWT" Version="1.66.0" />
         <PackageReference Include="Hackney.Core.Logging" Version="1.49.0" />
         <PackageReference Include="CsvHelper" Version="27.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.22" />
 
         <PackageReference Include="NodaMoney" Version="1.0.5" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />

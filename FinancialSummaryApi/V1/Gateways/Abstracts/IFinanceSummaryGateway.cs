@@ -21,6 +21,7 @@ namespace FinancialSummaryApi.V1.Gateways.Abstracts
         public Task AddRangeAsync(List<RentGroupSummary> groupSummaries);
         Task<Statement> GetStatementByIdAsync(Guid item, Guid targetId);
         public Task AddAsync(AssetSummary assetSummary);
+        Task UpdateAsync(AssetSummary assetSummary);
         public Task AddRangeAsync(List<Statement> statements);
     }
 }
