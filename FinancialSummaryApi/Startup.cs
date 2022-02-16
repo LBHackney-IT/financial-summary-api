@@ -218,7 +218,7 @@ namespace FinancialSummaryApi
                 }
             });
 
-            //app.UseGoogleGroupAuthorization();
+            app.UseGoogleGroupAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
