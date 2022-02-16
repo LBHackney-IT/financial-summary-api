@@ -21,7 +21,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
     public class DynamoDbGatewayQueryTests : IClassFixture<MockWebApplicationFactory<Startup>>, IDisposable
     {
         private readonly Fixture _fixture = new Fixture();
-        private readonly DynamoDbGateway _gateway;
+        private readonly IDynamoDbGateway _gateway;
         private static Mock<IMapper> _mapper;
         private readonly IDynamoDbFixture _dbFixture;
         private readonly MockWebApplicationFactory<Startup> _factory;
@@ -33,7 +33,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
             _factory = appFactory;
             _dbFixture = _factory.DynamoDbFixture;
             _mapper = new Mock<IMapper>();
-            _gateway = new DynamoDbGateway(_dbFixture.DynamoDbContext, _mapper.Object);
+            _gateway = new IDynamoDbGateway(_dbFixture.DynamoDbContext, _mapper.Object);
 
 
         }

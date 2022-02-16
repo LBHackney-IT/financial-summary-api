@@ -1,4 +1,5 @@
 using FinancialSummaryApi.V1.Boundary.Request;
+using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
 using System.Collections.Generic;
@@ -8,6 +9,60 @@ namespace FinancialSummaryApi.V1.Factories
 {
     public static class AssetSummaryFactory
     {
+        public static AssetSummaryUpdateRequest ToUpdateModel(this AssetSummaryResponse summary) => new AssetSummaryUpdateRequest
+        {
+            AssetName = summary.AssetName,
+            TotalDwellingRent = summary.TotalDwellingRent,
+            TotalNonDwellingRent = summary.TotalNonDwellingRent,
+            TotalServiceCharges = summary.TotalServiceCharges,
+            TotalRentalServiceCharge = summary.TotalRentalServiceCharge,
+            TotalIncome = summary.TotalIncome,
+            TotalExpenditure = summary.TotalExpenditure,
+            SubmitDate = summary.SubmitDate,
+            SummaryYear = summary.SummaryYear,
+            TotalLeaseholders = summary.TotalLeaseholders,
+            TotalFreeholders = summary.TotalFreeholders,
+            TotalDwellings = summary.TotalDwellings
+        };
+
+        public static AssetSummaryResponse ToResponse(this AssetSummaryUpdateRequest summary, AssetSummaryResponse response) => new AssetSummaryResponse
+        {
+            Id = response.Id,
+            TargetId = response.TargetId,
+            TargetType = response.TargetType,
+            AssetName = summary.AssetName,
+            TotalDwellingRent = summary.TotalDwellingRent,
+            TotalNonDwellingRent = summary.TotalNonDwellingRent,
+            TotalServiceCharges = summary.TotalServiceCharges,
+            TotalRentalServiceCharge = summary.TotalRentalServiceCharge,
+            TotalIncome = summary.TotalIncome,
+            TotalExpenditure = summary.TotalExpenditure,
+            SubmitDate = summary.SubmitDate,
+            SummaryYear = summary.SummaryYear,
+            TotalLeaseholders = summary.TotalLeaseholders,
+            TotalFreeholders = summary.TotalFreeholders,
+            TotalDwellings = summary.TotalDwellings
+        };
+
+        public static AssetSummary ToDomain(this AssetSummaryResponse response) => new AssetSummary
+        {
+            Id = response.Id,
+            TargetId = response.TargetId,
+            TargetType = response.TargetType,
+            AssetName = response.AssetName,
+            SubmitDate = response.SubmitDate,
+            TotalDwellingRent = response.TotalDwellingRent,
+            TotalNonDwellingRent = response.TotalNonDwellingRent,
+            TotalRentalServiceCharge = response.TotalRentalServiceCharge,
+            TotalServiceCharges = response.TotalServiceCharges,
+            TotalIncome = response.TotalIncome,
+            TotalExpenditure = response.TotalExpenditure,
+            TotalDwellings = response.TotalDwellings,
+            TotalFreeholders = response.TotalFreeholders,
+            TotalLeaseholders = response.TotalLeaseholders,
+            SummaryYear = response.SummaryYear
+        };
+
         public static AssetSummary ToDomain(this AssetSummaryDbEntity databaseEntity)
         {
             return databaseEntity == null ? null : new AssetSummary

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.Gateways
 {
-    public class DynamoDbGateway : IFinanceSummaryGateway
+    public class IDynamoDbGateway : IFinanceSummaryGateway
     {
         private const int MAX_RESULTS = 10;
         private const string TARGETID = "target_id";
@@ -23,7 +23,7 @@ namespace FinancialSummaryApi.V1.Gateways
         private readonly IMapper _mapper;
         private Guid _rentGroupTargetId = new Guid("51259000-0dfd-4c74-8e25-45a9c7f2fc90");
         public string PaginationToken { get; set; } = "{}";
-        public DynamoDbGateway(IDynamoDBContext dynamoDbContext, IMapper mapper)
+        public IDynamoDbGateway(IDynamoDBContext dynamoDbContext, IMapper mapper)
         {
             _dynamoDbContext = dynamoDbContext;
             _mapper = mapper;
@@ -35,6 +35,12 @@ namespace FinancialSummaryApi.V1.Gateways
         {
             await _dynamoDbContext.SaveAsync(assetSummary.ToDatabase()).ConfigureAwait(false);
         }
+
+        public Task UpdateAsync(AssetSummary assetSummary)
+        {
+            return _dynamoDbContext.SaveAsync(assetSummary.ToDatabase());
+        }
+
         public async Task<List<AssetSummary>> GetAllAssetSummaryAsync(Guid assetId, DateTime submitDate)
         {
             var (submitDateStart, submitDateEnd) = submitDate.GetDayRange();

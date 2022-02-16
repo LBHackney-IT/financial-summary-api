@@ -18,7 +18,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
     {
         private readonly Fixture _fixture = new Fixture();
         private readonly Mock<IDynamoDBContext> _mockDynamoDb;
-        private readonly DynamoDbGateway _gateway;
+        private readonly IDynamoDbGateway _gateway;
         private static IMapper _mapper;
 
         private readonly List<Action> _cleanup = new List<Action>();
@@ -31,7 +31,7 @@ namespace FinancialSummaryApi.Tests.V1.Gateways
                     mc.AddProfile(new MappingProfile()));
                 _mapper = mappingConfig.CreateMapper();
             }
-            _gateway = new DynamoDbGateway(_mockDynamoDb.Object, _mapper);
+            _gateway = new IDynamoDbGateway(_mockDynamoDb.Object, _mapper);
 
 
         }

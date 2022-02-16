@@ -1,10 +1,10 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
-using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -22,17 +22,20 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IGetAssetSummaryByIdUseCase _getByIdUseCase;
         private readonly IGetAssetSummaryByIdAndYearUseCase _getAssetSummaryByIdAndYearUseCase;
         private readonly IAddAssetSummaryUseCase _addUseCase;
+        private readonly IUpdateAssetSummaryUseCase _updateAssetSummaryUseCase;
 
         public AssetSummaryController(
             IGetAllAssetSummariesUseCase getAllUseCase,
             IGetAssetSummaryByIdUseCase getByIdUseCase,
             IGetAssetSummaryByIdAndYearUseCase getAssetSummaryByIdAndYearUseCase,
-            IAddAssetSummaryUseCase addAssetSummaryUseCase)
+            IAddAssetSummaryUseCase addAssetSummaryUseCase,
+            IUpdateAssetSummaryUseCase updateAssetSummaryUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
             _getAssetSummaryByIdAndYearUseCase = getAssetSummaryByIdAndYearUseCase;
             _addUseCase = addAssetSummaryUseCase;
+            _updateAssetSummaryUseCase = updateAssetSummaryUseCase;
         }
 
         /// <summary>
@@ -121,6 +124,33 @@ namespace FinancialSummaryApi.V1.Controllers
             return Ok(assetSummary);
         }
 
+        [HttpPatch("estimates/{assetId}")]
+        public async Task<IActionResult> PatchEstimate([FromBody] JsonPatchDocument<AssetSummaryUpdateRequest> patchDocument,
+                                                       [FromRoute] Guid assetId,
+                                                       [FromQuery] DateTime submitYear)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "AssetSummary model cannot be null!"));
+            }
+
+            var response = await _getByIdUseCase.ExecuteAsync(assetId, submitYear).ConfigureAwait(false);
+
+            if (response == null)
+            {
+                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Asset Summary by Id and Submit Date cannot be found!"));
+            }
+
+            var updateRequest = response.ToUpdateModel();
+
+            patchDocument.ApplyTo(updateRequest);
+
+            response = updateRequest.ToResponse(response);
+
+            await _updateAssetSummaryUseCase.ExecuteAsync(response).ConfigureAwait(false);
+
+            return Ok(response);
+        }
 
         /// <summary>
         /// Create new Asset summary model

@@ -158,7 +158,7 @@ namespace FinancialSummaryApi
 
         private static void RegisterGateways(IServiceCollection services)
         {
-            services.AddScoped<IFinanceSummaryGateway, DynamoDbGateway>();
+            services.AddScoped<IFinanceSummaryGateway, IDynamoDbGateway>();
         }
 
         private static void RegisterUseCases(IServiceCollection services)
@@ -177,6 +177,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
             services.AddScoped<IGetAssetSummaryByIdAndYearUseCase, GetAssetSummaryByIdAndYearUseCase>();
+            services.AddScoped<IUpdateAssetSummaryUseCase, UpdateAssetSummaryUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
