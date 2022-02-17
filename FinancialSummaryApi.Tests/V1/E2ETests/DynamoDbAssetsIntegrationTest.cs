@@ -1,7 +1,6 @@
 using AutoFixture;
 using FinancialSummaryApi.V1.Boundary;
 using FinancialSummaryApi.V1.Boundary.Response;
-using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Infrastructure.Entities;
@@ -235,6 +234,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id));
         }
+
         private async Task<AssetSummaryResponse> CreateAssetAndValidateAndReturnResponse(AssetSummary assetSummary)
         {
             var uri = new Uri($"api/v1/asset-summary", UriKind.Relative);
@@ -254,7 +254,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
             CleanupActions.Add(async () => await DynamoDbContext.DeleteAsync<AssetSummaryDbEntity>(apiEntity.TargetId, apiEntity.Id).ConfigureAwait(false));
             return apiEntity;
         }
-
 
         private async Task GetAssetByTargetIdAndValidateResponse(AssetSummary assetSummary)
         {

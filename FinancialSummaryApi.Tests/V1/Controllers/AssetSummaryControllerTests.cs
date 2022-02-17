@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -54,23 +55,23 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         [Fact]
         public async Task GetAllByDateAssetSummaryObjectsReturns200()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
                 .ReturnsAsync(
-                    new List<AssetSummaryResponse>()
+                    new List<AssetSummaryViewResponse>()
                     {
-                        new AssetSummaryResponse
+                        new AssetSummaryViewResponse
                         {
                             Id = new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"),
                             TargetId = new Guid("0f1da28f-a1e7-478b-aee9-3656cf9d8ab1"),
-                            TargetType = TargetType.Estate,
-                            AssetName = "Estate 1",
-                            SubmitDate = new DateTime(2021, 7, 2),
-                            TotalDwellingRent = 100,
-                            TotalNonDwellingRent = 50,
-                            TotalRentalServiceCharge = 120,
-                            TotalServiceCharges = 140,
-                            TotalIncome = 111,
-                            TotalExpenditure = 123
+                            Ownership = new OwnershipResponse
+                            {
+                                TotalLeaseholders = 2,
+                                TotalFreeholders = 2,
+                                TotalDwellings = 2
+                            },
+                            SummaryYear = 2020,
+                            Type = ValuesType.Actual,
+                            TotalServiceCharges = 140
                         }
                     });
 
@@ -82,50 +83,25 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            var assetSummaries = okResult.Value as List<AssetSummaryResponse>;
+            var assetSummaries = okResult.Value as List<AssetSummaryViewResponse>;
 
             assetSummaries.Should().NotBeNull();
 
             assetSummaries.Should().HaveCount(1);
 
-            assetSummaries[0].Id.Should().Be(new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"));
-            assetSummaries[0].TargetId.Should().Be(new Guid("0f1da28f-a1e7-478b-aee9-3656cf9d8ab1"));
-            assetSummaries[0].TargetType.Should().Be(TargetType.Estate);
-            assetSummaries[0].AssetName.Should().Be("Estate 1");
-            assetSummaries[0].SubmitDate.Should().Be(new DateTime(2021, 7, 2));
-            assetSummaries[0].TotalDwellingRent.Should().Be(100);
-            assetSummaries[0].TotalNonDwellingRent.Should().Be(50);
-            assetSummaries[0].TotalRentalServiceCharge.Should().Be(120);
-            assetSummaries[0].TotalServiceCharges.Should().Be(140);
-            assetSummaries[0].TotalIncome.Should().Be(111);
-            assetSummaries[0].TotalExpenditure.Should().Be(123);
+            assetSummaries.First().Id.Should().Be(new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"));
+            assetSummaries.First().TargetId.Should().Be(new Guid("0f1da28f-a1e7-478b-aee9-3656cf9d8ab1"));
+            assetSummaries.First().TotalServiceCharges.Should().Be(140);
+            assetSummaries.First().Ownership.TotalDwellings.Should().Be(2);
+            assetSummaries.First().Ownership.TotalFreeholders.Should().Be(2);
+            assetSummaries.First().Ownership.TotalLeaseholders.Should().Be(2);
         }
 
         [Fact]
         public async Task GetAllByAnotherDateAssetSummaryObjectsReturns200()
         {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(
-                    new List<AssetSummaryResponse>()
-                    {
-                        new AssetSummaryResponse
-                        {
-                            Id = new Guid("3cb13efc-14b9-4da8-8eb2-f552434d219d"),
-                            TargetId = new Guid("0f1da28f-a1e7-478b-aee9-3656cf9d8ab1"),
-                            TargetType = TargetType.Estate,
-                            AssetName = "Estate 1",
-                            SubmitDate = new DateTime(2021, 7, 2),
-                            TotalDwellingRent = 100,
-                            TotalNonDwellingRent = 50,
-                            TotalRentalServiceCharge = 120,
-                            TotalServiceCharges = 140,
-                            TotalIncome = 111,
-                            TotalExpenditure = 123
-                        }
-                    });
-
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
-                .ReturnsAsync(new List<AssetSummaryResponse> { });
+            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>()))
+                .ReturnsAsync(new List<AssetSummaryViewResponse> { });
 
             var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, Guid.Empty, new DateTime(2021, 7, 1)).ConfigureAwait(false);
 
@@ -135,29 +111,11 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             okResult.Should().NotBeNull();
 
-            var assetSummaries = okResult.Value as List<AssetSummaryResponse>;
+            var assetSummaries = okResult.Value as List<AssetSummaryViewResponse>;
 
             assetSummaries.Should().NotBeNull();
 
             assetSummaries.Should().HaveCount(0);
-        }
-
-        [Fact]
-        public async Task GetAllByDateAssetSummaryObjectsReturns500()
-        {
-            _getAllUseCase.Setup(x => x.ExecuteAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()))
-                .ThrowsAsync(new Exception("Test exception"));
-
-            try
-            {
-                var result = await _assetSummaryController.GetAll(string.Empty, string.Empty, Guid.Empty, new DateTime(2021, 7, 2)).ConfigureAwait(false);
-                Assert.True(false, "Exception must be thrown!");
-            }
-            catch (Exception ex)
-            {
-                ex.GetType().Should().Be(typeof(Exception));
-                ex.Message.Should().Be("Test exception");
-            }
         }
 
         [Fact]

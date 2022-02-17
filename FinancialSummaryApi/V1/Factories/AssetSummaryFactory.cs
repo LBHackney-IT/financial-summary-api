@@ -48,6 +48,7 @@ namespace FinancialSummaryApi.V1.Factories
         {
             Id = response.Id,
             TargetId = response.TargetId,
+            ValuesType = response.ValuesType,
             TargetType = response.TargetType,
             AssetName = response.AssetName,
             SubmitDate = response.SubmitDate,
@@ -70,6 +71,7 @@ namespace FinancialSummaryApi.V1.Factories
                 Id = databaseEntity.Id,
                 TargetId = databaseEntity.TargetId,
                 TargetType = databaseEntity.TargetType,
+                ValuesType = (int) databaseEntity.ValuesType == 0 ? ValuesType.Estimate : databaseEntity.ValuesType,
                 AssetName = databaseEntity.TargetName,
                 SubmitDate = databaseEntity.SubmitDate,
                 TotalDwellingRent = databaseEntity.TotalDwellingRent,
@@ -87,8 +89,8 @@ namespace FinancialSummaryApi.V1.Factories
 
         public static List<AssetSummary> ToDomain(this IEnumerable<AssetSummaryDbEntity> databaseEntity)
         {
-            return databaseEntity.Select(p => p.ToDomain())
-                                 .OrderByDescending(x => x.SubmitDate)
+            return databaseEntity.Select(p => p?.ToDomain())
+                                 .OrderByDescending(x => x?.SubmitDate)
                                  .ToList();
         }
         public static AssetSummaryDbEntity ToDatabase(this AssetSummary entity)
@@ -98,6 +100,7 @@ namespace FinancialSummaryApi.V1.Factories
 
                 Id = entity.Id,
                 TargetId = entity.TargetId,
+                ValuesType = entity.ValuesType,
                 TargetType = entity.TargetType,
                 SubmitDate = entity.SubmitDate,
                 TargetName = entity.AssetName,
@@ -120,6 +123,7 @@ namespace FinancialSummaryApi.V1.Factories
             return requestModel == null ? null : new AssetSummary
             {
                 TargetId = requestModel.TargetId,
+                ValuesType = requestModel.ValuesType,
                 TargetType = requestModel.TargetType,
                 AssetName = requestModel.AssetName,
                 SubmitDate = requestModel.SubmitDate,

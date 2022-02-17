@@ -55,7 +55,7 @@ namespace FinancialSummaryApi.V1.Controllers
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromQuery] Guid targetId, [FromQuery] DateTime submitDate)
         {
-            var assetSummaries = await _getAllUseCase.ExecuteAsync(targetId, submitDate).ConfigureAwait(false);
+            var assetSummaries = await _getAllUseCase.ExecuteAsync(targetId).ConfigureAwait(false);
 
             return Ok(assetSummaries);
         }

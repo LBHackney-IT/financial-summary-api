@@ -26,6 +26,10 @@ namespace FinancialSummaryApi.V1.Boundary.Request
         /// </example>
         [Required]
         public TargetType TargetType { get; set; }
+
+        [Required]
+        public ValuesType ValuesType { get; set; }
+
         /// <example>
         /// id libero excepturi
         /// </example>

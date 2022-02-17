@@ -13,7 +13,7 @@ namespace FinancialSummaryApi.V1.Gateways.Abstracts
 
         Task<AssetSummary> GetAssetSummaryByIdAsync(Guid assetId, DateTime submitDate);
         Task<AssetSummary> GetAssetSummaryByIdAndYearAsync(Guid assetId, short summaryYear);
-        Task<List<AssetSummary>> GetAllAssetSummaryAsync(Guid assetId, DateTime submitDate);
+        Task<List<AssetSummary>> GetAllAssetSummaryAsync(Guid assetId, DateTime? submitDate);
 
         Task<PagedResult<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, string paginationToken);
         Task<List<Statement>> GetStatementListAsync(Guid targetId, DateTime? startDate, DateTime? endDate);
