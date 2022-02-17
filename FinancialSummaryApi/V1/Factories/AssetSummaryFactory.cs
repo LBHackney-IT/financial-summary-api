@@ -71,7 +71,7 @@ namespace FinancialSummaryApi.V1.Factories
                 Id = databaseEntity.Id,
                 TargetId = databaseEntity.TargetId,
                 TargetType = databaseEntity.TargetType,
-                ValuesType = (int)databaseEntity.ValuesType == 0 ? ValuesType.Estimate: databaseEntity.ValuesType,
+                ValuesType = (int) databaseEntity.ValuesType == 0 ? ValuesType.Estimate : databaseEntity.ValuesType,
                 AssetName = databaseEntity.TargetName,
                 SubmitDate = databaseEntity.SubmitDate,
                 TotalDwellingRent = databaseEntity.TotalDwellingRent,
