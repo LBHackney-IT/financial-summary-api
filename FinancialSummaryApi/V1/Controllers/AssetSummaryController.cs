@@ -47,7 +47,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AssetSummaryViewResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         //[LogCall(LogLevel.Information)]
