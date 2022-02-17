@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -23,19 +24,22 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IGetAssetSummaryByIdAndYearUseCase _getAssetSummaryByIdAndYearUseCase;
         private readonly IAddAssetSummaryUseCase _addUseCase;
         private readonly IUpdateAssetSummaryUseCase _updateAssetSummaryUseCase;
+        private readonly IAddBatchUseCase _addBatchUseCase;
 
         public AssetSummaryController(
             IGetAllAssetSummariesUseCase getAllUseCase,
             IGetAssetSummaryByIdUseCase getByIdUseCase,
             IGetAssetSummaryByIdAndYearUseCase getAssetSummaryByIdAndYearUseCase,
             IAddAssetSummaryUseCase addAssetSummaryUseCase,
-            IUpdateAssetSummaryUseCase updateAssetSummaryUseCase)
+            IUpdateAssetSummaryUseCase updateAssetSummaryUseCase,
+            IAddBatchUseCase addBatchUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
             _getAssetSummaryByIdAndYearUseCase = getAssetSummaryByIdAndYearUseCase;
             _addUseCase = addAssetSummaryUseCase;
             _updateAssetSummaryUseCase = updateAssetSummaryUseCase;
+            _addBatchUseCase = addBatchUseCase;
         }
 
         /// <summary>
@@ -185,6 +189,42 @@ namespace FinancialSummaryApi.V1.Controllers
             var resultAsset = await _addUseCase.ExecuteAsync(assetSummary).ConfigureAwait(false);
 
             return CreatedAtAction("Get", new { assetId = assetSummary.TargetId }, resultAsset);
+        }
+
+        /// <summary>
+        /// Create a list of new Asset Summary records
+        /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="token">The jwt token value</param>
+        /// <param name="assetSummaries">List of Asset Summaries model for create</param>
+        /// <response code="201">Created. Asset Summaries model was created successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("process-batch")]
+        public async Task<IActionResult> AddBatch([FromHeader(Name = "x-correlation-id")] string correlationId,
+                                                  [FromHeader(Name = "Authorization")] string token,
+                                                  [FromBody] IEnumerable<AddAssetSummaryRequest> assetSummaries)
+        {
+            if (assetSummaries == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Asset Summaries models cannot be null!"));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+            }
+
+            var batchResponse = await _addBatchUseCase.ExecuteAsync(assetSummaries).ConfigureAwait(false);
+
+            if (batchResponse == assetSummaries.Count())
+                return Ok($"Total {batchResponse} number of Asset Summaries processed successfully");
+
+            return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Asset Summaries entries processing failed!"));
         }
     }
 }

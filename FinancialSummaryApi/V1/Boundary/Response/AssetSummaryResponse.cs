@@ -93,5 +93,10 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// TOtal Dwellings Count
         /// </summary>
         public int TotalDwellings { get; set; }
+
+        /// <summary>
+        /// Total Blocks count inside an Estate
+        /// </summary>
+        public int TotalBlocks { get; set; }
     }
 }

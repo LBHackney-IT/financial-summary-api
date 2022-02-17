@@ -2,6 +2,7 @@ using Amazon.DynamoDBv2.DataModel;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.Util;
 using AutoMapper;
+using FinancialSummaryApi.V1.Controllers;
 using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
@@ -287,6 +288,31 @@ namespace FinancialSummaryApi.V1.Gateways
 
             }
             return dbAssetSummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault().ToDomain();
+        }
+
+        public async Task<bool> AddBatchAsync(List<AssetSummary> assetSummaries)
+        {
+            var assetSummariesBatch = _dynamoDbContext.CreateBatchWrite<AssetSummaryDbEntity>();
+
+            var items = assetSummaries.ToDatabaseList();
+            var maxBatchCount = Constants.PerBatchProcessingCount;
+            if (items.Count > maxBatchCount)
+            {
+                var loopCount = (items.Count / maxBatchCount) + 1;
+                for (var start = 0; start < loopCount; start++)
+                {
+                    var itemsToWrite = items.Skip(start * maxBatchCount).Take(maxBatchCount);
+                    assetSummariesBatch.AddPutItems(itemsToWrite);
+                    await assetSummariesBatch.ExecuteAsync().ConfigureAwait(false);
+                }
+            }
+            else
+            {
+                assetSummariesBatch.AddPutItems(items);
+                await assetSummariesBatch.ExecuteAsync().ConfigureAwait(false);
+            }
+
+            return true;
         }
     }
 }

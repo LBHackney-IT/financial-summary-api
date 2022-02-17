@@ -182,6 +182,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
             services.AddScoped<IGetAssetSummaryByIdAndYearUseCase, GetAssetSummaryByIdAndYearUseCase>();
             services.AddScoped<IUpdateAssetSummaryUseCase, UpdateAssetSummaryUseCase>();
+            services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
