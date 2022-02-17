@@ -22,16 +22,16 @@ namespace FinancialSummaryApi.V1.UseCase
         public async Task<List<AssetSummaryViewResponse>> ExecuteAsync(Guid assetId)
         {
             var assetSummaries =
-                await _financeSummaryGateway.GetAllAssetSummaryAsync(assetId, null).ConfigureAwait(false);
-
-            var response = assetSummaries
+                (await _financeSummaryGateway.GetAllAssetSummaryAsync(assetId, null).ConfigureAwait(false))
                 .OrderByDescending(a => a.SummaryYear)
                 .ThenByDescending(a => a.SubmitDate)
-                .Take(3)
-                .ToList()
-                .ToViewResponse();
+                .ToList();
 
-            return response;
+            var last3Years = assetSummaries.Select(a => a.SummaryYear).Distinct().OrderByDescending(year => year).Take(3).ToList();
+
+            var summaryList = last3Years.Select(year => assetSummaries.First(s => s.SummaryYear == year)).ToList();
+
+            return summaryList.ToViewResponse();
         }
     }
 }
