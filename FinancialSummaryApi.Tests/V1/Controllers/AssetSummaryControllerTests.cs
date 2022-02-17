@@ -28,6 +28,7 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
         private readonly Mock<IGetAssetSummaryByIdAndYearUseCase> _mockGetByIdAndYearUseCase;
         private readonly Mock<IAddAssetSummaryUseCase> _addUseCase;
         private readonly Mock<IUpdateAssetSummaryUseCase> _updateAssetSummaryUseCase;
+        private readonly Mock<IAddBatchUseCase> _mockAddBatchUseCase;
 
         public AssetSummaryControllerTests()
         {
@@ -41,11 +42,13 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
 
             _updateAssetSummaryUseCase = new Mock<IUpdateAssetSummaryUseCase>();
 
+            _mockAddBatchUseCase = new Mock<IAddBatchUseCase>();
+
             _httpContext = new DefaultHttpContext();
             _controllerContext = new ControllerContext(new ActionContext(_httpContext, new RouteData(), new ControllerActionDescriptor()));
             _assetSummaryController = new AssetSummaryController(_getAllUseCase.Object, _getByIdUseCase.Object, _mockGetByIdAndYearUseCase.Object,
                 _addUseCase.Object,
-                _updateAssetSummaryUseCase.Object)
+                _updateAssetSummaryUseCase.Object, _mockAddBatchUseCase.Object)
             {
                 ControllerContext = _controllerContext
             };

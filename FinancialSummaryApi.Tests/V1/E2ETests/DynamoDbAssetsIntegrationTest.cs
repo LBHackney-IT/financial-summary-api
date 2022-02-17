@@ -233,7 +233,7 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
 
             apiEntity.Should().NotBeNull();
 
-            apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id));
+            apiEntity.Should().BeEquivalentTo(assetSummary, options => options.Excluding(a => a.Id).Excluding(c => c.TotalBlocks));
         }
         private async Task<AssetSummaryResponse> CreateAssetAndValidateAndReturnResponse(AssetSummary assetSummary)
         {

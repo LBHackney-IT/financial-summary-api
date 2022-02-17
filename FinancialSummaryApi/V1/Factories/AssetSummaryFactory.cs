@@ -22,7 +22,8 @@ namespace FinancialSummaryApi.V1.Factories
             SummaryYear = summary.SummaryYear,
             TotalLeaseholders = summary.TotalLeaseholders,
             TotalFreeholders = summary.TotalFreeholders,
-            TotalDwellings = summary.TotalDwellings
+            TotalDwellings = summary.TotalDwellings,
+            TotalBlocks = summary.TotalBlocks
         };
 
         public static AssetSummaryResponse ToResponse(this AssetSummaryUpdateRequest summary, AssetSummaryResponse response) => new AssetSummaryResponse
@@ -41,7 +42,8 @@ namespace FinancialSummaryApi.V1.Factories
             SummaryYear = summary.SummaryYear,
             TotalLeaseholders = summary.TotalLeaseholders,
             TotalFreeholders = summary.TotalFreeholders,
-            TotalDwellings = summary.TotalDwellings
+            TotalDwellings = summary.TotalDwellings,
+            TotalBlocks = summary.TotalBlocks
         };
 
         public static AssetSummary ToDomain(this AssetSummaryResponse response) => new AssetSummary
@@ -60,7 +62,8 @@ namespace FinancialSummaryApi.V1.Factories
             TotalDwellings = response.TotalDwellings,
             TotalFreeholders = response.TotalFreeholders,
             TotalLeaseholders = response.TotalLeaseholders,
-            SummaryYear = response.SummaryYear
+            SummaryYear = response.SummaryYear,
+            TotalBlocks = response.TotalBlocks
         };
 
         public static AssetSummary ToDomain(this AssetSummaryDbEntity databaseEntity)
@@ -81,7 +84,8 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalDwellings = databaseEntity.TotalDwellings,
                 TotalFreeholders = databaseEntity.TotalFreeholders,
                 TotalLeaseholders = databaseEntity.TotalLeaseholders,
-                SummaryYear = databaseEntity.SummaryYear
+                SummaryYear = databaseEntity.SummaryYear,
+                TotalBlocks = databaseEntity.TotalBlocks
             };
         }
 
@@ -90,6 +94,15 @@ namespace FinancialSummaryApi.V1.Factories
             return databaseEntity.Select(p => p.ToDomain())
                                  .OrderByDescending(x => x.SubmitDate)
                                  .ToList();
+        }
+
+        public static List<AssetSummary> ToDomainList(this List<AddAssetSummaryRequest> assetSummaries)
+        {
+            return assetSummaries.Select(item => item.ToDomain()).ToList();
+        }
+        public static List<AssetSummaryDbEntity> ToDatabaseList(this List<AssetSummary> assetSummaries)
+        {
+            return assetSummaries.Select(item => item.ToDatabase()).ToList();
         }
         public static AssetSummaryDbEntity ToDatabase(this AssetSummary entity)
         {
@@ -111,7 +124,8 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalDwellings = entity.TotalDwellings,
                 TotalFreeholders = entity.TotalFreeholders,
                 TotalLeaseholders = entity.TotalLeaseholders,
-                SummaryYear = entity.SummaryYear
+                SummaryYear = entity.SummaryYear,
+                TotalBlocks = entity.TotalBlocks
             };
         }
 
@@ -132,7 +146,8 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalDwellings = requestModel.TotalDwellings,
                 TotalFreeholders = requestModel.TotalFreeholders,
                 TotalLeaseholders = requestModel.TotalLeaseholders,
-                SummaryYear = requestModel.SummaryYear
+                SummaryYear = requestModel.SummaryYear,
+                TotalBlocks = requestModel.TotalBlocks
             };
         }
     }

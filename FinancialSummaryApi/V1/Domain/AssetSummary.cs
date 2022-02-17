@@ -37,5 +37,6 @@ namespace FinancialSummaryApi.V1.Domain
 
         public int TotalDwellings { get; set; }
 
+        public int TotalBlocks { get; set; }
     }
 }

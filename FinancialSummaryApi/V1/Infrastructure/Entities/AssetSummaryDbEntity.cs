@@ -53,5 +53,8 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "total_dwellings")]
         public int TotalDwellings { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_blocks")]
+        public int TotalBlocks { get; set; }
     }
 }
