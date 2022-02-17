@@ -65,3 +65,6 @@ tmp/
 .ionide
 .local-chromium
 puppeteer
+
+
+*launchSettings.Development.json

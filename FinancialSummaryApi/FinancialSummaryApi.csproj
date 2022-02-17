@@ -27,6 +27,12 @@
         <Compile Remove="V1\UseCase\Interfaces\IGetAllWeeklySummariesUseCase.cs" />
         <Compile Remove="V1\UseCase\Interfaces\IGetWeeklySummaryByIdUseCase.cs" />
     </ItemGroup>
+    <ItemGroup>
+      <_WebToolingArtifacts Remove="Properties\launchSettings.Development.json" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="Properties\launchSettings.Development.json" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Amazon.Lambda.AspNetCoreServer" Version="5.1.1" />
