@@ -12,6 +12,7 @@ using Hackney.Core.DynamoDb;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.Gateways
@@ -304,6 +305,7 @@ namespace FinancialSummaryApi.V1.Gateways
                     var itemsToWrite = items.Skip(start * maxBatchCount).Take(maxBatchCount);
                     assetSummariesBatch.AddPutItems(itemsToWrite);
                     await assetSummariesBatch.ExecuteAsync().ConfigureAwait(false);
+                    Thread.Sleep(1000);
                 }
             }
             else
