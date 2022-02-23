@@ -270,7 +270,7 @@ namespace FinancialSummaryApi.V1.Gateways
             return _mapper.Map<Statement>(data);
         }
 
-        public async Task<AssetSummary> GetAssetSummaryByIdAndYearAsync(Guid assetId, short summaryYear)
+        public async Task<AssetSummary> GetAssetSummaryByIdAndYearAsync(Guid assetId, short summaryYear, ValuesType valuesType)
         {
             var dbAssetSummary = new List<AssetSummaryDbEntity>();
             var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
@@ -288,7 +288,7 @@ namespace FinancialSummaryApi.V1.Gateways
                 dbAssetSummary.AddRange(_dynamoDbContext.FromDocuments<AssetSummaryDbEntity>(resultsSet));
 
             }
-            return dbAssetSummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault().ToDomain();
+            return dbAssetSummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault(x => x.ValuesType == valuesType).ToDomain();
         }
 
         public async Task<bool> AddBatchAsync(List<AssetSummary> assetSummaries)
