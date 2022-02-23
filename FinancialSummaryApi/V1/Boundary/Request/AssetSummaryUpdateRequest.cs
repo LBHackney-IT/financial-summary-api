@@ -1,3 +1,4 @@
+using FinancialSummaryApi.V1.Domain;
 using System;
 
 namespace FinancialSummaryApi.V1.Boundary.Request
@@ -28,5 +29,7 @@ namespace FinancialSummaryApi.V1.Boundary.Request
 
         public int TotalDwellings { get; set; }
         public int TotalBlocks { get; set; }
+
+        public ValuesType ValuesType { get; set; }
     }
 }

@@ -23,7 +23,8 @@ namespace FinancialSummaryApi.V1.Factories
             TotalLeaseholders = summary.TotalLeaseholders,
             TotalFreeholders = summary.TotalFreeholders,
             TotalDwellings = summary.TotalDwellings,
-            TotalBlocks = summary.TotalBlocks
+            TotalBlocks = summary.TotalBlocks,
+            ValuesType = summary.ValuesType
         };
 
         public static AssetSummaryResponse ToResponse(this AssetSummaryUpdateRequest summary, AssetSummaryResponse response) => new AssetSummaryResponse
@@ -43,7 +44,8 @@ namespace FinancialSummaryApi.V1.Factories
             TotalLeaseholders = summary.TotalLeaseholders,
             TotalFreeholders = summary.TotalFreeholders,
             TotalDwellings = summary.TotalDwellings,
-            TotalBlocks = summary.TotalBlocks
+            TotalBlocks = summary.TotalBlocks,
+            ValuesType = summary.ValuesType
         };
 
         public static AssetSummary ToDomain(this AssetSummaryResponse response) => new AssetSummary

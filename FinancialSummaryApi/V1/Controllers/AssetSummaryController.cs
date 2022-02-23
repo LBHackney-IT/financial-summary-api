@@ -1,5 +1,6 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Domain;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -102,6 +103,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
         /// <param name="token">The jwt token value</param>
         /// <param name="summaryYear">The date when the requested data was generated</param>
+        /// <param name="valuesType">The type Estimate or Actual</param>
         /// <param name="assetId">The value by which we are looking for an asset summary</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="400">Bad Request</response>
@@ -116,9 +118,10 @@ namespace FinancialSummaryApi.V1.Controllers
         public async Task<IActionResult> Get([FromHeader(Name = "Authorization")] string token,
                                              [FromHeader(Name = "x-correlation-id")] string correlationId,
                                              [FromRoute] Guid assetId,
-                                             [FromQuery] short summaryYear)
+                                             [FromQuery] short summaryYear,
+                                             [FromQuery] ValuesType valuesType)
         {
-            var assetSummary = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear).ConfigureAwait(false);
+            var assetSummary = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear, valuesType).ConfigureAwait(false);
 
             if (assetSummary == null)
             {
@@ -134,14 +137,16 @@ namespace FinancialSummaryApi.V1.Controllers
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpPatch("estimates/{assetId}")]
         public async Task<IActionResult> PatchEstimate([FromBody] JsonPatchDocument<AssetSummaryUpdateRequest> patchDocument,
-                                                       [FromRoute] Guid assetId)
+                                                       [FromRoute] Guid assetId,
+                                                       [FromQuery] short summaryYear,
+                                                       [FromQuery] ValuesType valuesType)
         {
             if (patchDocument == null)
             {
                 return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "AssetSummary model cannot be null!"));
             }
 
-            var response = await _getByIdUseCase.ExecuteAsync(assetId, DateTime.MinValue).ConfigureAwait(false);
+            var response = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear, valuesType).ConfigureAwait(false);
 
             if (response == null)
             {
