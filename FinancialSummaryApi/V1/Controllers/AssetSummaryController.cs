@@ -119,7 +119,7 @@ namespace FinancialSummaryApi.V1.Controllers
                                              [FromHeader(Name = "x-correlation-id")] string correlationId,
                                              [FromRoute] Guid assetId,
                                              [FromQuery] short summaryYear,
-                                             [FromQuery] ValuesType valuesType )
+                                             [FromQuery] ValuesType valuesType)
         {
             var assetSummary = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear, valuesType).ConfigureAwait(false);
 
