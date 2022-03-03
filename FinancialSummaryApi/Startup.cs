@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,9 @@ namespace FinancialSummaryApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services
+                .AddMvc()
+                .AddNewtonsoftJson(opts => opts.SerializerSettings.Converters.Add(new StringEnumConverter()));
             services.AddAutoMapper(typeof(Startup));
             services
                 .AddMvc()
@@ -176,7 +180,9 @@ namespace FinancialSummaryApi
             services.AddScoped<IExportSelectedStatementUseCase, ExportSelectedStatementUseCase>();
             services.AddScoped<IExportCsvStatementUseCase, ExportCsvStatementUseCase>();
             services.AddScoped<IExportPdfStatementUseCase, ExportPdfStatementUseCase>();
-
+            services.AddScoped<IGetAssetSummaryByIdAndYearUseCase, GetAssetSummaryByIdAndYearUseCase>();
+            services.AddScoped<IUpdateAssetSummaryUseCase, UpdateAssetSummaryUseCase>();
+            services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -202,6 +208,7 @@ namespace FinancialSummaryApi
             _apiVersions = api.ApiVersionDescriptions.ToList();
 
             //Swagger ui to view the swagger.json file
+            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 foreach (var apiVersionDescription in _apiVersions)
@@ -214,7 +221,6 @@ namespace FinancialSummaryApi
 
             app.UseGoogleGroupAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
-            app.UseSwagger();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {

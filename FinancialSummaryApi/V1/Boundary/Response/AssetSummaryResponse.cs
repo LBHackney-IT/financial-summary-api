@@ -21,6 +21,8 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// </example>
         public Guid TargetId { get; set; }
 
+        public ValuesType ValuesType { get; set; }
+
         /// <summary>
         /// Values: [Estate, Block, Core]
         /// </summary>
@@ -71,5 +73,30 @@ namespace FinancialSummaryApi.V1.Boundary.Response
         /// 2021-06-25T13:19:47.993Z
         /// </example>
         public DateTime SubmitDate { get; set; }
+
+        /// <summary>
+        /// Summary Year for Estimate 
+        /// </summary>
+        public short SummaryYear { get; set; }
+
+        /// <summary>
+        /// Total Leaseholder Count 
+        /// </summary>
+        public int TotalLeaseholders { get; set; }
+
+        /// <summary>
+        /// Total Freehoders Count
+        /// </summary>
+        public int TotalFreeholders { get; set; }
+
+        /// <summary>
+        /// TOtal Dwellings Count
+        /// </summary>
+        public int TotalDwellings { get; set; }
+
+        /// <summary>
+        /// Total Blocks count inside an Estate
+        /// </summary>
+        public int TotalBlocks { get; set; }
     }
 }

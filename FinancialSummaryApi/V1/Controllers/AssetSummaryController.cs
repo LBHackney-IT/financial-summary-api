@@ -1,12 +1,14 @@
 using FinancialSummaryApi.V1.Boundary.Request;
 using FinancialSummaryApi.V1.Boundary.Response;
+using FinancialSummaryApi.V1.Domain;
+using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
-using Hackney.Core.Logging;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -20,16 +22,25 @@ namespace FinancialSummaryApi.V1.Controllers
     {
         private readonly IGetAllAssetSummariesUseCase _getAllUseCase;
         private readonly IGetAssetSummaryByIdUseCase _getByIdUseCase;
+        private readonly IGetAssetSummaryByIdAndYearUseCase _getAssetSummaryByIdAndYearUseCase;
         private readonly IAddAssetSummaryUseCase _addUseCase;
+        private readonly IUpdateAssetSummaryUseCase _updateAssetSummaryUseCase;
+        private readonly IAddBatchUseCase _addBatchUseCase;
 
         public AssetSummaryController(
             IGetAllAssetSummariesUseCase getAllUseCase,
             IGetAssetSummaryByIdUseCase getByIdUseCase,
-            IAddAssetSummaryUseCase addAssetSummaryUseCase)
+            IGetAssetSummaryByIdAndYearUseCase getAssetSummaryByIdAndYearUseCase,
+            IAddAssetSummaryUseCase addAssetSummaryUseCase,
+            IUpdateAssetSummaryUseCase updateAssetSummaryUseCase,
+            IAddBatchUseCase addBatchUseCase)
         {
             _getAllUseCase = getAllUseCase;
             _getByIdUseCase = getByIdUseCase;
+            _getAssetSummaryByIdAndYearUseCase = getAssetSummaryByIdAndYearUseCase;
             _addUseCase = addAssetSummaryUseCase;
+            _updateAssetSummaryUseCase = updateAssetSummaryUseCase;
+            _addBatchUseCase = addBatchUseCase;
         }
 
         /// <summary>
@@ -41,7 +52,7 @@ namespace FinancialSummaryApi.V1.Controllers
         /// <param name="submitDate">The date when the requested data was generated</param>
         /// <response code="200">Success. Asset summary models was received successfully</response>
         /// <response code="500">Internal Server Error</response>
-        [ProducesResponseType(typeof(List<AssetSummaryResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(List<AssetSummaryViewResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
         [HttpGet]
         //[LogCall(LogLevel.Information)]
@@ -49,7 +60,7 @@ namespace FinancialSummaryApi.V1.Controllers
                                                 [FromHeader(Name = "x-correlation-id")] string correlationId,
                                                 [FromQuery] Guid targetId, [FromQuery] DateTime submitDate)
         {
-            var assetSummaries = await _getAllUseCase.ExecuteAsync(targetId, submitDate).ConfigureAwait(false);
+            var assetSummaries = await _getAllUseCase.ExecuteAsync(targetId).ConfigureAwait(false);
 
             return Ok(assetSummaries);
         }
@@ -87,6 +98,73 @@ namespace FinancialSummaryApi.V1.Controllers
         }
 
         /// <summary>
+        /// Get Asset summary model by provided assetId
+        /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="token">The jwt token value</param>
+        /// <param name="summaryYear">The date when the requested data was generated</param>
+        /// <param name="valuesType">The type Estimate or Actual</param>
+        /// <param name="assetId">The value by which we are looking for an asset summary</param>
+        /// <response code="200">Success. Asset summary models was received successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="404">Asset with provided id cannot be found</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpGet]
+        [Route("estimates/{assetId}")]
+        public async Task<IActionResult> Get([FromHeader(Name = "Authorization")] string token,
+                                             [FromHeader(Name = "x-correlation-id")] string correlationId,
+                                             [FromRoute] Guid assetId,
+                                             [FromQuery] short summaryYear,
+                                             [FromQuery] ValuesType valuesType)
+        {
+            var assetSummary = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear, valuesType).ConfigureAwait(false);
+
+            if (assetSummary == null)
+            {
+                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Asset Summary by provided assetId cannot be found!"));
+            }
+
+            return Ok(assetSummary);
+        }
+
+        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpPatch("estimates/{assetId}")]
+        public async Task<IActionResult> PatchEstimate([FromBody] JsonPatchDocument<AssetSummaryUpdateRequest> patchDocument,
+                                                       [FromRoute] Guid assetId,
+                                                       [FromQuery] short summaryYear,
+                                                       [FromQuery] ValuesType valuesType)
+        {
+            if (patchDocument == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "AssetSummary model cannot be null!"));
+            }
+
+            var response = await _getAssetSummaryByIdAndYearUseCase.ExecuteAsync(assetId, summaryYear, valuesType).ConfigureAwait(false);
+
+            if (response == null)
+            {
+                return NotFound(new BaseErrorResponse((int) HttpStatusCode.NotFound, "No Asset Summary by Id and Submit Date cannot be found!"));
+            }
+
+            var updateRequest = response.ToUpdateModel();
+
+            patchDocument.ApplyTo(updateRequest);
+
+            response = updateRequest.ToResponse(response);
+
+            await _updateAssetSummaryUseCase.ExecuteAsync(response).ConfigureAwait(false);
+
+            return Ok(response);
+        }
+
+        /// <summary>
         /// Create new Asset summary model
         /// </summary>
         /// <param name="token">The jwt token value</param>
@@ -116,6 +194,42 @@ namespace FinancialSummaryApi.V1.Controllers
             var resultAsset = await _addUseCase.ExecuteAsync(assetSummary).ConfigureAwait(false);
 
             return CreatedAtAction("Get", new { assetId = assetSummary.TargetId }, resultAsset);
+        }
+
+        /// <summary>
+        /// Create a list of new Asset Summary records
+        /// </summary>
+        /// <param name="correlationId">The value that is used to combine several requests into a common group</param>
+        /// <param name="token">The jwt token value</param>
+        /// <param name="assetSummaries">List of Asset Summaries model for create</param>
+        /// <response code="201">Created. Asset Summaries model was created successfully</response>
+        /// <response code="400">Bad Request</response>
+        /// <response code="500">Internal Server Error</response>
+        [ProducesResponseType(typeof(AssetSummaryResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpPost]
+        [Route("process-batch")]
+        public async Task<IActionResult> AddBatch([FromHeader(Name = "x-correlation-id")] string correlationId,
+                                                  [FromHeader(Name = "Authorization")] string token,
+                                                  [FromBody] IEnumerable<AddAssetSummaryRequest> assetSummaries)
+        {
+            if (assetSummaries == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Asset Summaries models cannot be null!"));
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, GetErrorMessage(ModelState)));
+            }
+
+            var batchResponse = await _addBatchUseCase.ExecuteAsync(assetSummaries).ConfigureAwait(false);
+
+            if (batchResponse == assetSummaries.Count())
+                return Ok($"Total {batchResponse} number of Asset Summaries processed successfully");
+
+            return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Asset Summaries entries processing failed!"));
         }
     }
 }

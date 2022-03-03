@@ -1,7 +1,7 @@
-using System.Collections.Generic;
-using System.Linq;
 using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Domain;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FinancialSummaryApi.V1.Factories
 {
@@ -35,6 +35,7 @@ namespace FinancialSummaryApi.V1.Factories
             {
                 Id = domain.Id,
                 TargetId = domain.TargetId,
+                ValuesType = domain.ValuesType,
                 TargetType = domain.TargetType,
                 SubmitDate = domain.SubmitDate,
                 TotalDwellingRent = domain.TotalDwellingRent,
@@ -44,6 +45,10 @@ namespace FinancialSummaryApi.V1.Factories
                 TotalIncome = domain.TotalIncome,
                 TotalExpenditure = domain.TotalExpenditure,
                 AssetName = domain.AssetName,
+                SummaryYear = domain.SummaryYear,
+                TotalDwellings = domain.TotalDwellings,
+                TotalFreeholders = domain.TotalFreeholders,
+                TotalLeaseholders = domain.TotalLeaseholders
             };
         }
 
@@ -52,6 +57,27 @@ namespace FinancialSummaryApi.V1.Factories
             return domainList?.Select(domain => domain.ToResponse())?.ToList();
         }
 
+        public static AssetSummaryViewResponse ToViewResponse(this AssetSummary domain)
+        {
+            return new AssetSummaryViewResponse
+            {
+                Id = domain.Id,
+                TargetId = domain.TargetId,
+                SummaryYear = domain.SummaryYear,
+                Type = domain.ValuesType,
+                Ownership = new OwnershipResponse
+                {
+                    TotalLeaseholders = domain.TotalLeaseholders,
+                    TotalFreeholders = domain.TotalFreeholders,
+                    TotalDwellings = domain.TotalDwellings
+                },
+                TotalServiceCharges = domain.TotalServiceCharges
+            };
+        }
 
+        public static List<AssetSummaryViewResponse> ToViewResponse(this IList<AssetSummary> domainList)
+        {
+            return domainList.Select(domain => domain?.ToViewResponse()).ToList();
+        }
     }
 }
