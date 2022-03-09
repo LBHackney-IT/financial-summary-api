@@ -9,6 +9,7 @@ using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
 using Hackney.Core.Authorization;
+using Hackney.Core.Http;
 using Hackney.Core.JWT;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -123,7 +124,8 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-            services.AddTokenFactory();
+            services.AddTokenFactory()
+                .AddHttpContextWrapper();
 
             RegisterGateways(services);
             RegisterUseCases(services);
@@ -208,7 +210,6 @@ namespace FinancialSummaryApi
             _apiVersions = api.ApiVersionDescriptions.ToList();
 
             //Swagger ui to view the swagger.json file
-            app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 foreach (var apiVersionDescription in _apiVersions)
@@ -219,9 +220,11 @@ namespace FinancialSummaryApi
                 }
             });
 
+
+            app.UseSwagger();
+            app.UseRouting();
             app.UseGoogleGroupAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
-            app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 // SwaggerGen won't find controllers that are routed via this technique.

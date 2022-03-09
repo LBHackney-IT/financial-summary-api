@@ -18,8 +18,7 @@
         "DynamoDb_LocalAccessKey": "fco1i2",
         "DynamoDb_LocalSecretKey": "8kmm3g",
         "DynamoDb_LocalMode": "true",
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "REQUIRED_GOOGL_GROUPS": "e2e-testing-development"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "applicationUrl": "http://localhost:5000"
     },
