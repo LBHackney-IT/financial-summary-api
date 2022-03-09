@@ -9,8 +9,12 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
     {
         [DynamoDBHashKey(AttributeName = "target_id")]
         public Guid TargetId { get; set; }
+
         [DynamoDBRangeKey(AttributeName = "id")]
         public Guid Id { get; set; }
+
+        [DynamoDBProperty(AttributeName = "values_type", Converter = typeof(DynamoDbEnumConverter<ValuesType>))]
+        public ValuesType ValuesType { get; set; }
 
         [DynamoDBProperty(AttributeName = "summary_type", Converter = typeof(DynamoDbEnumConverter<SummaryType>))]
         public SummaryType SummaryType { get; set; }
@@ -41,5 +45,20 @@ namespace FinancialSummaryApi.V1.Infrastructure.Entities
 
         [DynamoDBProperty(AttributeName = "total_expenditure")]
         public decimal TotalExpenditure { get; set; }
+
+        [DynamoDBProperty(AttributeName = "summary_year")]
+        public short SummaryYear { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_leaseholders")]
+        public int TotalLeaseholders { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_freeholders")]
+        public int TotalFreeholders { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_dwellings")]
+        public int TotalDwellings { get; set; }
+
+        [DynamoDBProperty(AttributeName = "total_blocks")]
+        public int TotalBlocks { get; set; }
     }
 }

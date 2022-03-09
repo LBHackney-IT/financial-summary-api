@@ -2,9 +2,9 @@ using FinancialSummaryApi.V1.Boundary.Response;
 using FinancialSummaryApi.V1.Factories;
 using FinancialSummaryApi.V1.Gateways.Abstracts;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
-using Hackney.Core.Logging;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.UseCase
@@ -17,17 +17,21 @@ namespace FinancialSummaryApi.V1.UseCase
         {
             _financeSummaryGateway = financeSummaryGateway;
         }
+
         //[LogCall]
-        public async Task<List<AssetSummaryResponse>> ExecuteAsync(Guid assertId, DateTime submitDate)
+        public async Task<List<AssetSummaryViewResponse>> ExecuteAsync(Guid assetId)
         {
-            if (submitDate == DateTime.MinValue)
-            {
-                submitDate = DateTime.UtcNow;
-            }
+            var assetSummaries =
+                (await _financeSummaryGateway.GetAllAssetSummaryAsync(assetId, null).ConfigureAwait(false))
+                .OrderByDescending(a => a.SummaryYear)
+                .ThenByDescending(a => a.SubmitDate)
+                .ToList();
 
-            var assetSummaries = (await _financeSummaryGateway.GetAllAssetSummaryAsync(assertId, submitDate).ConfigureAwait(false)).ToResponse();
+            var last3Years = assetSummaries.Select(a => a.SummaryYear).Distinct().OrderByDescending(year => year).Take(3).ToList();
 
-            return assetSummaries;
+            var summaryList = last3Years.Select(year => assetSummaries.First(s => s.SummaryYear == year)).ToList();
+
+            return summaryList.ToViewResponse();
         }
     }
 }

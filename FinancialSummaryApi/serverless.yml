@@ -3,12 +3,12 @@ provider:
   name: aws
   runtime: dotnetcore3.1
   memorySize: 2048
+  timeout: 300
   tracing:
     lambda: true
     apiGateway: true
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
-  account: ${opt:account}
   region: eu-west-2
 
 package:

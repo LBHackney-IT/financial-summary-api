@@ -1,19 +1,10 @@
+using FinancialSummaryApi.V1.Domain;
 using System;
 
-namespace FinancialSummaryApi.V1.Domain
+namespace FinancialSummaryApi.V1.Boundary.Request
 {
-    /// <summary>
-    /// Model that describe summary info about some estate
-    /// </summary>
-    public class AssetSummary
+    public class AssetSummaryUpdateRequest
     {
-        public Guid Id { get; set; }
-
-        public Guid TargetId { get; set; }
-
-        public TargetType TargetType { get; set; }
-        public ValuesType ValuesType { get; set; }
-
         public string AssetName { get; set; }
 
         public decimal TotalDwellingRent { get; set; }
@@ -37,7 +28,8 @@ namespace FinancialSummaryApi.V1.Domain
         public int TotalFreeholders { get; set; }
 
         public int TotalDwellings { get; set; }
-
         public int TotalBlocks { get; set; }
+
+        public ValuesType ValuesType { get; set; }
     }
 }

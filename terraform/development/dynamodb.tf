@@ -1,8 +1,8 @@
 resource "aws_dynamodb_table" "FinancialSummaries_dynamodb_table" {
     name                  = "FinancialSummaries"
     billing_mode          = "PROVISIONED"
-    read_capacity         = 10
-    write_capacity        = 10
+    read_capacity         = 100
+    write_capacity        = 100
     hash_key              = "target_id"
     range_key             = "id"
 
