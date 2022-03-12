@@ -93,40 +93,6 @@ namespace FinancialSummaryApi.Tests.V1.E2ETests
         }
 
         [Fact]
-        public async Task CreateStatementBadRequestReturns400()
-        {
-            var statementDomain = new List<Statement> { ConstructStatement() };
-
-            statementDomain[0].ChargedAmount = -100;
-            statementDomain[0].PaidAmount = -99;
-            statementDomain[0].HousingBenefitAmount = -500;
-
-            var uri = new Uri("api/v1/statements", UriKind.Relative);
-            string body = JsonConvert.SerializeObject(statementDomain);
-
-            HttpResponseMessage response;
-            using (StringContent stringContent = new StringContent(body))
-            {
-                stringContent.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                response = await Client.PostAsync(uri, stringContent).ConfigureAwait(false);
-            }
-
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-
-            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var apiEntity = JsonConvert.DeserializeObject<BaseErrorResponse>(responseContent);
-
-            apiEntity.Should().NotBeNull();
-            apiEntity.StatusCode.Should().Be(400);
-            apiEntity.Details.Should().Be(string.Empty);
-
-            apiEntity.Message.Should().Contain("'Paid Amount' must be greater than or equal to '0'.");
-            apiEntity.Message.Should().Contain("'Charged Amount' must be greater than or equal to '0'.");
-            apiEntity.Message.Should().Contain("'Housing Benefit Amount' must be greater than or equal to '0'.");
-        }
-
-        [Fact]
         public async Task CreateTwoStatementsGetListReturns200()
         {
             var statementDomains = new List<Statement> { ConstructStatement(), ConstructStatement() };
