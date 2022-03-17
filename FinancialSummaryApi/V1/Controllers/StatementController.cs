@@ -22,6 +22,7 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IExportSelectedStatementUseCase _exportSelectedItemUseCase;
         private readonly IExportCsvStatementUseCase _exportCsvStatementUseCase;
         private readonly IExportPdfStatementUseCase _exportPdfStatementUseCase;
+        private readonly IGetStatementByIdUseCase _getStatementByIdUseCase;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
@@ -29,7 +30,8 @@ namespace FinancialSummaryApi.V1.Controllers
             IExportStatementUseCase exportStatementUseCase,
             IExportSelectedStatementUseCase exportSelectedItemUseCase,
             IExportCsvStatementUseCase exportCsvStatementUseCase,
-            IExportPdfStatementUseCase exportPdfStatementUseCase)
+            IExportPdfStatementUseCase exportPdfStatementUseCase,
+            IGetStatementByIdUseCase getStatementByIdUseCase)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
@@ -37,6 +39,33 @@ namespace FinancialSummaryApi.V1.Controllers
             _exportSelectedItemUseCase = exportSelectedItemUseCase;
             _exportCsvStatementUseCase = exportCsvStatementUseCase;
             _exportPdfStatementUseCase = exportPdfStatementUseCase;
+            _getStatementByIdUseCase = getStatementByIdUseCase;
+        }
+
+        /// <summary>
+        /// Load statement by id
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="correlationId"></param>
+        /// <param name="statementId"></param>
+        /// <param name="targetId"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(PagedResult<StatementResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpGet("single/{statementId}")]
+        public async Task<IActionResult> GetById([FromHeader(Name = "Authorization")] string token,
+                                                [FromHeader(Name = "x-correlation-id")] string correlationId,
+                                                [FromRoute] Guid statementId, [FromQuery] Guid targetId)
+        {
+            if (statementId == Guid.Empty)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Statement id cannot be null!"));
+            }
+
+            var statement = await _getStatementByIdUseCase.ExecuteAsync(statementId, targetId).ConfigureAwait(false);
+
+            return Ok(statement);
         }
 
         /// <summary>

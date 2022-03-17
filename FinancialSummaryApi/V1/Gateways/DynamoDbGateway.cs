@@ -256,6 +256,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
             return dbStatement.ToDomain();
         }
+
         public async Task AddRangeAsync(List<Statement> statements)
         {
             var statementBatch = _dynamoDbContext.CreateBatchWrite<StatementDbEntity>();
