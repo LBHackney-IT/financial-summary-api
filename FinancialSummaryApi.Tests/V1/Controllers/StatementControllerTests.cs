@@ -54,7 +54,10 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
             _statementController = new StatementController(
                 _getListUseCase.Object, _addListUseCase.Object,
                 _exportStatementUseCase.Object,
-                _exportSelectedItemUseCase.Object, _exportCsvStatementUseCase.Object, _exportPdfStatementUseCase.Object)
+                _exportSelectedItemUseCase.Object,
+                _exportCsvStatementUseCase.Object,
+                _exportPdfStatementUseCase.Object,
+                new Mock<IGetStatementByIdUseCase>().Object)
             {
                 ControllerContext = _controllerContext
             };
