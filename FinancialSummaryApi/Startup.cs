@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using FinancialSummaryApi.V1.UseCase.Interfaces.Statements;
+using FinancialSummaryApi.V1.UseCase.Statements;
 
 namespace FinancialSummaryApi
 {
@@ -186,6 +188,7 @@ namespace FinancialSummaryApi
             services.AddScoped<IUpdateAssetSummaryUseCase, UpdateAssetSummaryUseCase>();
             services.AddScoped<IAddBatchUseCase, AddBatchUseCase>();
             services.AddScoped<IGetStatementByIdUseCase, GetStatementByIdUseCase>();
+            services.AddScoped<IGetBatchSatementsByIdsUseCase, GetBatchSatementsByIdsUseCase>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

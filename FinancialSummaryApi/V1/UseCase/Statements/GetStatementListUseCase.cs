@@ -6,7 +6,6 @@ using FinancialSummaryApi.V1.UseCase.Helpers;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using Hackney.Core.DynamoDb;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace FinancialSummaryApi.V1.UseCase
