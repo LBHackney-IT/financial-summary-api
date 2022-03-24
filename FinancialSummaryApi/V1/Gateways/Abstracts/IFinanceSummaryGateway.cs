@@ -25,5 +25,6 @@ namespace FinancialSummaryApi.V1.Gateways.Abstracts
         Task<bool> AddBatchAsync(List<AssetSummary> assetSummaries);
         Task UpdateAsync(AssetSummary assetSummary);
         public Task AddRangeAsync(List<Statement> statements);
+        Task<List<Statement>> GetBatchStatementsByIds(List<Guid> targetIds);
     }
 }

@@ -103,6 +103,52 @@ namespace FinancialSummaryApi.V1.Gateways
 
         }
 
+        public async Task<AssetSummary> GetAssetSummaryByIdAndYearAsync(Guid assetId, short summaryYear, ValuesType valuesType)
+        {
+            var dbAssetSummary = new List<AssetSummaryDbEntity>();
+            var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
+            var queryConfig = new QueryOperationConfig
+            {
+                BackwardSearch = true,
+                ConsistentRead = true,
+                Filter = new QueryFilter(TargetId, QueryOperator.Equal, assetId)
+            };
+            queryConfig.Filter.AddCondition("summary_year", QueryOperator.Equal, summaryYear);
+            var search = table.Query(queryConfig);
+            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
+            if (resultsSet.Any())
+            {
+                dbAssetSummary.AddRange(_dynamoDbContext.FromDocuments<AssetSummaryDbEntity>(resultsSet));
+
+            }
+            return dbAssetSummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault(x => x.ValuesType == valuesType).ToDomain();
+        }
+
+        public async Task<bool> AddBatchAsync(List<AssetSummary> assetSummaries)
+        {
+            var assetSummariesBatch = _dynamoDbContext.CreateBatchWrite<AssetSummaryDbEntity>();
+
+            var items = assetSummaries.ToDatabaseList();
+            var maxBatchCount = Constants.PerBatchProcessingCount;
+            if (items.Count > maxBatchCount)
+            {
+                var loopCount = (items.Count / maxBatchCount) + 1;
+                for (var start = 0; start < loopCount; start++)
+                {
+                    var itemsToWrite = items.Skip(start * maxBatchCount).Take(maxBatchCount);
+                    assetSummariesBatch.AddPutItems(itemsToWrite);
+                    await assetSummariesBatch.ExecuteAsync().ConfigureAwait(false);
+                    Thread.Sleep(1000);
+                }
+            }
+            else
+            {
+                assetSummariesBatch.AddPutItems(items);
+                await assetSummariesBatch.ExecuteAsync().ConfigureAwait(false);
+            }
+
+            return true;
+        }
         #endregion
 
         #region Rent Group Summary
@@ -177,7 +223,7 @@ namespace FinancialSummaryApi.V1.Gateways
 
         #endregion
 
-
+        #region Satatements
         public async Task<PagedResult<Statement>> GetPagedStatementsAsync(Guid targetId, DateTime startDate, DateTime endDate, int pageSize, string paginationToken)
         {
             pageSize = pageSize > 0 ? pageSize : MaxResults;
@@ -271,51 +317,32 @@ namespace FinancialSummaryApi.V1.Gateways
             return _mapper.Map<Statement>(data);
         }
 
-        public async Task<AssetSummary> GetAssetSummaryByIdAndYearAsync(Guid assetId, short summaryYear, ValuesType valuesType)
+        public async Task<List<Statement>> GetBatchStatementsByIds(List<Guid> targetIds)
         {
-            var dbAssetSummary = new List<AssetSummaryDbEntity>();
-            var table = _dynamoDbContext.GetTargetTable<AssetSummaryDbEntity>();
+            var dbStatement = new List<Document>();
+
+            foreach (var id in targetIds)
+            {
+                dbStatement.AddRange(await GetStatementsByTargetId(id).ConfigureAwait(false));
+            }
+
+            return _dynamoDbContext.FromDocuments<StatementDbEntity>(dbStatement).ToDomain();
+        }
+
+        private async Task<List<Document>> GetStatementsByTargetId(Guid targetId)
+        {
+            var table = _dynamoDbContext.GetTargetTable<StatementDbEntity>();
             var queryConfig = new QueryOperationConfig
             {
                 BackwardSearch = true,
                 ConsistentRead = true,
-                Filter = new QueryFilter(TargetId, QueryOperator.Equal, assetId)
+                Filter = new QueryFilter(TargetId, QueryOperator.Equal, targetId)
             };
-            queryConfig.Filter.AddCondition("summary_year", QueryOperator.Equal, summaryYear);
+
             var search = table.Query(queryConfig);
-            var resultsSet = await search.GetNextSetAsync().ConfigureAwait(false);
-            if (resultsSet.Any())
-            {
-                dbAssetSummary.AddRange(_dynamoDbContext.FromDocuments<AssetSummaryDbEntity>(resultsSet));
-
-            }
-            return dbAssetSummary.OrderByDescending(x => x.SubmitDate).FirstOrDefault(x => x.ValuesType == valuesType).ToDomain();
+            return await search.GetNextSetAsync().ConfigureAwait(false);
         }
+        #endregion
 
-        public async Task<bool> AddBatchAsync(List<AssetSummary> assetSummaries)
-        {
-            var assetSummariesBatch = _dynamoDbContext.CreateBatchWrite<AssetSummaryDbEntity>();
-
-            var items = assetSummaries.ToDatabaseList();
-            var maxBatchCount = Constants.PerBatchProcessingCount;
-            if (items.Count > maxBatchCount)
-            {
-                var loopCount = (items.Count / maxBatchCount) + 1;
-                for (var start = 0; start < loopCount; start++)
-                {
-                    var itemsToWrite = items.Skip(start * maxBatchCount).Take(maxBatchCount);
-                    assetSummariesBatch.AddPutItems(itemsToWrite);
-                    await assetSummariesBatch.ExecuteAsync().ConfigureAwait(false);
-                    Thread.Sleep(1000);
-                }
-            }
-            else
-            {
-                assetSummariesBatch.AddPutItems(items);
-                await assetSummariesBatch.ExecuteAsync().ConfigureAwait(false);
-            }
-
-            return true;
-        }
     }
 }
