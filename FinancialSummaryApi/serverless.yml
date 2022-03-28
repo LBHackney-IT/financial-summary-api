@@ -13,6 +13,10 @@ provider:
 
 package:
   artifact: ./bin/release/netcoreapp3.1/financial-summary-api.zip
+
+  plugins:
+  - serverless-associate-waf
+    
 functions:
   FinancialSummaryApi:
     name: ${self:service}-${self:provider.stage}
@@ -137,6 +141,9 @@ resources:
                           - Ref: 'AWS::AccountId'
                           - 'table/FinancialSummaries/index/*'
 custom:
+  associateWaf:
+    name: Platform_APIs_Web_ACL
+    version: V2
   vpc:
     development:
       subnetIds:
