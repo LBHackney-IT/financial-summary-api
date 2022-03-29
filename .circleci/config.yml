@@ -86,6 +86,7 @@ commands:
           name: Deploy lambda
           command: |
             cd ./FinancialSummaryApi/
+            npm i serverless-associate-waf
             sls deploy --stage <<parameters.stage>> --conceal
 jobs:
   check-code-formatting:
