@@ -38,8 +38,8 @@ commands:
           root: *workspace_root
           paths:
             - .aws
-  terraform-init-then-apply:
-    description: "Initializes and applies terraform configuration"
+  terraform-init-then-plan:
+    description: "Initializes and run plan from terraform configuration"
     parameters:
       environment:
         type: string
@@ -53,10 +53,54 @@ commands:
             terraform init
           name: get and init
       - run:
+          name: plan
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            terraform plan -out=plan.out
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .aws
+            - project/*
+  terraform-compliance:
+    description: "Run Terraform Compliance checks"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout
+      - run:
+          command: |
+            cd ./terraform/<<parameters.environment>>/
+            apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+            apk add --update --no-cache g++ gcc libxslt-dev python3-dev
+            python3 -m ensurepip
+            pip3 install --no-cache --upgrade pip setuptools
+            pip install terraform-compliance
+            terraform-compliance -f terraform-compliance/ -p plan.out
+          name: terraform compliance
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .aws
+  terraform-apply:
+    description: "Runs Terraform Apply"
+    parameters:
+      environment:
+        type: string
+    steps:
+      - *attach_workspace
+      - checkout          
+      - run:
           name: apply
           command: |
             cd ./terraform/<<parameters.environment>>/
-            terraform apply -auto-approve
+            terraform apply -auto-approve plan.out
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .aws
   deploy-lambda:
     description: "Deploys API via Serverless"
     parameters:
@@ -71,8 +115,6 @@ commands:
           command: |
             curl -sL https://deb.nodesource.com/setup_13.x | bash -
             apt-get update && apt-get install -y nodejs
-            apt-get -y install libgdiplus libc6-dev
-            
       - run:
           name: Install serverless CLI
           command: npm i -g serverless
@@ -88,6 +130,7 @@ commands:
             cd ./FinancialSummaryApi/
             npm i serverless-associate-waf
             sls deploy --stage <<parameters.stage>> --conceal
+
 jobs:
   check-code-formatting:
     executor: docker-dotnet
@@ -125,39 +168,66 @@ jobs:
     steps:
       - assume-role-and-persist-workspace:
           aws-account: $AWS_ACCOUNT_PRODUCTION
-  terraform-init-and-apply-to-development:
+  terraform-init-and-plan-development:
     executor: docker-terraform
     steps:
-      - terraform-init-then-apply:
+      - terraform-init-then-plan:
           environment: "development"
-  terraform-init-and-apply-to-staging:
+  terraform-compliance-development:
     executor: docker-terraform
     steps:
-      - terraform-init-then-apply:
+      - terraform-compliance:
+          environment: "development"
+  terraform-apply-development:
+    executor: docker-terraform
+    steps:
+      - terraform-apply:
+          environment: "development"
+  terraform-init-and-plan-staging:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-plan:
           environment: "staging"
-  terraform-init-and-apply-to-production:
+  terraform-compliance-staging:
     executor: docker-terraform
     steps:
-      - terraform-init-then-apply:
+      - terraform-compliance:
+          environment: "staging"
+  terraform-apply-staging:
+    executor: docker-terraform
+    steps:
+      - terraform-apply:
+          environment: "staging"
+  terraform-init-and-plan-production:
+    executor: docker-terraform
+    steps:
+      - terraform-init-then-plan:
+          environment: "production"
+  terraform-compliance-production:
+    executor: docker-terraform
+    steps:
+      - terraform-compliance:
+          environment: "production"
+  terraform-apply-production:
+    executor: docker-terraform
+    steps:
+      - terraform-apply:
           environment: "production"
   deploy-to-development:
     executor: docker-dotnet
     steps:
       - deploy-lambda:
           stage: "development"
-          #aws-account: $AWS_ACCOUNT_DEVELOPMENT
   deploy-to-staging:
     executor: docker-dotnet
     steps:
       - deploy-lambda:
           stage: "staging"
-          #aws-account: $AWS_ACCOUNT_STAGING
   deploy-to-production:
     executor: docker-dotnet
     steps:
       - deploy-lambda:
           stage: "production"
-          #aws-account: $AWS_ACCOUNT_PRODUCTION
 
 workflows:
   check-and-deploy-development:
@@ -169,31 +239,25 @@ workflows:
       - assume-role-development:
           context: api-assume-role-housing-development-context
           requires:
-            - check-code-formatting
             - build-and-test
-          filters:
-            branches:
-              only: development
-      - terraform-init-and-apply-to-development:
+      - terraform-init-and-plan-development:
           requires:
             - assume-role-development
-          filters:
-            branches:
-              only: development
+      - terraform-compliance-development:
+          requires:
+            - terraform-init-and-plan-development
+      - terraform-apply-development:
+          requires:
+            - terraform-compliance-development
       - deploy-to-development:
           context: api-nuget-token-context
           requires:
-            - terraform-init-and-apply-to-development
+            - terraform-apply-development
           filters:
             branches:
               only: development
   check-and-deploy-staging-and-production:
-      jobs:
-      - check-code-formatting:
-          context: api-nuget-token-context
-          filters:
-            branches:
-              only: master
+    jobs:
       - build-and-test:
           context: api-nuget-token-context
           filters:
@@ -206,16 +270,28 @@ workflows:
           filters:
              branches:
                only: master
-      - terraform-init-and-apply-to-staging:
+      - terraform-init-and-plan-staging:
           requires:
             - assume-role-staging
           filters:
             branches:
               only: master
+      - terraform-compliance-staging:
+          requires:
+            - terraform-init-and-plan-staging
+          filters:
+            branches:
+              only: master
+      - terraform-apply-staging:
+          requires:
+            - terraform-compliance-staging
+          filters:
+            branches:
+              only: master              
       - deploy-to-staging:
           context: api-nuget-token-context
           requires:
-            - terraform-init-and-apply-to-staging
+            - terraform-apply-staging
           filters:
             branches:
               only: master
@@ -223,33 +299,41 @@ workflows:
           type: approval
           requires:
             - deploy-to-staging
-          filters:
-            branches:
-              only: master
-      - terraform-init-and-apply-to-production:
-          requires:
-            - permit-production-terraform-release
-          filters:
-            branches:
-              only: master
-      - permit-production-release:
-          type: approval
-          requires:
-              - terraform-init-and-apply-to-production
-          filters:
-             branches:
-               only: master
       - assume-role-production:
           context: api-assume-role-housing-production-context
           requires:
-              - permit-production-release
+              - permit-production-terraform-release
           filters:
              branches:
                only: master
+      - terraform-init-and-plan-production:
+          requires:
+            - assume-role-production
+          filters:
+            branches:
+              only: master
+      - terraform-compliance-production:
+          requires:
+            - terraform-init-and-plan-production
+          filters:
+            branches:
+              only: master
+      - terraform-apply-production:
+          requires:
+            - terraform-compliance-production
+          filters:
+            branches:
+              only: master              
+      - permit-production-release:
+          type: approval
+          requires:
+            - terraform-apply-production
+          filters:
+            branches:
+              only: master
       - deploy-to-production:
           context: api-nuget-token-context
           requires:
-            - assume-role-production
             - permit-production-release
           filters:
             branches:
