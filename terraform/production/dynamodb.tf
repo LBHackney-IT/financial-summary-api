@@ -21,6 +21,7 @@ resource "aws_dynamodb_table" "FinancialSummaries_dynamodb_table" {
         Environment       = var.environment_name
         terraform-managed = true
         project_name      = var.project_name
+        BackupPolicy      = "Prod"
     }
 
     point_in_time_recovery {
