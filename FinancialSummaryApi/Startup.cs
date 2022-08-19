@@ -53,7 +53,6 @@ namespace FinancialSummaryApi
             services.AddAutoMapper(typeof(Startup));
             services
                 .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                 .AddFluentValidation(o => o.RegisterValidatorsFromAssemblyContaining<Startup>());
             services.AddApiVersioning(o =>
             {
