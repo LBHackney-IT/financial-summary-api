@@ -8,9 +8,7 @@ using FinancialSummaryApi.V1.UseCase;
 using FinancialSummaryApi.V1.UseCase.Interfaces;
 using FinancialSummaryApi.Versioning;
 using FluentValidation.AspNetCore;
-using Hackney.Core.Authorization;
 using Hackney.Core.Http;
-using Hackney.Core.JWT;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -123,8 +121,7 @@ namespace FinancialSummaryApi
             ConfigureLogging(services, Configuration);
 
             services.ConfigureDynamoDB();
-            services.AddTokenFactory()
-                .AddHttpContextWrapper();
+            services.AddHttpContextWrapper();
 
             RegisterGateways(services);
             RegisterUseCases(services);
@@ -223,7 +220,6 @@ namespace FinancialSummaryApi
 
             app.UseSwagger();
             app.UseRouting();
-            app.UseGoogleGroupAuthorization();
             app.UseMiddleware<ExceptionMiddleware>();
             app.UseEndpoints(endpoints =>
             {
