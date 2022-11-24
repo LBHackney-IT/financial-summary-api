@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.UseCase.Interfaces.Statements;
+
 namespace FinancialSummaryApi.V1.Controllers
 {
     [ApiController]
@@ -23,6 +25,7 @@ namespace FinancialSummaryApi.V1.Controllers
         private readonly IExportCsvStatementUseCase _exportCsvStatementUseCase;
         private readonly IExportPdfStatementUseCase _exportPdfStatementUseCase;
         private readonly IGetStatementByIdUseCase _getStatementByIdUseCase;
+        private readonly IGetBatchSatementsByIdsUseCase _getBatchSatementsByIdsUseCase;
 
         public StatementController(
             IGetStatementListUseCase getListUseCase,
@@ -31,7 +34,8 @@ namespace FinancialSummaryApi.V1.Controllers
             IExportSelectedStatementUseCase exportSelectedItemUseCase,
             IExportCsvStatementUseCase exportCsvStatementUseCase,
             IExportPdfStatementUseCase exportPdfStatementUseCase,
-            IGetStatementByIdUseCase getStatementByIdUseCase)
+            IGetStatementByIdUseCase getStatementByIdUseCase,
+            IGetBatchSatementsByIdsUseCase getBatchSatementsByIdsUseCase)
         {
             _getListUseCase = getListUseCase;
             _addListUseCase = addListUseCase;
@@ -40,6 +44,7 @@ namespace FinancialSummaryApi.V1.Controllers
             _exportCsvStatementUseCase = exportCsvStatementUseCase;
             _exportPdfStatementUseCase = exportPdfStatementUseCase;
             _getStatementByIdUseCase = getStatementByIdUseCase;
+            _getBatchSatementsByIdsUseCase = getBatchSatementsByIdsUseCase;
         }
 
         /// <summary>
@@ -67,6 +72,37 @@ namespace FinancialSummaryApi.V1.Controllers
 
             return Ok(statement);
         }
+
+        /// <summary>
+        /// Gets a list of statements by a list of targetIds
+        /// </summary>
+        /// <param name="token">The token.</param>
+        /// <param name="correlationId">The correlation identifier.</param>
+        /// <param name="request">The request.</param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(List<StatementResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(BaseErrorResponse), StatusCodes.Status500InternalServerError)]
+        [HttpPost("batch")]
+        public async Task<IActionResult> GetBatchStatements([FromHeader(Name = "Authorization")] string token,
+            [FromHeader(Name = "x-correlation-id")]
+            string correlationId, [FromBody] GetBatchStatementsRequest request)
+        {
+            if (request == null)
+            {
+                return BadRequest(new BaseErrorResponse((int) HttpStatusCode.BadRequest, "Request model cannot be empty!"));
+            }
+
+            if (request.TargetIds == null || request.TargetIds.Count == 0)
+            {
+                return Ok(new List<StatementResponse>());
+            }
+
+            var statements = await _getBatchSatementsByIdsUseCase.ExecuteAsync(request.TargetIds).ConfigureAwait(false);
+
+            return Ok(statements);
+        }
+
 
         /// <summary>
         /// Get a list of statements for specified asset

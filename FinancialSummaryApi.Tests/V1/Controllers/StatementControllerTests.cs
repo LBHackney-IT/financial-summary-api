@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using FinancialSummaryApi.V1.UseCase.Interfaces.Statements;
 using Xunit;
 
 
@@ -57,7 +58,8 @@ namespace FinancialSummaryApi.Tests.V1.Controllers
                 _exportSelectedItemUseCase.Object,
                 _exportCsvStatementUseCase.Object,
                 _exportPdfStatementUseCase.Object,
-                new Mock<IGetStatementByIdUseCase>().Object)
+                new Mock<IGetStatementByIdUseCase>().Object,
+                new Mock<IGetBatchSatementsByIdsUseCase>().Object)
             {
                 ControllerContext = _controllerContext
             };
